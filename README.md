@@ -7,4 +7,4 @@ It contains:
 
 Due to historical reasons, set of script and way of running them is different at the moment. 
 
-TBA: short instruction for each part
+TBA: insert names, add short instruction for each part
