@@ -1,7 +1,8 @@
 // Macro to plot responses with various pt binning on one plot
 //------------------------------------------------------------
 
-#include "../include/parameters.h"
+//#include "../include/parameters.h"
+#include "../../include/constants.h"
 #include "../include/useful_functions.h"
 #include "../include/CorrectionObject.h"
 #include "../include/tdrstyle_mod15.h"

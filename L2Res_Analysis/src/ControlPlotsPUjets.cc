@@ -3,7 +3,8 @@
 // created on 10.04.2019 by A. Karavdina
 
 #include "../include/CorrectionObject.h"
-#include "../include/parameters.h"
+//#include "../include/parameters.h"
+#include "../../include/constants.h"
 #include <TH1F.h>
 #include <TH2D.h>
 #include <TH3.h>

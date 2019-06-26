@@ -1,6 +1,7 @@
 // This script stores ratio between MC and DATA responses as function of pT in different eta bins and for different alpha values
 
-#include "../include/parameters.h"
+//#include "../include/parameters.h"
+#include "../../include/constants.h"
 #include "../include/CorrectionObject.h"
 #include "../include/useful_functions.h"
 
