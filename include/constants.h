@@ -3,68 +3,87 @@
 #ifndef  CONSTANTS_H
 #define  CONSTANTS_H
 
+#include <TString.h>
+#include <map>
+#include <array>
+
+using namespace std;
+
 const double eta_cut = 2.853-1e-5;
   
+//Eta bins:
+//Abs eta range:
+const int n_eta = 19;
+const TString eta_range[n_eta] = {"0.000", "0.261", "0.522", "0.783", "1.044", "1.305", "1.479", "1.653", "1.930", "2.172", "2.322", "2.500", "2.650", "2.853", "2.964", "3.139", "3.489", "3.839", "5.191"};
+const TString eta_range2[n_eta] = {"00", "0261", "0522", "0783", "1044", "1305", "1479", "1653", "193", "2172", "2322", "25", "2650", "2853", "2964", "3139", "3489", "3839", "5191"};
+const double eta_bins[n_eta]     = {0, 0.261, 0.522, 0.783, 1.044, 1.305, 1.479, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
+
+//Negative Eta Range
 const int n_eta_full = 37;
-
 const TString eta_range_full[n_eta_full] = {"-5.191","-3.839","-3.489","-3.139","-2.964","-2.853", "-2.65", "-2.5", "-2.322", "-2.172", "-1.93", "-1.653", "-1.479", "-1.305", "-1.044", "-0.783", "-0.522", "-0.261"," 0.000", "0.261", "0.522", "0.783", "1.044", "1.305", "1.479", "1.653", "1.930", "2.172", "2.322", "2.500", "2.650", "2.853", "2.964", "3.139", "3.489", "3.839", "5.191"};
-
+const TString eta_range2_full[n_eta_full] = {"-5191","-3839","-3489","-3139","-2964","-2853", "-265", "-25", "-2322", "-2172", "-193", "-1653", "-1479", "-1305", "-1044", "-0783", "-0522", "-0261","00", "0261", "0522", "0783", "1044", "1305", "1479", "1653", "193", "2172", "2322", "25", "2650", "2853", "2964", "3139", "3489", "3839", "5191"};
 const double eta_bins_full[n_eta_full]     = {-5.191, -3.839, -3.489, -3.139, -2.964, -2.853, -2.65, -2.5, -2.322, -2.172, -1.93, -1.653, -1.479, -1.305, -1.044, -0.783, -0.522, -0.261, 0, 0.261, 0.522, 0.783, 1.044, 1.305, 1.479, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
 
-const int n_pt_Si = 12;
 
-/* //SingleJet triggers highest double checked with combined BCDEF------------- */
-const double pt_bins_Si[n_pt_Si] = {
-  40 ,
-  72 ,
-  95 ,
-  160,
-  226,
-  283,
-  344,
-  443,
-  577,
-  606,1000,2000};
-
-const TString pt_range_Si[n_pt_Si]={
-  "40",
-  "72",
-  "95",
-  "160",
-  "226",
-  "283",
-  "344",
-  "443",
-  "577",
-  "606","1000","2000"};
-
-/* //SingleJet triggers highest End------------- */
 
 //19 bin edges, 18 actual bins
-constexpr static int n_eta = 19;
-static std::vector<double>   eta_range  =  {0, 0.261, 0.522, 0.783, 1.044, 1.305, 1.479, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
+//constexpr static int n_eta = 19;
+//static std::vector<double>   eta_range  =  {0, 0.261, 0.522, 0.783, 1.044, 1.305, 1.479, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
 static std::vector<double>   eta_range_mikko  = {0, 0.783, 1.305, 1.93, 2.5, 2.964, 3.2, 5.191};
-static std::vector<double>   alpha_range= {0., 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25};
+//Eta bins for GlobalFit files
+const int n_eta_common = 19;
+const double eta_common_bins[n_eta_common] ={0, 0.261, 0.522, 0.783, 1.044, 1.305, 1.479, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
+const TString eta_common_range[n_eta_common] = {"0.000", "0.261", "0.522", "0.783", "1.044", "1.305", "1.479", "1.653", "1.930", "2.172", "2.322", "2.500", "2.650", "2.853", "2.964", "3.139", "3.489", "3.839", "5.191"};
 
-/* constexpr static int n_eta_RelVals = 14; */
-/* static std::vector<double>   eta_range_RelVals  =  {0, 0.522, 1.044, 1.305, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 3.139, 3.489, 3.839, 5.191}; */
+const TString eta_output[n_eta_common-1] = {"eta_00_03", "eta_03_05","eta_05_08","eta_08_10","eta_10_13","eta_13_15","eta_15_17", "eta_17_19", "eta_19_22", "eta_22_23", "eta_23_25", "eta_25_27", "eta_27_29", "eta_29_30", "eta_30_31", "eta_31_35", "eta_35_38", "eta_38_52"};  
+
+const int n_eta_common_2 = 7;
+const double eta_common_bins_2[n_eta_common_2] ={
+  0.,
+  1.305,
+  1.93,
+  2.5,
+  2.964,
+  3.2,
+  5.191
+};
+const TString eta_common_range_2[n_eta_common_2] = {
+  "0.000",
+  "1.305",
+  "1.930",
+  "2.500",
+  "2.964",
+  "3.200",
+  "5.191"};
+
+const TString eta_output_2[n_eta_common_2-1] = {"eta_00_13", "eta_13_19","eta_19_25","eta_25_30","eta_30_32","eta_32_52"};
+
+
+//eta binning for checks with RelVals
 constexpr static int n_eta_RelVals = 19;
 static std::vector<double>   eta_range_RelVals  =  {0, 0.261, 0.522, 0.783, 1.044, 1.305, 1.479, 1.653, 1.93, 2.172, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
+
+
+//alpha
+//static std::vector<double>   alpha_range= {0., 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25};
+const double alpha_cut = 0.3;
+const TString s_alpha_cut = "0.3";
+const TString s_alpha_cut_name = "03";
+const int n_alpha = 11;
+const TString alpha_range[n_alpha] = {"a005", "a010", "a015", "a020", "a025", "a030", "a035", "a040", "a045","a050","a055"};
+const double alpha_bins[n_alpha] = {0.050, 0.100, 0.150, 0.200, 0.250, 0.300, 0.350,  0.400, 0.450,0.50,0.55};
+
+const int n_alpha_common = 4;
+const TString alpha_range_common[n_alpha_common] = {"a10","a15", "a20", "a30"};//for Global fit we produce result only in few alpha values
+const double alpha_bins_common[n_alpha_common] = {0.100, 0.150, 0.200, 0.300};
 
 /** \brief Dijet event selection **/
 // barrel region (|eta| < 1.3)
 constexpr static float s_eta_barr = 1.3;
 // two back-to-back leading jets (delta_phi(j1,j2) = min(|phi1 - phi2|, 2PI - |phi2 - phi1|) > 2.9)
 constexpr static float s_delta_phi = 2.7;
-// cut on the asymmetry for events with two jets  |(j2->pt - j1->pt /(j2->pt + j1->pt)| < 0.70
-// constexpr static float s_asymm = 0.7;
-
-constexpr static float s_asymm = 1.; //FIXME change back to 0.7?
-
- // cut on the asymmetry for events with two jets  |(j2->pt - j1->pt /(j2->pt + j1->pt)| < 0.2
-/* constexpr static float s_asymm = 0.2; */
-// relative third jet fraction pt_rel = 2*j3_pt/(j1_pt + j2_pt) < 0.2
-constexpr static float s_pt_rel = 0.4;
+// cut on the extreme asymmetry for events with two jets  |(j2->pt - j1->pt /(j2->pt + j1->pt)| < 0.70
+constexpr static float s_asymm = 1.; 
 
 /** \brief good Primary Vertex reconstruction **/
 // more than four tracks
@@ -77,81 +96,8 @@ constexpr static float s_n_Pv_xy = 2.0;
 
 /** \brief The trigger thresholds of pt_ave **/
 
-
 constexpr static int n_pt_bins = 9;
-
-
-/* //from 94X max RunB to RunD */
- constexpr static float s_Pt_AveMC_cut_2017   =40;
- constexpr static float s_Pt_Ave40_cut_2017   =40 ;
- constexpr static float s_Pt_Ave60_cut_2017   =72 ;
- constexpr static float s_Pt_Ave80_cut_2017   =95 ;
- constexpr static float s_Pt_Ave140_cut_2017  =160;
- constexpr static float s_Pt_Ave200_cut_2017  =226;
- constexpr static float s_Pt_Ave260_cut_2017  =283;
- constexpr static float s_Pt_Ave320_cut_2017  =344;
- constexpr static float s_Pt_Ave400_cut_2017  =443;
- constexpr static float s_Pt_Ave450_cut_2017  =577;
- constexpr static float s_Pt_Ave500_cut_2017  =606;
-
-//FIXME check the numbers below, are copy of central triggers atm, are they still?? does not look so...
-  constexpr static float s_Pt_Ave40HF_cut_2017  =40 ;
-  constexpr static float s_Pt_Ave60HF_cut_2017  =60 ;
-  constexpr static float s_Pt_Ave80HF_cut_2017  =72 ;
- constexpr static float s_Pt_Ave140HF_cut_2017  =160;
- constexpr static float s_Pt_Ave200HF_cut_2017  =190;
- constexpr static float s_Pt_Ave260HF_cut_2017  =290;
- constexpr static float s_Pt_Ave320HF_cut_2017  =310;
- constexpr static float s_Pt_Ave400HF_cut_2017  =390;
- constexpr static float s_Pt_Ave450HF_cut_2017  =444;
- constexpr static float s_Pt_Ave500HF_cut_2017  =480;
-
-//FixME: 2018 is copy of 2017 at the moment
-constexpr static float s_Pt_AveMC_cut_2018   =40;
- constexpr static float s_Pt_Ave40_cut_2018   =40 ;
- constexpr static float s_Pt_Ave60_cut_2018   =72 ;
- constexpr static float s_Pt_Ave80_cut_2018   =95 ;
- constexpr static float s_Pt_Ave140_cut_2018  =160;
- constexpr static float s_Pt_Ave200_cut_2018  =226;
- constexpr static float s_Pt_Ave260_cut_2018  =283;
- constexpr static float s_Pt_Ave320_cut_2018  =344;
- constexpr static float s_Pt_Ave400_cut_2018  =443;
- constexpr static float s_Pt_Ave450_cut_2018  =577;
- constexpr static float s_Pt_Ave500_cut_2018  =606;
-
-//FIXME check the numbers below, are copy of central triggers atm, are they still?? does not look so...
-  constexpr static float s_Pt_Ave40HF_cut_2018  =40 ;
-  constexpr static float s_Pt_Ave60HF_cut_2018  =60 ;
-  constexpr static float s_Pt_Ave80HF_cut_2018  =72 ;
- constexpr static float s_Pt_Ave140HF_cut_2018  =160;
- constexpr static float s_Pt_Ave200HF_cut_2018  =190;
- constexpr static float s_Pt_Ave260HF_cut_2018  =290;
- constexpr static float s_Pt_Ave320HF_cut_2018  =310;
- constexpr static float s_Pt_Ave400HF_cut_2018  =390;
- constexpr static float s_Pt_Ave450HF_cut_2018  =444;
- constexpr static float s_Pt_Ave500HF_cut_2018  =480;
-
-
- constexpr static float Pt_AveMC_cut   =  51;
-//from Di triggers 94X 17Nov2017
- constexpr static float d_Pt_Ave40_cut_2017   =  73;
- constexpr static float d_Pt_Ave60_cut_2017   =  85;
- constexpr static float d_Pt_Ave80_cut_2017   =  97;
- constexpr static float d_Pt_Ave140_cut_2017  = 179;
- constexpr static float d_Pt_Ave200_cut_2017  = 307;
- constexpr static float d_Pt_Ave260_cut_2017  = 370;
- constexpr static float d_Pt_Ave320_cut_2017  = 434;
- constexpr static float d_Pt_Ave400_cut_2017  = 520;
- constexpr static float d_Pt_Ave500_cut_2017  = 649;
-// Dijet_HFJEC 2017 94X 17Nov2017
-constexpr static float d_Pt_Ave60HF_cut_2017   = 73 ;
-constexpr static float d_Pt_Ave80HF_cut_2017   = 93 ;
-constexpr static float d_Pt_Ave100HF_cut_2017  = 113;
-constexpr static float d_Pt_Ave160HF_cut_2017  = 176;
-constexpr static float d_Pt_Ave220HF_cut_2017  = 239;
-constexpr static float d_Pt_Ave300HF_cut_2017  = 318;
-
-
+constexpr static float Pt_AveMC_cut   =  51;
 
 //from Di triggers 2018, RunABC, ReReco
 //https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
@@ -172,115 +118,54 @@ constexpr static float d_Pt_Ave160HF_cut_2018  = 210;
 constexpr static float d_Pt_Ave220HF_cut_2018  = 279;
 constexpr static float d_Pt_Ave300HF_cut_2018  = 379;
 
-// RunII rough bins, used in LumiHist only and Reco-GEN matched plots for pt binning
-const int n_pt = 15;
-const double pt_bins[n_pt] = {
-  10,
-  15,
-  20,
-  25,
-  30,
-  40,
-  50,
-  70,
-  120,
-  250,
-  400,
-  650,
-  1000,1500,2000};
+
+
+// RunII pt-bins used in LumiHist, Reco-GEN matched plots and L2Res analysis (2nd step)
+//2018
+const int n_pt = 14;
+const double pt_bins[n_pt] = {//TODO check which code assumed the "min Bias" bin
+  66,
+  93,
+  118,
+  189,
+  257,
+  291,
+  325,
+  358,
+  391,
+  434,
+  478,
+  531,585,1000};
 
 const TString pt_range[n_pt]={
-  "10",
-  "15",
-  "20",
-  "25",
-  "30",
-  "40",
-  "50",
-  "70",
-  "120",
-  "250",
-  "400",
-  "650",
-  "1000","1500","2000"};
+  "66",
+  "93",
+  "118",
+  "189",
+  "257",
+  "291",
+  "325",
+  "358",
+  "391",
+  "434",
+  "478",
+  "531","585","1000"};
 
-
-const int n_pt_HF = 8;
+const int n_pt_HF = 10;
 const double pt_bins_HF[n_pt_HF] = {
-  70 ,
-  95 ,
-  120,
-  150,
-  210,
-  280,
-  1000,2000};
+ 66,
+ 73,
+ 93,
+ 116,
+ 142,
+ 210,
+ 279,
+ 379,
+ 1000,
+ 2000};
 
-const TString pt_range_HF[n_pt_HF]={
-  "70",
-  "95",
-  "120",
-  "150",
-  "210",
-  "280",
-  "1000","2000"};
+const TString pt_range_HF[n_pt_HF]={"51","73","93","113","176","239","318","370","1000","2000"};
 
-/* 2017 */
-/* const int n_pt = 12; */
-/* const double pt_bins[n_pt] = { */
-/*   51, */
-/*   73, */
-/*   85, */
-/*   97, */
-/*   179, */
-/*   307, */
-/*   370, */
-/*   434, */
-/*   520, */
-/*   649,1000,2000}; */
-
-/* const TString pt_range[n_pt]={ */
-/*   "51", */
-/*   "73", */
-/*   "85", */
-/*   "97", */
-/*   "179", */
-/*   "307", */
-/*   "370", */
-/*   "434", */
-/*   "520", */
-/*   "648","1000","2000"}; */
-
-
-/* const int n_pt_HF = 8; */
-/* const double pt_bins_HF[n_pt_HF] = { */
-/*   73 , */
-/*   93 , */
-/*   113, */
-/*   176, */
-/*   239, */
-/*   318, */
-/*   1000,2000}; */
-
-/* const TString pt_range_HF[n_pt_HF]={ */
-/*   "73", */
-/*   "93", */
-/*   "113", */
-/*   "176", */
-/*   "239", */
-/*   "318", */
-/*   "1000","2000"}; */
-
-
-
-/* //2017 */
-/* //from Si triggers */
-/* constexpr static int trg_vals_Si[10]  = {40,60,80,140,200,260,320,400,450,500}; */
-/* constexpr static int trg_vals_Sifwd[7]  = {60,80,140,200,260,320,400}; */
-/* constexpr static int trg_vals_Si_plusfwd[17]  = {40,60,80,140,200,260,320,400,450,500,60,80,140,200,260,320,400}; */
-/* //from Di triggersint trg_val */
-/* constexpr static int trg_vals_Di[9]  = {40,60,80,140,200,260,320,400,500}; */
-/* constexpr static int trg_vals_HF[6]  = {60,80,100,160,220,300}; */
-/* constexpr static int trg_vals_Di_plusHF[15]  = {40,60,80,140,200,260,320,400,500,60,80,100,160,220,300}; */
 
 
 // Runnumbers for applying different corrections
@@ -305,25 +190,18 @@ const TString pt_range_HF[n_pt_HF]={
   constexpr static int s_runnr_C_2018  = 320065; //up to this one, including this one
   constexpr static int s_runnr_D_2018 =  325175; //up to this one, including this one
 
-/* //FixME: is it correct? */
-/* constexpr static float s_lumi_HF_60 = 19.605; */
-/* constexpr static float s_lumi_HF_80 = 28.773; */
-/* constexpr static float s_lumi_HF_100 = 98.341; */
-/* constexpr static float s_lumi_HF_160 = 561.485; */
-/* constexpr static float s_lumi_HF_220 = 28983.619; */
-/* constexpr static float s_lumi_HF_300 = 35672.846; */
+//LumiBins for the Runs
+const int lumibins_BC[3] = {0, 1, 2};
+const int lumibins_B[2] = {0, 1};
+const int lumibins_C[1] = {2};
 
-/* // 2017 RunB PromptReco, not completly filled, not used if apply lumi weights is false */
-/* //Lumi recorded by different triggers in pb-1 */
-/* constexpr static float s_lumi_cent_40 = 0.09; */
-/* constexpr static float s_lumi_cent_60 = 0.024; */
-/* constexpr static float s_lumi_cent_80 = 0.; */
-/* constexpr static float s_lumi_cent_140 = 27.769; */
-/* constexpr static float s_lumi_cent_200 = 139.732; */
-/* constexpr static float s_lumi_cent_260 = 521.863; */
-/* constexpr static float s_lumi_cent_320 = 2965.774; */
-/* constexpr static float s_lumi_cent_400 = 9021.331; */
-/* constexpr static float s_lumi_cent_450 = 29280.311; */
-/* constexpr static float s_lumi_cent_500 = 29280.311; */
+
+//Other consts used in L2Res analysis
+const int nResponseBins = 100;
+const double Response_min = -1.2; //min of asymmetry hist
+const double Response_max = 1.2; //max of asymmetry hist
+const int n_etabarr=5; // needed for the normalization to 1 in the barrel. 
+const int n_enough_entries = 100; //min N events per eta-pt bin to consider it for the L2Res derivation
+const double jet3pt_min=15;//jets with pt below were disregarded during alpha calculation for kFSR 
 
 #endif

@@ -1,7 +1,9 @@
 #include <cmath>
 #include <iostream>
 #include "../include/CorrectionObject.h"
-#include "../include/parameters.h"
+//#include "../include/parameters.h"
+#include "../../include/constants.h"
+
 #include <TString.h>
 #include <vector>
 #include <algorithm>
@@ -509,7 +511,7 @@ int main(int argc,char *argv[]){
     if(do_fullPlots) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].FullCycle_CorrectFormulae(kfsrRange, do_useCombinedkSFR, do_useStraightkfsr,ptMin);
     if(do_fullPlots or do_JEF) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].JetEnergyFractions();
 
-    if(do_calcMCW) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].CalculateMCWeights();
+    //    if(do_calcMCW) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].CalculateMCWeights();
  
     if(do_fullPlotsef) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].FullCycle_CorrectFormulae_eta();    
     if(do_trgControlPlots) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].ControlPlots(true);
@@ -522,7 +524,7 @@ int main(int argc,char *argv[]){
     if(do_ControlPlotsGeneratorResponse) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].GenResponsePlots();
     if(do_kFSR) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].kFSR_CorrectFormulae();
 
-    if(kfsrXrange)for(unsigned int i=0; i<Objects.size(); i++) Objects[i].genJetLinearity();    
+    //    if(kfsrXrange)for(unsigned int i=0; i<Objects.size(); i++) Objects[i].genJetLinearity();    
 
     // if(do_deriveThresholdsSi) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].Derive_Thresholds_SiJet(false,useHF);
     // if(do_deriveThresholdsSi_ptCheck) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].Derive_Thresholds_SiJet(true,useHF);
@@ -537,7 +539,7 @@ int main(int argc,char *argv[]){
 
     if(do_asymControlPlots) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].FinalControlPlots_CorrectFormulae(0.,true);
 
-    if(do_NPVEtaPlot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].NPVtoEtaPlots();
+    //    if(do_NPVEtaPlot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].NPVtoEtaPlots();
 
     if(do_L2AR) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].L2ResAllRuns();  
     if(do_L2JER) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].L2ResOverlay_JEC();
@@ -560,20 +562,20 @@ int main(int argc,char *argv[]){
     if(do_lumi_plot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].Lumi_Plots();
     if(do_mon) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].Monitoring();
     if(do_monSi) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].Monitoring(true);
-    if(do_matchtrg_plot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].JetMatching_Plots();
-    if(do_oor_plot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].OnOffResp_Plots();
-   if(do_matchtrg_plotdi) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].JetMatching_PlotsDi();
-    if(do_oor_plotdi) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].OnOffResp_PlotsDi(useHF);
+    //    if(do_matchtrg_plot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].JetMatching_Plots();
+    //    if(do_oor_plot) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].OnOffResp_Plots();
+    //   if(do_matchtrg_plotdi) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].JetMatching_PlotsDi();
+    //    if(do_oor_plotdi) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].OnOffResp_PlotsDi(useHF);
     if(do_addAsymPlots){
       for(unsigned int i=0; i<Objects.size(); i++) Objects[i].AdditionalAsymmetryPlots();
       //   for(unsigned int i=0; i<Objects.size(); i++) Objects[i].JetEnergyFractions();
     }
     if(do_addAsymPlotsef) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].AdditionalAsymmetryPlots(false);
-    if(do_triggerEx) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].triggerExclusivityCheck();
+    //    if(do_triggerEx) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].triggerExclusivityCheck();
 
     if(do_IGF) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].InputForGlobalFit();
     if(do_IGFw) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].InputForGlobalFit_eta_0_13();
-    if(do_MEPC) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].MakeEtaPhiCleanTxt();  
+    //    if(do_MEPC) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].MakeEtaPhiCleanTxt();  
     //    if(do_l1bx) for(unsigned int i=0; i<Objects.size(); i++) Objects[i].L1jetSeedBXcheck();
      // // // //Macros to compare different Runs 
 // // //    // Objects[0].L2ResAllRuns();
