@@ -1,5 +1,5 @@
-#include "UHH2/BaconJets/include/JECAnalysisRecoGenMatchedHists.h"
-#include "UHH2/BaconJets/include/constants.h"
+#include "UHH2/DiJetJERC/include/JECAnalysisRecoGenMatchedHists.h"
+#include "UHH2/DiJetJERC/include/constants.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/Jet.h"
 #include "UHH2/common/include/Utils.h"
@@ -54,8 +54,8 @@ JECAnalysisRecoGenMatchedHists::JECAnalysisRecoGenMatchedHists(Context & ctx, co
     ((TH2D*)hist("Hadrons_energy_rel"))->GetXaxis()->SetBinLabel(7,"n");
     ((TH2D*)hist("Hadrons_energy_rel"))->GetXaxis()->SetBinLabel(8,"other");
 
-    double eta_bins[n_eta_RelVals];                                                                                                                                           
-    for(int i=0; i<n_eta_RelVals; i++) eta_bins[i] = eta_range_RelVals[i];  
+    double eta_bins[n_eta_RelVals];
+    for(int i=0; i<n_eta_RelVals; i++) eta_bins[i] = eta_range_RelVals[i];
     book<TH2D>("Hadrons_genjeteta", "Hadrons_genjeteta;;GEN jet #eta (matched to probe RECO jet)", 8,0,8,n_eta_RelVals-1, eta_bins);
     ((TH2D*)hist("Hadrons_genjeteta"))->GetXaxis()->SetBinLabel(1,"#gamma");
     //    ((TH2D*)hist("Hadrons_genjeteta"))->GetXaxis()->SetBinLabel(2,"#pi^{0}");
@@ -132,7 +132,7 @@ JECAnalysisRecoGenMatchedHists::JECAnalysisRecoGenMatchedHists(Context & ctx, co
 
     const int pf_label_nr_had = 3;
     double pf_label_had[pf_label_nr_had];
-    for(int i=0;i<pf_label_nr_had;i++) pf_label_had[i] = i;   
+    for(int i=0;i<pf_label_nr_had;i++) pf_label_had[i] = i;
     book<TH3D>("PF_to_HAD_event_eta", "PF_to_HAD_event_eta;RECO jet #eta;PF jet fraction/Hadron jet fraction;", n_eta_RelVals-1, eta_bins, fr_vec_nr-1, frac_vec, pf_label_nr_had-1,pf_label_had);
 
     //    ((TH3D*)hist("PF_to_HAD_event_eta"))->GetZaxis()->SetBinLabel(1,"(chEM+chHAD)/(#pi^{#pm}+K^{#pm}+p+X^{#pm})");
@@ -215,7 +215,7 @@ void JECAnalysisRecoGenMatchedHists::fill(const uhh2::Event & ev, const int gen_
     double genjet_energy_recalcTMP=0;
     for (const auto candInd : genj.genparticles_indices()) {
       GenParticle & genp = ev.genparticles->at(candInd);
-      double dr = deltaR(genj,genp); 
+      double dr = deltaR(genj,genp);
       if(dr<dR_vec[i]){
 	genjet_energy_recalcTMP += genp.energy();
       }
@@ -229,14 +229,14 @@ void JECAnalysisRecoGenMatchedHists::fill(const uhh2::Event & ev, const int gen_
   //  double dr_max=0.5;
 
   double dr_max=1000.;
- 
-  
-  double gamma_energy=0; double pipm_energy=0; double K0L_energy=0; 
+
+
+  double gamma_energy=0; double pipm_energy=0; double K0L_energy=0;
   double K0S_energy=0; double Kpm_energy=0; double p_energy=0; double n_energy=0;
   double other_energy=0;
   double ch_energy=0; double neut_energy=0;
   double ch_N=0; double neut_N=0;
-  int gamma_count=0; int pipm_count=0; int K0L_count=0; 
+  int gamma_count=0; int pipm_count=0; int K0L_count=0;
   int K0S_count=0; int Kpm_count=0; int p_count=0; int n_count=0;
   int other_count=0;
   double genjet_energy_recalc=0;
@@ -244,7 +244,7 @@ void JECAnalysisRecoGenMatchedHists::fill(const uhh2::Event & ev, const int gen_
   //  sort_by_pt<GenParticle>(*ev.genparticles);
   for (const auto candInd : genj.genparticles_indices()) {
     GenParticle & genp = ev.genparticles->at(candInd);
-    double dr = deltaR(genj,genp); 
+    double dr = deltaR(genj,genp);
     //    cout<<"deltaR(genj,genp) = "<<deltaR(genj,genp)<<endl;
     //    double dr=-1;
     if(dr<dr_max){
@@ -252,14 +252,14 @@ void JECAnalysisRecoGenMatchedHists::fill(const uhh2::Event & ev, const int gen_
       int energycl_id = genp.pdgId();
       double energycl_energy = genp.energy();
       ((TH2D*)hist("Hadron_energy_rel_dR"))->Fill(dr,energycl_energy/genjet_energy,weight);
-    
+
       genjet_energy_recalc +=energycl_energy;
       //      cout<<"charge="<<genp.charge()<<" energy="<<energycl_energy<<" energycl_id = "<<energycl_id<<endl;
       if(genp.charge()==0){
 	neut_energy+=energycl_energy;
 	neut_N++;
       }
-      else{ 
+      else{
 	ch_energy+=energycl_energy;
 	ch_N++;
       }
@@ -377,7 +377,7 @@ void JECAnalysisRecoGenMatchedHists::fill(const uhh2::Event & ev, const int gen_
   //  cout<<"probe_jet.chargedMultiplicity() = "<<probe_jet.chargedMultiplicity()<<" ch_N = "<<ch_N<<" ratio = "<<double(probe_jet.chargedMultiplicity())/ch_N<<endl;
   ((TH3D*)hist("N_PF_to_HAD_event_eta"))->Fill(fabs(probe_jet.eta()),double(probe_jet.chargedMultiplicity())/ch_N,"N^{PF}_{charged}/N^{GEN}_{charged}",weight);
   ((TH3D*)hist("N_PF_to_HAD_event_eta"))->Fill(fabs(probe_jet.eta()),double(probe_jet.neutralMultiplicity())/neut_N,"N^{PF}_{neutral}/N^{GEN}_{neutral}",weight);
- 
+
   ((TH2D*)hist("Hadrons_count_event"))->Fill("#gamma",gamma_count,weight);
   ((TH2D*)hist("Hadrons_count_event"))->Fill("#pi^{#pm}",pipm_count,weight);
   ((TH2D*)hist("Hadrons_count_event"))->Fill("K^{0}_{L}",K0L_count,weight);

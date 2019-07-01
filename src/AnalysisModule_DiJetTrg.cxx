@@ -18,15 +18,15 @@
 #include <UHH2/common/include/LumiSelection.h> //includes also LuminosityHists.h
 #include <UHH2/common/include/TriggerSelection.h>
 #include "UHH2/common/include/CleaningModules.h"
-#include <UHH2/common/include/NSelections.h> 
-#include <UHH2/common/include/MuonIds.h> 
+#include <UHH2/common/include/NSelections.h>
+#include <UHH2/common/include/MuonIds.h>
 #include <UHH2/common/include/ElectronIds.h>
 #include "UHH2/common/include/PrintingModules.h"
 
-#include "UHH2/BaconJets/include/selection.h"
-#include "UHH2/BaconJets/include/constants.h"
+#include "UHH2/DiJetJERC/include/selection.h"
+#include "UHH2/DiJetJERC/include/constants.h"
 
-#include "UHH2/BaconJets/include/LumiHists.h"
+#include "UHH2/DiJetJERC/include/LumiHists.h"
 
 
 #include "TClonesArray.h"
@@ -56,7 +56,7 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
   bool isMC, ispuppi;
   bool is2016v2, is2016v3, is2017, is2018;
   // correctors
-  std::unique_ptr<JetCorrector> jet_corrector_A,jet_corrector_B, jet_corrector_C, jet_corrector_D, jet_corrector_E, jet_corrector_F, 
+  std::unique_ptr<JetCorrector> jet_corrector_A,jet_corrector_B, jet_corrector_C, jet_corrector_D, jet_corrector_E, jet_corrector_F,
     jet_corrector_G,jet_corrector_H, jet_corrector_MC;
   std::unique_ptr<GenericJetResolutionSmearer> jetER_smearer;
 // cleaners
@@ -64,8 +64,8 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
    std::unique_ptr<JetCleaner> jetPUid;
    std::unique_ptr<JetCleaner> jetcleaner;
    std::unique_ptr<GenJetCleaner> genjetcleaner;
-   std::unique_ptr<MuonCleaner>     muoSR_cleaner;   
-   std::unique_ptr<ElectronCleaner> eleSR_cleaner;    
+   std::unique_ptr<MuonCleaner>     muoSR_cleaner;
+   std::unique_ptr<ElectronCleaner> eleSR_cleaner;
 
     // selections
     std::unique_ptr<uhh2::Selection> lumi_sel;
@@ -88,10 +88,10 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
     std::unique_ptr<uhh2::Selection> trigger100_HFJEC_sel;
     std::unique_ptr<uhh2::Selection> trigger160_HFJEC_sel;
     std::unique_ptr<uhh2::Selection> trigger220_HFJEC_sel;
-    std::unique_ptr<uhh2::Selection> trigger300_HFJEC_sel;  
-  
+    std::unique_ptr<uhh2::Selection> trigger300_HFJEC_sel;
+
     std::unique_ptr<LumiHists> h_monitoring_final;
-  
+
     //// Data/MC scale factors
     std::unique_ptr<uhh2::AnalysisModule> pileupSF;
   unique_ptr<AnalysisModule>  Jet_printer;
@@ -99,14 +99,14 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
   unique_ptr<AnalysisModule> GenParticles_printer;
   unique_ptr<AnalysisModule> LumiWeight_module;
 
-  
+
     Event::Handle<float> tt_jet1_ptGen;  Event::Handle<float> tt_jet2_ptGen;  Event::Handle<float> tt_jet3_ptGen;
     Event::Handle<float> tt_gen_pthat; Event::Handle<float> tt_gen_weight;  Event::Handle<float> tt_gen_PUpthat;
     Event::Handle<bool> tt_JER_SM; //event should be used for StandardMethod JER SFs
  //Different energy fractions in jets
-    Event::Handle<float> tt_probejet_neutEmEF; Event::Handle<float> tt_probejet_neutHadEF; 
-    Event::Handle<float> tt_probejet_chEmEF; Event::Handle<float> tt_probejet_chHadEF; 
-    Event::Handle<float> tt_probejet_photonEF; Event::Handle<float> tt_probejet_muonEF; 
+    Event::Handle<float> tt_probejet_neutEmEF; Event::Handle<float> tt_probejet_neutHadEF;
+    Event::Handle<float> tt_probejet_chEmEF; Event::Handle<float> tt_probejet_chHadEF;
+    Event::Handle<float> tt_probejet_photonEF; Event::Handle<float> tt_probejet_muonEF;
 
     Event::Handle<float> tt_jet1_pt;     Event::Handle<float> tt_jet2_pt;     Event::Handle<float> tt_jet3_pt;
     Event::Handle<float> tt_jet3_eta;
@@ -116,10 +116,10 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
     Event::Handle<float> tt_pv0Z;     Event::Handle<float> tt_pv0X; Event::Handle<float> tt_pv0Y;
     Event::Handle<float> tt_probejet_eta;  Event::Handle<float> tt_probejet_phi; Event::Handle<float> tt_probejet_pt; Event::Handle<float> tt_probejet_ptRaw;
     Event::Handle<float> tt_barreljet_eta;  Event::Handle<float> tt_barreljet_phi; Event::Handle<float> tt_barreljet_pt; Event::Handle<float> tt_barreljet_ptRaw;
-    Event::Handle<float> tt_probejet_ptgen;         Event::Handle<float> tt_barreljet_ptgen;     
+    Event::Handle<float> tt_probejet_ptgen;         Event::Handle<float> tt_barreljet_ptgen;
     Event::Handle<float> tt_probejet_etagen;  Event::Handle<float> tt_probejet_phigen;
-    Event::Handle<float> tt_probejet_ptptcl;         Event::Handle<float> tt_barreljet_ptptcl;   
-    Event::Handle<int> tt_probejet_statusptcl;         Event::Handle<int> tt_barreljet_statusptcl;   Event::Handle<int> tt_jet3_statusptcl;   
+    Event::Handle<float> tt_probejet_ptptcl;         Event::Handle<float> tt_barreljet_ptptcl;
+    Event::Handle<int> tt_probejet_statusptcl;         Event::Handle<int> tt_barreljet_statusptcl;   Event::Handle<int> tt_jet3_statusptcl;
     Event::Handle<int> tt_jet1_genID;     Event::Handle<int> tt_jet2_genID;     Event::Handle<int> tt_jet3_genID;
     Event::Handle<int> tt_jet4_genID;     Event::Handle<int> tt_jet5_genID;     Event::Handle<int> tt_jet6_genID;
     Event::Handle<float> tt_probejet_dRminParton;   Event::Handle<float> tt_barreljet_dRminParton;
@@ -130,7 +130,7 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
 
     Event::Handle<float> tt_pt_ave;
     Event::Handle<float> tt_alpha;
-    Event::Handle<float> tt_rel_r; Event::Handle<float> tt_mpf_r; 
+    Event::Handle<float> tt_rel_r; Event::Handle<float> tt_mpf_r;
     Event::Handle<float> tt_asymmetry;
     Event::Handle<float> tt_B;
     Event::Handle<float> tt_MET;
@@ -139,7 +139,7 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
     Event::Handle<float> tt_genMET;
     Event::Handle<int> tt_nPU;
     Event::Handle<int> tt_matchJetId_0;
-    Event::Handle<int> tt_matchJetId_1;	
+    Event::Handle<int> tt_matchJetId_1;
     Event::Handle<float> tt_ev_weight;
     Event::Handle<float> tt_jets_pt;//sum of jets pT
     Event::Handle<int> tt_jet_n;//number of jets
@@ -158,7 +158,7 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
     Event::Handle<int> tt_Nmuon; Event::Handle<float> tt_muon_pt;
     Event::Handle<int> tt_Nele; Event::Handle<float> tt_ele_pt;
     Event::Handle<float> tt_dR_jet3_barreljet;  Event::Handle<float> tt_dR_jet3_probejet;  Event::Handle<float> tt_dR_jet3_RECO_GEN;
-    Event::Handle<float> tt_dR_GenJet_GenParticle_barrel_matched;   Event::Handle<float> tt_dR_GenJet_GenParticle_probe_matched; 
+    Event::Handle<float> tt_dR_GenJet_GenParticle_barrel_matched;   Event::Handle<float> tt_dR_GenJet_GenParticle_probe_matched;
     Event::Handle<int> tt_trigger40;
     Event::Handle<int> tt_trigger60;
     Event::Handle<int> tt_trigger80;
@@ -176,14 +176,14 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
     Event::Handle<int> tt_trigger220_HF;
     Event::Handle<int> tt_trigger300_HF;
 
-    Event::Handle<int> tt_run; 
+    Event::Handle<int> tt_run;
     Event::Handle<long long> tt_evID;
     Event::Handle<int> tt_lumiSec;
-  
-    Event::Handle<int> tt_jet1_l1bx; 
-    Event::Handle<int> tt_jet2_l1bx; 
-    Event::Handle<int> tt_jet3_l1bx;  
- 
+
+    Event::Handle<int> tt_jet1_l1bx;
+    Event::Handle<int> tt_jet2_l1bx;
+    Event::Handle<int> tt_jet3_l1bx;
+
 
   std::unique_ptr<JECAnalysisRecoGenMatchedHistsFractions> h_matched_all;//uses PF and GEN fractions only
   std::unique_ptr<JECAnalysisRecoGenMatchedHistsFractions> h_matched_pt[n_pt-1];//uses PF and GEN fractions only
@@ -216,14 +216,14 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
 
   std::unique_ptr<JECAnalysisHists> h_nocuts, h_sel, h_dijet, h_match, h_final;
   std::unique_ptr<JECAnalysisHists> h_trg40, h_trg60, h_trg80, h_trg140, h_trg200,h_trg260,h_trg320,h_trg400,h_trg500;
-  std::unique_ptr<JECAnalysisHists> h_trgHF60, h_trgHF80,h_trgHF100, h_trgHF160,h_trgHF220, h_trgHF300;   
-  std::unique_ptr<LuminosityHists> h_lumi_nocuts, h_lumi_sel, h_lumi_dijet, h_lumi_match, h_lumi_final;    
+  std::unique_ptr<JECAnalysisHists> h_trgHF60, h_trgHF80,h_trgHF100, h_trgHF160,h_trgHF220, h_trgHF300;
+  std::unique_ptr<LuminosityHists> h_lumi_nocuts, h_lumi_sel, h_lumi_dijet, h_lumi_match, h_lumi_final;
   std::unique_ptr<LuminosityHists> h_lumi_Trig40, h_lumi_Trig60, h_lumi_Trig80, h_lumi_Trig140, h_lumi_Trig200, h_lumi_Trig260, h_lumi_Trig320, h_lumi_Trig400, h_lumi_Trig500;
   std::unique_ptr<LuminosityHists> h_lumi_TrigHF60, h_lumi_TrigHF80, h_lumi_TrigHF100, h_lumi_TrigHF160, h_lumi_TrigHF220, h_lumi_TrigHF300;
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
   std::unique_ptr<JECCrossCheckHists> h_input,h_lumisel, h_beforeCleaner,h_afterCleaner,h_2jets,h_beforeJEC,h_afterJEC,h_afterJER,h_afterMET,h_beforeTriggerData,h_afterTriggerData,h_beforeFlatFwd,h_afterFlatFwd,h_afterPtEtaReweight,h_afterLumiReweight,h_afterUnflat,h_afternVts;
   uhh2bacon::Selection sel;
-  
+
   bool debug;
   bool ispythia8;
   bool no_genp;
@@ -238,7 +238,7 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
   JetId Jet_PUid;
   int n_evt;
   std::unique_ptr<TFile> f_weights;
-    
+
     std::map<run_lumi, double> rl2lumi;
     std::map<run_lumi, double> rl2intlumi;
     TBranch * brun ;
@@ -259,7 +259,7 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
     bool useUnprefireable;
 
   uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
-  
+
 
 };
 
@@ -281,7 +281,7 @@ void AnalysisModule_DiJetTrg::init_JEC(uhh2::Context& ctx){
     JEC_corr_C_L1RC = JERFiles::jecv##_C_L1RC_##jetLabel##_DATA;        \
     JEC_corr_D_L1RC = JERFiles::jecv##_D_L1RC_##jetLabel##_DATA;        \
   }
-           
+
   #define MAKE_JEC_noRes(jecv,jetLabel)						\
   if(JEC_Version == #jecv){                                             \
     JEC_corr_A      = JERFiles::jecv##_A_L123_noRes_##jetLabel##_DATA;        \
@@ -292,8 +292,8 @@ void AnalysisModule_DiJetTrg::init_JEC(uhh2::Context& ctx){
     JEC_corr_B_L1RC = JERFiles::jecv##_B_L1RC_##jetLabel##_DATA;        \
     JEC_corr_C_L1RC = JERFiles::jecv##_C_L1RC_##jetLabel##_DATA;        \
     JEC_corr_D_L1RC = JERFiles::jecv##_D_L1RC_##jetLabel##_DATA;        \
-  }     
-      
+  }
+
   #define MAKE_JEC_MC(jecv,jetLabel)					\
   if(JEC_Version == #jecv){                                             \
     JEC_corr      = JERFiles::jecv##_L123_##jetLabel##_MC;              \
@@ -339,7 +339,7 @@ void AnalysisModule_DiJetTrg::init_JEC(uhh2::Context& ctx){
     }
   }
 
-  
+
 }
 
 
@@ -407,7 +407,7 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
     tt_genMET = ctx.declare_event_output<float>("genMET");
     tt_nPU = ctx.declare_event_output<int>("nPU");
     tt_matchJetId_0 = ctx.declare_event_output<int>("matchJetId_0");
-    tt_matchJetId_1 = ctx.declare_event_output<int>("matchJetId_1");  
+    tt_matchJetId_1 = ctx.declare_event_output<int>("matchJetId_1");
     tt_ev_weight = ctx.declare_event_output<float>("weight");
     tt_jets_pt= ctx.declare_event_output<float>("sum_jets_pt");
     tt_jet_n= ctx.declare_event_output<int>("Njet");
@@ -451,7 +451,7 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
     tt_jet1_l1bx = ctx.declare_event_output<int>("jet1_l1bx");
     tt_jet2_l1bx = ctx.declare_event_output<int>("jet1_l2bx");
     tt_jet3_l1bx = ctx.declare_event_output<int>("jet1_l3bx");
-    
+
     tt_trigger40 = ctx.declare_event_output<int>("trigger40");
     tt_trigger60 = ctx.declare_event_output<int>("trigger60");
     tt_trigger80 = ctx.declare_event_output<int>("trigger80");
@@ -468,12 +468,12 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
     tt_trigger160_HF = ctx.declare_event_output<int>("trigger160_HF");
     tt_trigger220_HF = ctx.declare_event_output<int>("trigger220_HF");
     tt_trigger300_HF = ctx.declare_event_output<int>("trigger300_HF");
-    
+
     tt_dR_jet3_barreljet = ctx.declare_event_output<float>("dR_jet3_barreljet");
     tt_dR_jet3_probejet = ctx.declare_event_output<float>("dR_jet3_probejet");
     tt_dR_jet3_RECO_GEN = ctx.declare_event_output<float>("dR_jet3_RECO_GEN");
-    tt_dR_GenJet_GenParticle_barrel_matched = ctx.declare_event_output<float>("dR_GenJet_GenParticle_barrel_matched"); 
-    tt_dR_GenJet_GenParticle_probe_matched = ctx.declare_event_output<float>("dR_GenJet_GenParticle_probe_matched"); 
+    tt_dR_GenJet_GenParticle_barrel_matched = ctx.declare_event_output<float>("dR_GenJet_GenParticle_barrel_matched");
+    tt_dR_GenJet_GenParticle_probe_matched = ctx.declare_event_output<float>("dR_GenJet_GenParticle_probe_matched");
 }
 
 void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
@@ -508,7 +508,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     h_match.reset(new JECAnalysisHists(ctx,"JetMatching"));
     h_sel.reset(new JECAnalysisHists(ctx,"Selection"));
     h_final.reset(new JECAnalysisHists(ctx,"Final"));
-    
+
     h_trg40.reset(new JECAnalysisHists(ctx,"HLT_DiPFJetAve40"));
     h_trg60.reset(new JECAnalysisHists(ctx,"HLT_DiPFJetAve60"));
     h_trg80.reset(new JECAnalysisHists(ctx,"HLT_DiPFJetAve80"));
@@ -525,27 +525,27 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     h_trgHF160.reset(new JECAnalysisHists(ctx,"HLT_DiPFJetAve160_HFJEC"));
     h_trgHF220.reset(new JECAnalysisHists(ctx,"HLT_DiPFJetAve220_HFJEC"));
     h_trgHF300.reset(new JECAnalysisHists(ctx,"HLT_DiPFJetAve300_HFJEC"));
-    
-    h_lumi_nocuts.reset(new LuminosityHists(ctx,"Lumi_noCuts"));  
+
+    h_lumi_nocuts.reset(new LuminosityHists(ctx,"Lumi_noCuts"));
     h_lumi_sel.reset(new LuminosityHists(ctx,"Lumi_Selection"));
     h_lumi_dijet.reset(new LuminosityHists(ctx,"Lumi_diJet"));
     h_lumi_match.reset(new LuminosityHists(ctx,"Lumi_JetMatching"));
     h_lumi_final.reset(new LuminosityHists(ctx,"Lumi_Final"));
-    h_lumi_Trig40.reset(new LuminosityHists(ctx,"Lumi_Trig40"));  
-    h_lumi_Trig60.reset(new LuminosityHists(ctx,"Lumi_Trig60")); 
-    h_lumi_Trig80.reset(new LuminosityHists(ctx,"Lumi_Trig80")); 
-    h_lumi_Trig140.reset(new LuminosityHists(ctx,"Lumi_Trig140")); 
-    h_lumi_Trig200.reset(new LuminosityHists(ctx,"Lumi_Trig200")); 
-    h_lumi_Trig260.reset(new LuminosityHists(ctx,"Lumi_Trig260")); 
-    h_lumi_Trig320.reset(new LuminosityHists(ctx,"Lumi_Trig320")); 
-    h_lumi_Trig400.reset(new LuminosityHists(ctx,"Lumi_Trig400")); 
+    h_lumi_Trig40.reset(new LuminosityHists(ctx,"Lumi_Trig40"));
+    h_lumi_Trig60.reset(new LuminosityHists(ctx,"Lumi_Trig60"));
+    h_lumi_Trig80.reset(new LuminosityHists(ctx,"Lumi_Trig80"));
+    h_lumi_Trig140.reset(new LuminosityHists(ctx,"Lumi_Trig140"));
+    h_lumi_Trig200.reset(new LuminosityHists(ctx,"Lumi_Trig200"));
+    h_lumi_Trig260.reset(new LuminosityHists(ctx,"Lumi_Trig260"));
+    h_lumi_Trig320.reset(new LuminosityHists(ctx,"Lumi_Trig320"));
+    h_lumi_Trig400.reset(new LuminosityHists(ctx,"Lumi_Trig400"));
     h_lumi_Trig500.reset(new LuminosityHists(ctx,"Lumi_Trig500"));
 
-    h_lumi_TrigHF60.reset(new LuminosityHists(ctx,"Lumi_TrigHF60")); 
-    h_lumi_TrigHF80.reset(new LuminosityHists(ctx,"Lumi_TrigHF80")); 
-    h_lumi_TrigHF100.reset(new LuminosityHists(ctx,"Lumi_TrigHF100")); 
-    h_lumi_TrigHF160.reset(new LuminosityHists(ctx,"Lumi_TrigHF160")); 
-    h_lumi_TrigHF220.reset(new LuminosityHists(ctx,"Lumi_TrigHF220")); 
+    h_lumi_TrigHF60.reset(new LuminosityHists(ctx,"Lumi_TrigHF60"));
+    h_lumi_TrigHF80.reset(new LuminosityHists(ctx,"Lumi_TrigHF80"));
+    h_lumi_TrigHF100.reset(new LuminosityHists(ctx,"Lumi_TrigHF100"));
+    h_lumi_TrigHF160.reset(new LuminosityHists(ctx,"Lumi_TrigHF160"));
+    h_lumi_TrigHF220.reset(new LuminosityHists(ctx,"Lumi_TrigHF220"));
     h_lumi_TrigHF300.reset(new LuminosityHists(ctx,"Lumi_TrigHF300"));
     h_monitoring_final.reset(new LumiHists(ctx, "Monitoring_Final"));
 
@@ -588,7 +588,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       h_dataRECO_3rd_pt[i].reset(new JECAnalysisPUjetsHists(ctx,histname.Data()));
 
     }
-    
+
 }
 
   AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) :
@@ -618,7 +618,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     dataset_version = ctx.get("dataset_version");
     JECClosureTest = (ctx.get("JECClosureTest") == "true");
     apply_EtaPhi_cut = (ctx.get("EtaPhi_cut") == "true");
-    
+
     apply_L1seed_from_bx1_filter =  (ctx.get("Apply_L1Seed_From_BX1_Filter") == "true" && !isMC);
     //    const bool ispuppi = (ctx.get("is_puppi") == "true");
     ispuppi = false; //TEST
@@ -627,13 +627,13 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     is2016v3 = (ctx.get("dataset_version").find("2016v3") != std::string::npos);
     is2017 = (ctx.get("dataset_version").find("2017") != std::string::npos);
     is2018 = (ctx.get("dataset_version").find("2018") != std::string::npos);
- 
+
     for(auto & kv : ctx.get_all()){
       cout << " " << kv.first << " = " << kv.second << endl;
     }
 
     cout << "start" << endl;
-    
+
     try{
       useUnprefireable = ctx.get("UseUnprefirable") == "true";
     }
@@ -651,12 +651,12 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	TBranch * brun = filtered_tree->GetBranch("run");
 	TBranch * blumiblock = filtered_tree->GetBranch("lumi");
 	TBranch * beventid = filtered_tree->GetBranch("event");
-      
+
 	uhh2bacon::run_lumi_ev rle;
 	brun->SetAddress(&rle.run);
 	blumiblock->SetAddress(&rle.lumiblock);
 	beventid->SetAddress(&rle.event);
-	
+
 	auto ientries = filtered_tree->GetEntries();
 	for(auto ientry = 0l; ientry < ientries; ientry++){
 	  for(auto b : {brun, blumiblock, beventid}){
@@ -666,8 +666,8 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	}
 	cout<<"list of unprefireable events is prepared, found "<<unprefirableSummary.size()<<" events"<<endl;
     }
-    
-    
+
+
     isMC = (ctx.get("dataset_type") == "MC");
     //    cout<<" isMC = "<< isMC<<" no_genp = "<<no_genp<<endl;
     if(isMC && !no_genp) cout<<"!!! WARNING, no genparticle are used! !!!"<<endl;
@@ -675,16 +675,16 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
     L1METptThresh = stod(ctx.get("L1METptThresh"));
     eta_thresh_low = stod(ctx.get("eta_thresh_low"));
-      
+
     if(!isMC) lumi_sel.reset(new LumiSelection(ctx));
     /* MET filters */
     if(!isMC){
       metfilters_sel.reset(new uhh2::AndSelection(ctx, "metfilters"));
-      metfilters_sel->add<TriggerSelection>("1-good-vtx", "Flag_goodVertices"); 
-      metfilters_sel->add<TriggerSelection>("globalSuperTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter"); 
-      metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");        
+      metfilters_sel->add<TriggerSelection>("1-good-vtx", "Flag_goodVertices");
+      metfilters_sel->add<TriggerSelection>("globalSuperTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter");
+      metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");
       metfilters_sel->add<TriggerSelection>("HBHENoiseIsoFilter", "Flag_HBHENoiseIsoFilter");
-      metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter"); 
+      metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter");
       metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter");
       metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter");
       metfilters_sel->add<TriggerSelection>("eeBadScFilter", "Flag_eeBadScFilter");
@@ -713,22 +713,22 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
     //Lepton cleaner
     const     MuonId muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
-    const ElectronId eleSR(AndId<Electron>(ElectronID_MVA_Fall17_loose_noIso , PtEtaSCCut(15, 2.4)));  
+    const ElectronId eleSR(AndId<Electron>(ElectronID_MVA_Fall17_loose_noIso , PtEtaSCCut(15, 2.4)));
     muoSR_cleaner.reset(new     MuonCleaner(muoSR));
-    eleSR_cleaner.reset(new ElectronCleaner(eleSR)); 
+    eleSR_cleaner.reset(new ElectronCleaner(eleSR));
 
     //#############################################  Trigger  #########################################################
     trigger_central = (ctx.get("Trigger_Central") == "true");
     trigger_fwd     = (ctx.get("Trigger_FWD") == "true");
     //    ts  = (ctx.get("Trigger_Single") == "true"); //if true use single jet trigger, if false di jet trigger TODO collapse the SiJet and DiJEt AnalysisModules into one?
 
-    
+
 #define GET_RESET_TRIGGER(trg_name)       \
-  const std::string& trg_name = ctx.get( #trg_name , "NULL"); \     
+  const std::string& trg_name = ctx.get( #trg_name , "NULL"); \
   if ( trg_name != "NULL") trg_name##_sel.reset(new TriggerSelection( trg_name ));\
   else trg_name##_sel.reset(new uhh2::AndSelection(ctx)); \
-  
-    
+
+
     if(!isMC){
         GET_RESET_TRIGGER(trigger40)
 	GET_RESET_TRIGGER(trigger60)
@@ -740,24 +740,24 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	GET_RESET_TRIGGER(trigger400)
 	GET_RESET_TRIGGER(trigger500)
 
-	GET_RESET_TRIGGER(trigger60_HFJEC)	
-	GET_RESET_TRIGGER(trigger80_HFJEC)		
-	GET_RESET_TRIGGER(trigger100_HFJEC)		
-	GET_RESET_TRIGGER(trigger160_HFJEC)	
-	GET_RESET_TRIGGER(trigger220_HFJEC)	
+	GET_RESET_TRIGGER(trigger60_HFJEC)
+	GET_RESET_TRIGGER(trigger80_HFJEC)
+	GET_RESET_TRIGGER(trigger100_HFJEC)
+	GET_RESET_TRIGGER(trigger160_HFJEC)
+	GET_RESET_TRIGGER(trigger220_HFJEC)
 	GET_RESET_TRIGGER(trigger300_HFJEC)
     }
 
 
-    split_JEC_MC   = false; //Different MC corrections only existed for Spring16_25ns_V8* 
+    split_JEC_MC   = false; //Different MC corrections only existed for Spring16_25ns_V8*
     split_JEC_DATA = true; //TODO check the JEC!!!
 
     if(debug) std::cout<<"isMC: "<<isMC<<"  split_JEC_MC: "<<split_JEC_MC<<"  split_JEC_DATA: "<<split_JEC_DATA <<"   JECClosureTest: "<<JECClosureTest<<std::endl;
-    
-     
+
+
     //JER Smearing for corresponding JEC-Version
     if(isMC){
-      if(is2018){ 
+      if(is2018){
 	cout<<"JER smearer ..."<<endl;
 	jetER_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", JERSmearing::SF_13TeV_Autumn18_RunABC_V4,"2018/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));//JER SFs obtained with Madgraph
 	cout<<"JER smearer is ready!"<<endl;
@@ -765,7 +765,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       if(is2017) jetER_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", JERSmearing::SF_13TeV_Fall17_V3_RunBCDEF_Madgraph,"2017/Fall17_V3_MC_PtResolution_AK4PFchs.txt"));//JER SFs obtained with Madgraph
       if(is2016v2 || is2016v3)  jetER_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets",  JERSmearing::SF_13TeV_Summer16_25nsV1,"2016/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"));
     }
-     
+
     //output
     ctx.undeclare_all_event_output();//clean
     declare_output(ctx);//store only varaibles useful for dijet analysis
@@ -779,18 +779,18 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
     init_hists(ctx);
     if(debug) cout<<"reset hists \n";
-    
-   
+
+
     Jet_printer.reset(new JetPrinter("Jet-Printer", 0));
     GenJet_printer.reset(new GenJetPrinter("GenJet-Printer", 0));
-    
-    if(!no_genp) 
+
+    if(!no_genp)
       GenParticles_printer.reset(new GenParticlesPrinter(ctx));
 
     LumiWeight_module.reset(new MCLumiWeight(ctx));
-    
+
     n_evt = 0;
-       
+
     apply_lumiweights = (ctx.get("Apply_Lumiweights") == "true" && isMC);
     apply_unflattening = (ctx.get("Apply_Unflattening") == "true" && isMC);
     apply_smear = (ctx.get("DO_JERSMEAR")=="true" && isMC);
@@ -801,7 +801,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       lumiweight = string2double(ctx.get("dataset_lumi"));
       cout<<"will be scaled my lumi "<<lumiweight<<endl;
     }
-    
+
     string lumifile = ctx.get("lumi_file");
     std::unique_ptr<TFile> file(TFile::Open(lumifile.c_str(), "read"));
     TTree * tree = dynamic_cast<TTree*>(file->Get("AnalysisTree"));
@@ -831,7 +831,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       rl2lumi.insert(make_pair(rl, ilumi_pb));
       rl2intlumi.insert(make_pair(rl, intlumi_pb));
     }
-    
+
     double ilumi_current_bin = 0.0;
     run_lumi last_entry;
     for(const auto & rl : rl2lumi){
@@ -849,7 +849,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     handle_l1jet_seeds = ctx.declare_event_input< vector< L1Jet>>("L1Jet_seeds");
 
     cout<<"end of AnalyseModule Constructor\n";
-    
+
     };
 
   AnalysisModule_DiJetTrg::~AnalysisModule_DiJetTrg() {
@@ -858,9 +858,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
   bool AnalysisModule_DiJetTrg::process(Event & event) {
  //###############################################################
     //
-    //Selection Module for L2 Residual Calculation  
+    //Selection Module for L2 Residual Calculation
     //
-    //Select Di-Jet Events 
+    //Select Di-Jet Events
     //Define Barrel and Probe Jet
     //Use possible third Jet to estimate alpha
     //Apply MC-Weights for Reweighting (Second Iteration)
@@ -891,7 +891,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
     //LEPTON selection
     muoSR_cleaner->process(event);
-    sort_by_pt<Muon>(*event.muons); 
+    sort_by_pt<Muon>(*event.muons);
     if(debug )std::cout<<"#muons = "<<event.muons->size()<<std::endl;
 
     eleSR_cleaner->process(event);
@@ -914,7 +914,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     }
 
     // MET filters
-    if(!isMC && !metfilters_sel->passes(event)) return false;   
+    if(!isMC && !metfilters_sel->passes(event)) return false;
 
     int event_in_lumibin = -1;
     double fill_event_integrated_lumi = 0;
@@ -932,33 +932,33 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	else it = prev(upper_binborders_runnrs.end()); //force the entries with the highest run_lumi to enter the last bin instead of overflow.
       }
       else it = upper_bound(upper_binborders_runnrs.begin(), upper_binborders_runnrs.end(), rl_event); //find the first entry in the vector of binborders that is greater than rl_event
-      
+
       event_in_lumibin = distance(upper_binborders_runnrs.begin(), it); //find how many elements of the vector of binborders are smaller than 'it', this is the bin to be filled
       fill_event_integrated_lumi = lumi_in_bins.at(event_in_lumibin);
     }
-    
+
     h_beforeCleaner->fill(event);
 
 //############### Jet Cleaner and First Selection (N_Jets >=2) ##############################
     if(debug) cout<<"before jet size\n";
     int n_jets_beforeCleaner = event.jets->size();
-    
+
     if(debug) cout<<"#jets before clean "<<n_jets_beforeCleaner<<endl;
-    
+
     //JetID
     // if(jetLabel == "AK4CHS" // || jetLabel == "AK8CHS"
-    //    ) 
+    //    )
     int jet_n = event.jets->size();
     if(jet_n<2) return false;
 
-    Jet jet1_b = event.jets->at(0);// leading jet   
-    Jet jet2_b = event.jets->at(1);// sub-leading jet  
+    Jet jet1_b = event.jets->at(0);// leading jet
+    Jet jet2_b = event.jets->at(1);// sub-leading jet
 
     jetID->process(event);//FixME: make sure JetID works for AK8
     if(apply_PUid)
       jetPUid->process(event);
     int n_jets_afterCleaner = event.jets->size();
-    if(debug) cout<<"#jets after clean "<<n_jets_afterCleaner<<endl;   
+    if(debug) cout<<"#jets after clean "<<n_jets_afterCleaner<<endl;
     sort_by_pt<Jet>(*event.jets);
     jet_n = event.jets->size();
     if(jet_n<2) return false;
@@ -966,7 +966,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
      //discard events if not all jets fulfill JetID instead of just discarding single jets
      //    if (n_jets_beforeCleaner != n_jets_afterCleaner) return false;
-    if(!isMC) h_afterCleaner->fill(event); 
+    if(!isMC) h_afterCleaner->fill(event);
     // if(debug) cout<<"event.jets->at(0).tagname2tag(pileup_loose) = "<<event.jets->at(0).tagname2tag("pileup_loose")<<endl;
     // if(debug) cout<<"event.jets->at(0).tagname2tag(pileup_medium) = "<<event.jets->at(0).tagname2tag("pileup_medium")<<endl;
     // if(debug) cout<<"event.jets->at(0).tagname2tag(pileup_tight) = "<<event.jets->at(0).tagname2tag("pileup_tight")<<endl;
@@ -981,11 +981,11 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     // 	if(event.jets->at(2).get_tag(event.jets->at(2).tagname2tag("pileup_tight"))<1) return false;//TEST
     // }
 //###########################################################################################
-  
+
 //####################  Select and Apply proper JEC-Versions for every Run ##################
 
 //    const int jet_n = event.jets->size();
-    h_2jets->fill(event); 
+    h_2jets->fill(event);
 
     bool apply_global = false;
     bool apply_A = false;
@@ -1001,8 +1001,8 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     //residuals
     if(!isMC){
       //DATA
-      if(split_JEC_DATA){ 
-	//split JEC 
+      if(split_JEC_DATA){
+	//split JEC
 	if(is2018){
 	  if(event.run <= s_runnr_A_2018)  apply_A = true;
 	  else if(event.run <= s_runnr_B_2018)  apply_B = true;
@@ -1023,19 +1023,19 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	//not split JEC
 	apply_global = true;
       }
-    }     
+    }
     else if(isMC){
       //MC
 	apply_global = true;
     }
-        
+
     h_beforeJEC->fill(event);
     // if(debug) std::cout <<" before jetleptoncleaner  "<<std::endl;
-    // if(debug) std::cout <<"jetlepton cleaner is at "<<(jetleptoncleaner==0)<<std::endl;    
+    // if(debug) std::cout <<"jetlepton cleaner is at "<<(jetleptoncleaner==0)<<std::endl;
     // // if(debug) std::cout <<jetleptoncleaner<<std::endl;
-    
+
     std::cout<< std::flush;
-    
+
     if(debug) std::cout <<" before jet corrector "<<std::endl;
     if(apply_A){
       jet_corrector_A->process(event);
@@ -1054,7 +1054,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     }
     if(apply_F){
       jet_corrector_F->process(event);
-    }     
+    }
     if(apply_G){
       jet_corrector_G->process(event);
     }
@@ -1068,7 +1068,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
 //#############################################################################################################
 //################################  Apply JER and MET  ########################################################
-    if(debug){     
+    if(debug){
       cout<<"After JEC, before JER"<<endl;
       cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl;
       cout<< "MET: "<< event.met->pt() <<endl;
@@ -1085,12 +1085,12 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     jetcleaner->process(event); //remove low pt jets
     sort_by_pt<Jet>(*event.jets);
     n_jets_afterCleaner = event.jets->size();
-    if(debug) cout<<"#jets after cleanining low pt jets "<<n_jets_afterCleaner<<endl;   
+    if(debug) cout<<"#jets after cleanining low pt jets "<<n_jets_afterCleaner<<endl;
     if(n_jets_afterCleaner<2) return false;
     sort_by_pt<Jet>(*event.jets);
     //FixME: do matching to trigger objects instead
-    // Jet jet1_a = event.jets->at(0);// leading jet   
-    // Jet jet2_a = event.jets->at(1);// sub-leading jet  
+    // Jet jet1_a = event.jets->at(0);// leading jet
+    // Jet jet2_a = event.jets->at(1);// sub-leading jet
     // if(jet1_a.eta()!=jet1_b.eta() || jet2_a.eta()!=jet2_b.eta() || jet1_a.phi()!=jet1_b.phi() || jet2_a.phi()!=jet2_b.phi()){
     //   if(debug) cout<<"jet1_a.eta()="<<jet1_a.eta()<<", jet1_b.eta()="<<jet1_b.eta()<<" jet1_a.pt()="<<jet1_a.pt()<<", jet1_b.pt()="<<jet1_b.pt()<<endl;
     //   if(debug) cout<<"jet2_a.eta()="<<jet2_a.eta()<<", jet2_b.eta()="<<jet2_b.eta()<<" jet2_a.pt()="<<jet2_a.pt()<<", jet2_b.pt()="<<jet2_b.pt()<<endl;
@@ -1098,7 +1098,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     // }
     jet_n = n_jets_afterCleaner;
     if(hypot(event.met->rawCHS_px(),event.met->rawCHS_py())/event.met->uncorr_v4().Pt()>1e4) return false;//remove bad events in Herwig++ sample
-    if(debug){   
+    if(debug){
       cout<<"After JER, before MET"<<endl;
       cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl;
       cout<< "MET: PF MET = "<< event.met->pt() <<" uncorr PF MET = "<<event.met->uncorr_v4().Pt()<<" unccor CHS MET = "<<hypot(event.met->rawCHS_px(),event.met->rawCHS_py())<<endl;
@@ -1108,7 +1108,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       // }
    }
 
-    h_afterJER->fill(event); 
+    h_afterJER->fill(event);
     float DeltaMET = event.met->pt(); //MET before TypeI correction
 
 
@@ -1144,7 +1144,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       }
       if(apply_F){
 	jet_corrector_F->correct_met(event,chsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
-      }     
+      }
       if(apply_global){
 	jet_corrector_MC->correct_met(event,chsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
       }
@@ -1167,23 +1167,23 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       }
       if(apply_F){
 	jet_corrector_F->correct_met(event,chsMET);
-      }     
+      }
       if(apply_global){
 	jet_corrector_MC->correct_met(event,chsMET);
       }
     }
 
-    h_afterMET->fill(event); 
+    h_afterMET->fill(event);
     DeltaMET -= event.met->pt();//= difference between before and after TypeI correction
 
-    if(debug){ 
+    if(debug){
       cout << "After MET"<<endl;
       cout<< "MET: "<< event.met->pt() <<" DeltaMET = "<<DeltaMET<<" DeltaMET/MET = "<<DeltaMET/event.met->pt()<<endl;
       if(DeltaMET/event.met->pt()>5.0) cout<<"AAAAAA, DeltaMET/MET is too large!"<<endl;
       cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl;
     }
-   
-//############################################################################################################    
+
+//############################################################################################################
 
     int jetid_0 = 0;
     int jetid_1 = 1;
@@ -1191,8 +1191,8 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
     int jetid_0_last = 0;
     int jetid_1_last = 1;
-    int jetid_2_last = 2;  
- 
+    int jetid_2_last = 2;
+
  //Calculate pt_ave
     if(debug) cout<<"calc pt_ave\n";
     sort_by_pt<Jet>(*event.jets);//safety
@@ -1201,13 +1201,13 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     float jet1_pt = jet1->pt(); float jet2_pt = jet2->pt();
     float pt_ave = (jet1_pt + jet2_pt)/2.;
 
-        
+
 ////###############################################  Trigger  ###################################
 
 //*****************************************
 //
-// Trigger Selection: 
-//  Use Central trigger for abs(probejet_eta) < 2.8  
+// Trigger Selection:
+//  Use Central trigger for abs(probejet_eta) < 2.8
 //  Use FWD trigger for abs(probejet_eta) => 2.8
 //  Upper thresholds are applied to make sure
 //  only one trigger contribute in this pT_ave bin
@@ -1230,11 +1230,11 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     int trigger160_HF = 0;
     int trigger220_HF = 0;
     int trigger300_HF = 0;
-    
+
     bool pass_trigger40=false; bool pass_trigger60=false; bool pass_trigger80=false;
     bool pass_trigger140=false; bool pass_trigger200=false; bool pass_trigger260=false;
     bool pass_trigger320=false; bool pass_trigger400=false; bool pass_trigger500=false;
-    
+
     bool pass_trigger60_HFJEC=false; bool pass_trigger80_HFJEC=false;
     bool pass_trigger100_HFJEC=false; bool pass_trigger160_HFJEC=false;
     bool pass_trigger220_HFJEC=false; bool pass_trigger300_HFJEC=false;
@@ -1245,7 +1245,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       trg_thresh[3] = d_Pt_Ave140_cut_2017; trg_thresh[4] = d_Pt_Ave200_cut_2017; trg_thresh[5] = d_Pt_Ave260_cut_2017;
       trg_thresh[6] = d_Pt_Ave320_cut_2017; trg_thresh[7] = d_Pt_Ave400_cut_2017; trg_thresh[8] = d_Pt_Ave500_cut_2017;
 
-      trgHF_thresh[0] = d_Pt_Ave60HF_cut_2017; trgHF_thresh[1] = d_Pt_Ave80HF_cut_2017; 
+      trgHF_thresh[0] = d_Pt_Ave60HF_cut_2017; trgHF_thresh[1] = d_Pt_Ave80HF_cut_2017;
       trgHF_thresh[2] = d_Pt_Ave100HF_cut_2017; trgHF_thresh[3] = d_Pt_Ave160HF_cut_2017;
       trgHF_thresh[4] = d_Pt_Ave220HF_cut_2017; trgHF_thresh[5] =d_Pt_Ave300HF_cut_2017;
     }
@@ -1254,7 +1254,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       trg_thresh[3] = d_Pt_Ave140_cut_2018; trg_thresh[4] = d_Pt_Ave200_cut_2018; trg_thresh[5] = d_Pt_Ave260_cut_2018;
       trg_thresh[6] = d_Pt_Ave320_cut_2018; trg_thresh[7] = d_Pt_Ave400_cut_2018; trg_thresh[8] = d_Pt_Ave500_cut_2018;
 
-      trgHF_thresh[0] = d_Pt_Ave60HF_cut_2018; trgHF_thresh[1] = d_Pt_Ave80HF_cut_2018; 
+      trgHF_thresh[0] = d_Pt_Ave60HF_cut_2018; trgHF_thresh[1] = d_Pt_Ave80HF_cut_2018;
       trgHF_thresh[2] = d_Pt_Ave100HF_cut_2018; trgHF_thresh[3] = d_Pt_Ave160HF_cut_2018;
       trgHF_thresh[4] = d_Pt_Ave220HF_cut_2018; trgHF_thresh[5] =d_Pt_Ave300HF_cut_2018;
     }
@@ -1266,7 +1266,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     if(numb==0){
 	jet_probe = jet2;
 	jet_barrel = jet1;
-    }    
+    }
     if ((fabs(jet1->eta())<s_eta_barr)&&(fabs(jet2->eta())<s_eta_barr)) {
       ran = rand();
       numb = ran % 2;
@@ -1276,9 +1276,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       }
       else{
 	jet_probe = jet1;
-	jet_barrel = jet2;	
+	jet_barrel = jet2;
       }
-    } 
+    }
     else if ((fabs(jet1->eta())<s_eta_barr)||(fabs(jet2->eta())<s_eta_barr)){
       if(fabs(jet1->eta())<s_eta_barr){
 	jet_probe = jet2;
@@ -1301,10 +1301,10 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	}
 	else{
 	  jet_probe = jet1;
-	  jet_barrel = jet2;	
+	  jet_barrel = jet2;
 	}
 	isJER_SM = true;
-      } 
+      }
     }
 
 
@@ -1312,36 +1312,36 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     if(event.isRealData){
       float pt_ave_ = pt_ave;
       float probejet_eta = jet_probe->eta();
-      
-      bool eta_cut_bool = abs(probejet_eta) <  eta_cut;     
+
+      bool eta_cut_bool = abs(probejet_eta) <  eta_cut;
       if(!trigger_fwd) eta_cut_bool = true;
 
       bool eta_cut_bool_HF = abs(probejet_eta) >=  eta_cut;
-      if(!trigger_central) eta_cut_bool_HF = true;      
-      
-      //pass_trigger40 = (trigger40_sel->passes(event) && pt_ave>trg_thresh[0]   && pt_ave<trg_thresh[1] && (eta_cut_bool));//ToDo: remove requirement on eta_bool, add one more bin in forward region in 
+      if(!trigger_central) eta_cut_bool_HF = true;
+
+      //pass_trigger40 = (trigger40_sel->passes(event) && pt_ave>trg_thresh[0]   && pt_ave<trg_thresh[1] && (eta_cut_bool));//ToDo: remove requirement on eta_bool, add one more bin in forward region in
       pass_trigger40 = (trigger40_sel->passes(event) && pt_ave>trg_thresh[0]   && pt_ave<trg_thresh[1] && (eta_cut_bool));
       pass_trigger60 = (trigger60_sel->passes(event) && pt_ave>trg_thresh[1]   && pt_ave<trg_thresh[2] && (eta_cut_bool));
-      pass_trigger80 = (trigger80_sel->passes(event) && pt_ave>trg_thresh[2]   && pt_ave<trg_thresh[3]&&( eta_cut_bool)); 
-      pass_trigger140 = (trigger140_sel->passes(event) && pt_ave>trg_thresh[3] && pt_ave<trg_thresh[4]&&( eta_cut_bool)); 
-      pass_trigger200 = (trigger200_sel->passes(event) && pt_ave>trg_thresh[4] && pt_ave<trg_thresh[5]&& (eta_cut_bool)); 
+      pass_trigger80 = (trigger80_sel->passes(event) && pt_ave>trg_thresh[2]   && pt_ave<trg_thresh[3]&&( eta_cut_bool));
+      pass_trigger140 = (trigger140_sel->passes(event) && pt_ave>trg_thresh[3] && pt_ave<trg_thresh[4]&&( eta_cut_bool));
+      pass_trigger200 = (trigger200_sel->passes(event) && pt_ave>trg_thresh[4] && pt_ave<trg_thresh[5]&& (eta_cut_bool));
       pass_trigger260 = (trigger260_sel->passes(event) && pt_ave>trg_thresh[5] && pt_ave<trg_thresh[6]&& (eta_cut_bool));
       pass_trigger320 = (trigger320_sel->passes(event) && pt_ave>trg_thresh[6] && pt_ave<trg_thresh[7]&& (eta_cut_bool));
       pass_trigger400 = (trigger400_sel->passes(event) && pt_ave>trg_thresh[7] && pt_ave<trg_thresh[8]&&( eta_cut_bool));
       pass_trigger500 = (trigger500_sel->passes(event) && pt_ave>trg_thresh[8]&& (eta_cut_bool));
-      
+
 //FWD Trigger
       pass_trigger60_HFJEC = (trigger_fwd && trigger60_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[0]   && pt_ave<trgHF_thresh[1] &&eta_cut_bool_HF);
       pass_trigger80_HFJEC = (trigger_fwd && trigger80_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[1]   && pt_ave<trgHF_thresh[2] && eta_cut_bool_HF);
       pass_trigger100_HFJEC = (trigger_fwd && trigger100_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[2] && pt_ave<trgHF_thresh[3] &&eta_cut_bool_HF);
       pass_trigger160_HFJEC = (trigger_fwd && trigger160_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[3] && pt_ave<trgHF_thresh[4] && eta_cut_bool_HF);
       pass_trigger220_HFJEC = (trigger_fwd && trigger220_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[4] && pt_ave<trgHF_thresh[5] && eta_cut_bool_HF);
-      pass_trigger300_HFJEC = (trigger_fwd && trigger300_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[5] && eta_cut_bool_HF);      
+      pass_trigger300_HFJEC = (trigger_fwd && trigger300_HFJEC_sel->passes(event) && pt_ave>trgHF_thresh[5] && eta_cut_bool_HF);
 
-    
+
       //HLT Selection
       bool pass_trigger = false;
-      if(eta_cut_bool) pass_trigger = (pass_trigger40 || pass_trigger60 || pass_trigger80 || pass_trigger140 || pass_trigger200  || pass_trigger260 || pass_trigger320 || pass_trigger400 || pass_trigger500); 
+      if(eta_cut_bool) pass_trigger = (pass_trigger40 || pass_trigger60 || pass_trigger80 || pass_trigger140 || pass_trigger200  || pass_trigger260 || pass_trigger320 || pass_trigger400 || pass_trigger500);
       else  pass_trigger = (pass_trigger40 || pass_trigger60_HFJEC || pass_trigger80_HFJEC || pass_trigger100_HFJEC || pass_trigger160_HFJEC || pass_trigger220_HFJEC || pass_trigger300_HFJEC);
 
     if(debug && pass_trigger){
@@ -1377,10 +1377,10 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     if(pass_trigger160_HFJEC){ n_trig++; trigger160_HF = 1;}
     if(pass_trigger220_HFJEC){ n_trig++; trigger220_HF = 1;}
     if(pass_trigger300_HFJEC){ n_trig++; trigger300_HF = 1;}
-    
+
     h_afterTriggerData->fill(event);
 
-    
+
 //###############################  Declare Probe and Barrel Jet  ################################
 
     if(debug) cout<<"Declare Probe and Barrel Jet\n";
@@ -1391,10 +1391,10 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       dR_jet3_barreljet = deltaR(event.jets->at(2), *jet_barrel);
       dR_jet3_probejet = deltaR(event.jets->at(2), *jet_probe);
     }
-//###############################################################################################   
+//###############################################################################################
 
     if(debug) cout<<"read or calculated values for dijet events\n";
-    
+
     //read or calculated values for dijet events
     float gen_pthat = 0; //pt hat (from QCD simulation)
     float gen_weight = 0;
@@ -1404,9 +1404,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       if(debug) cout<<"gen_pthat = "<<gen_pthat<<endl;
       //      gen_pthat = event.genInfo->binningValues()[0];// only for pythia8 samples //todo: for herwig, madgraph
     }
-    float nvertices = event.pvs->size(); 
+    float nvertices = event.pvs->size();
     float nPU = 0 ;//todo for data?
-    if(!event.isRealData) 
+    if(!event.isRealData)
       nPU = event.genInfo->pileup_TrueNumInteractions();
 
     float genjet1_pt = 0;
@@ -1425,20 +1425,20 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     auto factor_raw2 = jet2->JEC_factor_raw();
     float jet1_ptRaw = jet1_pt*factor_raw1;
     float jet2_ptRaw = jet2_pt*factor_raw2;
-    float probejet_eta = jet_probe->eta(); 
-    float  probejet_phi = jet_probe->phi(); 
-    float  probejet_pt = jet_probe->pt(); 
+    float probejet_eta = jet_probe->eta();
+    float  probejet_phi = jet_probe->phi();
+    float  probejet_pt = jet_probe->pt();
     auto factor_raw_probe = jet_probe->JEC_factor_raw();
     float probejet_ptRaw = probejet_pt*factor_raw_probe;
-    float barreljet_eta = jet_barrel->eta(); 
-    float  barreljet_phi = jet_barrel->phi(); 
-    float  barreljet_pt = jet_barrel->pt(); 
+    float barreljet_eta = jet_barrel->eta();
+    float  barreljet_phi = jet_barrel->phi();
+    float  barreljet_pt = jet_barrel->pt();
     auto factor_raw_barrel = jet_barrel->JEC_factor_raw();
     float barreljet_ptRaw = barreljet_pt*factor_raw_barrel;
     if(debug) cout<<"raw jet pt jet1: "<<jet1_ptRaw <<" jet2: "<<jet2_ptRaw<<endl;
 //##########################  Get third Jet for alpha, asymmetry calculation  ###################
   if(debug) cout<<"Get third Jet for alpha, asymmetry calculation\n";
-    
+
     float jet3_pt = -1; float jet3_ptRaw = -1; float jet3_eta = -100;
     if(jet_n>2){
       Jet* jet3 = &event.jets->at(2);
@@ -1475,14 +1475,14 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 //       event.weight *= h_weights->GetBinContent(h_weights->FindBin(pt_ave<2000?pt_ave:(2000-1e-7),probejet_eta));
 //     }
 
-  
-    
-   
+
+
+
     int flavor = 0;
-    float onoffDummy =0.;   
+    float onoffDummy =0.;
 
     if(debug) cout<<"before the event.set wall\n";
-    
+
     //fill the containers
     double pu_pthat = -1;
     if(!event.isRealData) pu_pthat = event.genInfo->PU_pT_hat_max();
@@ -1541,9 +1541,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
     event.set(tt_jets_pt,jets_pt);
     event.set(tt_jet_n,jet_n);
-    event.set(tt_rho,event.rho);    
+    event.set(tt_rho,event.rho);
     event.set(tt_partonFlavor,flavor);
-   
+
     event.set(tt_dR_jet3_barreljet,dR_jet3_barreljet);
     event.set(tt_dR_jet3_probejet,dR_jet3_probejet);
 
@@ -1566,8 +1566,8 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     event.set(tt_trigger100_HF, trigger100_HF);
     event.set(tt_trigger160_HF, trigger160_HF);
     event.set(tt_trigger220_HF, trigger220_HF);
-    event.set(tt_trigger300_HF, trigger300_HF);    
-    
+    event.set(tt_trigger300_HF, trigger300_HF);
+
     sel.SetEvent(event);
 
     //##################################################   Advanced Selections   ################################
@@ -1610,14 +1610,14 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     //PhiEta Region cleaning
     if(!isMC)
       if(apply_EtaPhi_cut && (!sel.EtaPhiCleaning()  || !sel.EtaPhi())) return false;
-    
+
     if(! sel.EnergyEtaCut()) return false;
 
     event.set(tt_run,event.run);
     event.set(tt_evID,event.event);
     event.set(tt_lumiSec,event.luminosityBlock);
-    
-    
+
+
     if(debug){
      cout << "before 'dijet advanced selection' : " << endl;
      cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl;
@@ -1631,23 +1631,23 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     h_lumi_match->fill(event);
     if(event.isRealData){
       if(pass_trigger40) {h_trg40->fill(event); h_lumi_Trig40->fill(event);}
-      if(pass_trigger60) {h_trg60->fill(event); h_lumi_Trig60->fill(event);} 
+      if(pass_trigger60) {h_trg60->fill(event); h_lumi_Trig60->fill(event);}
       if(pass_trigger80) {h_trg80->fill(event); h_lumi_Trig80->fill(event);}
       if(pass_trigger140) {h_trg140->fill(event); h_lumi_Trig140->fill(event);}
       if(pass_trigger200) {h_trg200->fill(event); h_lumi_Trig200->fill(event);}
       if(pass_trigger260) {h_trg260->fill(event); h_lumi_Trig260->fill(event);}
-      if(pass_trigger320) {h_trg320->fill(event); h_lumi_Trig320->fill(event);} 
+      if(pass_trigger320) {h_trg320->fill(event); h_lumi_Trig320->fill(event);}
       if(pass_trigger400) {h_trg400->fill(event); h_lumi_Trig400->fill(event);}
       if(pass_trigger500) {h_trg500->fill(event); h_lumi_Trig500->fill(event);}
 
-      if(pass_trigger60_HFJEC) {h_trgHF60->fill(event); h_lumi_TrigHF60->fill(event);}  
+      if(pass_trigger60_HFJEC) {h_trgHF60->fill(event); h_lumi_TrigHF60->fill(event);}
       if(pass_trigger80_HFJEC) {h_trgHF80->fill(event); h_lumi_TrigHF80->fill(event);}
       if(pass_trigger100_HFJEC) {h_trgHF100->fill(event); h_lumi_TrigHF100->fill(event);}
       if(pass_trigger160_HFJEC) {h_trgHF160->fill(event); h_lumi_TrigHF160->fill(event);}
       if(pass_trigger220_HFJEC) {h_trgHF220->fill(event); h_lumi_TrigHF220->fill(event);}
-      if(pass_trigger300_HFJEC) {h_trgHF300->fill(event); h_lumi_TrigHF300->fill(event);}    
+      if(pass_trigger300_HFJEC) {h_trgHF300->fill(event); h_lumi_TrigHF300->fill(event);}
     }
-    else{    
+    else{
       if(debug){
 	cout << "before Pt selection (MC only) : " << endl;
 	cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl;
@@ -1656,11 +1656,11 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       if(!sel.PtMC()) return false; // For MC only one Pt threshold
     }
     //######################################################################################################################################
- 
+
     if(useUnprefireable){
 	 if(!sel.Unprefirable(unprefirableSummary)) return false;
     }
-      
+
 
     // L1 jet seed cleaning
     if(apply_L1seed_from_bx1_filter){
@@ -1676,9 +1676,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     std::vector< L1Jet>* l1jets = &event.get(handle_l1jet_seeds);
 
     if(debug) cout << "declared L1Jet seeds" << endl;
-    
+
     int jet1_l1bx, jet2_l1bx, jet3_l1bx;
-    
+
     unsigned int n_l1jets =l1jets->size();
     if(debug) cout << "l1jets size is "<<n_l1jets<<endl;
     if(n_l1jets>0){
@@ -1698,7 +1698,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       else jet1_l1bx = l1jets->at(dRmin_seed_idx).bx();
     }
     else jet1_l1bx = 10;
-    
+
     if(n_l1jets>1){
       double dRmin = 100.;
       int dRmin_seed_idx = -1;
@@ -1750,16 +1750,16 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
     h_lumi_final->fill(event);
 
     h_monitoring_final->fill(event);
-    
+
     event.set(tt_Nmuon,event.muons->size());
-    if(event.muons->size()>0)  
+    if(event.muons->size()>0)
       event.set(tt_muon_pt,event.muons->at(0).pt());
-    else 
+    else
       event.set(tt_muon_pt,0);
     event.set(tt_Nele,event.electrons->size());
-    if(event.electrons->size()>0)  
+    if(event.electrons->size()>0)
       event.set(tt_ele_pt,event.electrons->at(0).pt());
-    else 
+    else
       event.set(tt_ele_pt,0);
 
 
@@ -1775,10 +1775,10 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       cout<<" Barrel: "<<event.get(tt_barreljet_eta)<<" "<<event.get(tt_barreljet_phi)
 	  <<" "<<event.get(tt_barreljet_pt)<<" "<<event.get(tt_barreljet_ptRaw)<<endl;
       cout<<" B="<<event.get(tt_B)<<" A="<<event.get(tt_asymmetry)<<" "<<event.get(tt_rel_r)<<" "<<event.get(tt_mpf_r)<<""<<endl;
-      cout<<"N_muons= "<<event.muons->size()<<" N_electrons= "<<event.electrons->size()<<endl;      
-      if(event.muons->size()>0) cout<<"muon1 pt = "<<event.muons->at(0).pt()<<endl;      
-      if(event.electrons->size()>0) cout<<"ele1 pt = "<<event.electrons->at(0).pt()<<endl;      
-      cout<<" "<<endl; 
+      cout<<"N_muons= "<<event.muons->size()<<" N_electrons= "<<event.electrons->size()<<endl;
+      if(event.muons->size()>0) cout<<"muon1 pt = "<<event.muons->at(0).pt()<<endl;
+      if(event.electrons->size()>0) cout<<"ele1 pt = "<<event.electrons->at(0).pt()<<endl;
+      cout<<" "<<endl;
     }
     if(debug){
       Jet_printer->process(event);
@@ -1787,7 +1787,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       GenJet_printer->process(event);
       GenParticles_printer->process(event);
     }
-    if(isMC){    
+    if(isMC){
       double dr_cut = 0;
       if(jetLabel == "AK4CHS" || jetLabel == "AK4PUPPI") dr_cut = 0.2;
       else if (jetLabel == "AK8CHS" || jetLabel == "AK8PUPPI") dr_cut = 0.4;
@@ -1805,15 +1805,15 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       int flavor_subleadingjet = 0;
       const unsigned int genjets_n = event.genjets->size();
       int idx_jet_matching_genjet[genjets_n];
-      double probejet_ptgen = -1; 
-      double probejet_etagen = -1; 
-      double probejet_phigen = -1; 
+      double probejet_ptgen = -1;
+      double probejet_etagen = -1;
+      double probejet_phigen = -1;
       double barreljet_ptgen = -1;
       double probejet_drminparton=100;
-      double barreljet_drminparton=100; 
-      double barreljet_phigen = -1; 
-      double probejet_ptptcl = -1; 
-      double barreljet_ptptcl = -1; 
+      double barreljet_drminparton=100;
+      double barreljet_phigen = -1;
+      double probejet_ptptcl = -1;
+      double barreljet_ptptcl = -1;
       int probejet_statusptcl = -1;
       int barreljet_statusptcl = -1;
       int jet3_statusptcl = -1;
@@ -1829,7 +1829,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       }
       // int idx_parton_genJet[4]; int idx_parton_recoJet[4];
       // for(int i=0; i<4; i++){
-      // 	idx_parton_genJet[i]=-1; 
+      // 	idx_parton_genJet[i]=-1;
       // 	idx_parton_recoJet[i]=-1;
       // }
       //matching gen- and reco-jets
@@ -1844,7 +1844,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	  //	  double parton_pt = event.genjets->at(i).pt();
  	  //if(dR<dR_min && parton_pt>parton_pt_max){
 	  if(dR<dR_min){
- 	    dR_min = dR; 
+ 	    dR_min = dR;
 	    //	    parton_pt_max = parton_pt;
  	    if(dR_min<dr_cut) idx_matching_jet = j;
  	  }
@@ -1881,9 +1881,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	    if(dr < dr_min){
 	      //parton_pt_max=parton_pt;
 	      dr_min = dr;
-	      idx_genp_min = idx_g;	
+	      idx_genp_min = idx_g;
 	      if(debug) cout<<"PYTHIA8 gen jet and gen particle might be matched, status = "<<genp.status()<<" idx_genp_min = "<<idx_genp_min<<" dR="<<dr_min<<endl;
-	    }	
+	    }
 	  }
 	  else{//Herwig, etc
 	    if(genp.status()!=11) continue;//Herwig++: only particle with status 11 can contain parton from ME we are interested in
@@ -1895,12 +1895,12 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	      dr_min = dr;
 	      idx_genp_min = idx_g;
 	      if(debug) cout<<"HERWIG++ gen jet and gen particle might be matched, status = "<<genp.status()<<" idx_genp_min = "<<idx_genp_min<<" dR="<<dr_min<<endl;
-	    }	
+	    }
 	  }
  	}
  	if(dr_min <= dr_cut && idx_genp_min>-1) {
 	    if(debug) cout << "genjet " << idx_j << " is matched to genparticle " << idx_genp_min <<" with status="<<event.genparticles->at(idx_genp_min).status()<< " and flavor " << event.genparticles->at(idx_genp_min).partonFlavour()
-			 << " and pt = "<<event.genparticles->at(idx_genp_min).pt()<< ", within dR = " << dr_min << ". " <<  endl; 
+			 << " and pt = "<<event.genparticles->at(idx_genp_min).pt()<< ", within dR = " << dr_min << ". " <<  endl;
 	    //	    idx_parton_genJet[idx_genp_min] = idx_j;
 	    if(idx_jet_matching_genjet[idx_j] >= 0) idx_matched_jets[idx_jet_matching_genjet[idx_j]] = idx_genp_min;
  	}
@@ -1931,29 +1931,29 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       else throw runtime_error("first two jets are not the barrel jets, how could this happen?");
       if(debug) cout<<"idx_barreljet = "<<idx_barreljet<<endl;
       //obtain flavor of the barreljet
-      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle 
+      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle
       if(idx_matched_jets[idx_barreljet] != -1){//flavor
  	if(debug) cout<<"idx_matched_jets[idx_barreljet]="<<idx_matched_jets[idx_barreljet]<<endl;
  	flavor_barreljet = fabs(event.genparticles->at(idx_matched_jets[idx_barreljet]).partonFlavour());
  	if(debug) cout<<"flavor barrel jet ="<<flavor_barreljet<<endl;
  	response_barreljet = jet_barrel->pt() / event.genparticles->at(idx_matched_jets[idx_barreljet]).pt();
-        barreljet_ptptcl = event.genparticles->at(idx_matched_jets[idx_barreljet]).pt(); 
-        barreljet_ptgen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).pt(); 
-        barreljet_phigen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).phi(); 
+        barreljet_ptptcl = event.genparticles->at(idx_matched_jets[idx_barreljet]).pt();
+        barreljet_ptgen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).pt();
+        barreljet_phigen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).phi();
  	barreljet_statusptcl = event.genparticles->at(idx_matched_jets[idx_barreljet]).status();
 	dR_GenJet_GenParticle_barrel_matched =   deltaR(event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]),event.genparticles->at(idx_matched_jets[idx_barreljet]));
       }
       if(idx_matched_RecoGenjets[idx_barreljet] !=-1){//RECO to GEN
 	if(debug) cout<<"idx_matched_RecoGenjets[idx_barreljet] = "<<idx_matched_RecoGenjets[idx_barreljet]<<endl;
         barreljet_ptgen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).pt();
-	barreljet_phigen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).phi(); 
+	barreljet_phigen = event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]).phi();
  	if(idx_matched_jets[idx_barreljet]<0){
 	  flavor_barreljet = -1;
 	  response_barreljet = -1;
 	  barreljet_ptptcl = -1;
 	  dR_GenJet_GenParticle_barrel_matched = -1; //deltaR(event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]),event.genparticles->at(2));
 	}
-      }    
+      }
       if(idx_matched_RecoGenjets[idx_barreljet]<0 && idx_matched_jets[idx_barreljet]<0){//NONE, flavor and GEN are not matched
  	flavor_barreljet = -1;
  	response_barreljet = -1;
@@ -1962,14 +1962,14 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
         barreljet_phigen = -1;
  	barreljet_statusptcl  = -1;
  	barreljet_drminparton = -1;
-	dR_GenJet_GenParticle_barrel_matched = -1; 
+	dR_GenJet_GenParticle_barrel_matched = -1;
       }
       //also for probe jets
       int idx_probejet = fabs(idx_barreljet - 1);
       if(debug) cout<<"idx_probejet = "<<idx_probejet <<" idx_matched_jets[idx_probejet] = "<<idx_matched_jets[idx_probejet]
 		    <<" idx_matched_RecoGenjets[idx_probejet] = "<<idx_matched_RecoGenjets[idx_probejet]<<endl;
       //obtain flavor of the probejet
-      //-1: unmatched,  >0: flavor of matching genparticle 
+      //-1: unmatched,  >0: flavor of matching genparticle
       if(idx_matched_jets[idx_probejet] != -1){
 	// if(debug) cout<<" idx_matched_jets[idx_probejet] = "<<idx_matched_jets[idx_probejet]<<" idx_matched_RecoGenjets[idx_probejet] = "<<idx_matched_RecoGenjets[idx_probejet]
  	//  	      <<" idx_probejet = "<<idx_probejet<<endl;
@@ -1977,7 +1977,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
  	flavor_probejet = fabs(event.genparticles->at(idx_matched_jets[idx_probejet]).partonFlavour());
  	response_probejet = jet_probe->pt() / event.genparticles->at(idx_matched_jets[idx_probejet]).pt();
  	probejet_ptptcl = event.genparticles->at(idx_matched_jets[idx_probejet]).pt();
- 	probejet_statusptcl = event.genparticles->at(idx_matched_jets[idx_probejet]).status(); 
+ 	probejet_statusptcl = event.genparticles->at(idx_matched_jets[idx_probejet]).status();
  	dR_GenJet_GenParticle_probe_matched =   deltaR(event.genjets->at(idx_matched_RecoGenjets[idx_probejet]),event.genparticles->at(idx_matched_jets[idx_probejet]));
       }
       if(idx_matched_RecoGenjets[idx_probejet] !=-1){//GEN and RECO jets are matched
@@ -2013,41 +2013,41 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	    }
 	    if(isStop) break;
 	  }
-	// if(fabs(probejet_eta)<0.522 && fabs(probejet_eta)>0.261) 
+	// if(fabs(probejet_eta)<0.522 && fabs(probejet_eta)>0.261)
 	//   h_hadrons_BB->fill(event,idx_matched_RecoGenjets[idx_probejet],idx_probejet);
-	// if(fabs(probejet_eta)<2.322 && fabs(probejet_eta)>2.172) 
+	// if(fabs(probejet_eta)<2.322 && fabs(probejet_eta)>2.172)
 	//   h_hadrons_EC1->fill(event,idx_matched_RecoGenjets[idx_probejet],idx_probejet);
-	// if(fabs(probejet_eta)<2.650 && fabs(probejet_eta)>2.5) 
+	// if(fabs(probejet_eta)<2.650 && fabs(probejet_eta)>2.5)
 	//   h_hadrons_EC2->fill(event,idx_matched_RecoGenjets[idx_probejet],idx_probejet);
-	// if(fabs(probejet_eta)<3.839 && fabs(probejet_eta)>3.489) 
+	// if(fabs(probejet_eta)<3.839 && fabs(probejet_eta)>3.489)
 	//   h_hadrons_HF->fill(event,idx_matched_RecoGenjets[idx_probejet],idx_probejet);
 
 	// if(jet_n>2 && idx_matched_RecoGenjets[2]>-1)
 	//   h_hadrons_3rdjet->fill(event,idx_matched_RecoGenjets[2],2);
 	// //fill hadron hists per pt bins
 	// //The same as trigger selection, but without triggers
-	// bool eta_cut_bool = abs(probejet_eta) <  eta_cut;     
+	// bool eta_cut_bool = abs(probejet_eta) <  eta_cut;
 	// if(!trigger_fwd) eta_cut_bool = true;
 	// bool eta_cut_bool_HF = abs(probejet_eta) >=  eta_cut;
-	// if(!trigger_central) eta_cut_bool_HF = true;      
-      
+	// if(!trigger_central) eta_cut_bool_HF = true;
+
 	// bool pass_trigger40_MC = (pt_ave>trg_thresh[0]   && pt_ave<trg_thresh[1]);//remove requirement on eta_bool = add one more bin in forward region
 	// bool pass_trigger60_MC = (pt_ave>trg_thresh[1]   && pt_ave<trg_thresh[2] && eta_cut_bool);
-	// bool pass_trigger80_MC = (pt_ave>trg_thresh[2]   && pt_ave<trg_thresh[3]&& eta_cut_bool); 
-	// bool pass_trigger140_MC = (pt_ave>trg_thresh[3] && pt_ave<trg_thresh[4]&& eta_cut_bool); 
-	// bool pass_trigger200_MC = (pt_ave>trg_thresh[4] && pt_ave<trg_thresh[5]&& eta_cut_bool); 
+	// bool pass_trigger80_MC = (pt_ave>trg_thresh[2]   && pt_ave<trg_thresh[3]&& eta_cut_bool);
+	// bool pass_trigger140_MC = (pt_ave>trg_thresh[3] && pt_ave<trg_thresh[4]&& eta_cut_bool);
+	// bool pass_trigger200_MC = (pt_ave>trg_thresh[4] && pt_ave<trg_thresh[5]&& eta_cut_bool);
 	// bool pass_trigger260_MC = (pt_ave>trg_thresh[5] && pt_ave<trg_thresh[6]&& eta_cut_bool);
 	// bool pass_trigger320_MC = (pt_ave>trg_thresh[6] && pt_ave<trg_thresh[7]&& eta_cut_bool);
 	// bool pass_trigger400_MC = (pt_ave>trg_thresh[7] && pt_ave<trg_thresh[8]&& eta_cut_bool);
 	// bool pass_trigger500_MC = (pt_ave>trg_thresh[8] && eta_cut_bool);
-      
+
 	// //FWD Trigger
 	// bool pass_trigger60_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[0]   && pt_ave<trgHF_thresh[1] &&eta_cut_bool_HF);
 	// bool pass_trigger80_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[1]   && pt_ave<trgHF_thresh[2] && eta_cut_bool_HF);
 	// bool pass_trigger100_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[2] && pt_ave<trgHF_thresh[3] &&eta_cut_bool_HF);
 	// bool pass_trigger160_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[3] && pt_ave<trgHF_thresh[4] && eta_cut_bool_HF);
 	// bool pass_trigger220_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[4] && pt_ave<trgHF_thresh[5] && eta_cut_bool_HF);
-	// bool pass_trigger300_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[5] && eta_cut_bool_HF);      
+	// bool pass_trigger300_HFJEC_MC = (trigger_fwd && pt_ave>trgHF_thresh[5] && eta_cut_bool_HF);
 
 
 	// if(pass_trigger40_MC) h_hadrons_trg40->fill(event,idx_matched_RecoGenjets[idx_probejet],idx_probejet);
@@ -2085,7 +2085,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	//     if(isStop) break;
 	//   }
       }
- 
+
 
       //Fill PUid related histograms
       for(int idx_curr=0;idx_curr<2;idx_curr++){//barrel and leading jets
@@ -2119,7 +2119,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 		isStop = true;
 	      }
 	      if(isStop) break;
-	    }	  
+	    }
 	  }
 	}
 	else{//RECO and GEN are not matched
@@ -2131,7 +2131,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	      isStop = true;
 	    }
 	    if(isStop) break;
-	  }	  
+	  }
 	}
       }
       if(jet_n>2){
@@ -2168,7 +2168,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 		isStop = true;
 	      }
 	      if(isStop) break;
-	    }	  
+	    }
 	  }
 	}
 	else{//RECO_3rd and GEN are not matched
@@ -2181,7 +2181,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	      isStop = true;
 	    }
 	    if(isStop) break;
-	  }	  
+	  }
 	}
       }
       }
@@ -2190,7 +2190,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
       //find the closest parton to the jet even if not matched (to check dR matching)
       //Code should be the same as matching before!
-     
+
       if(event.genparticles){
 	int idx_g = -1;
 	double parton_pt_max=15;
@@ -2208,9 +2208,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 		if(dr < dr_min){
 		  //parton_pt_max=parton_pt;
 		  dr_min = dr;
-		  idx_genp_min = idx_g;	
+		  idx_genp_min = idx_g;
 		  if(debug) cout<<"PYTHIA8 gen jet and gen particle might be matched, status = "<<genp.status()<<" idx_genp_min = "<<idx_genp_min<<" dR="<<dr_min<<endl;
-		}	
+		}
 	      }
 	      else{//Herwig, etc
 		if(genp.status()!=11) continue;//Herwig++: only particle with status 11 can contain parton from ME we are interested in
@@ -2223,7 +2223,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 		  dr_min = dr;
 		  idx_genp_min = idx_g;
 		  if(debug) cout<<"HERWIG++ gen jet and gen particle might be matched, status = "<<genp.status()<<" idx_genp_min = "<<idx_genp_min<<" dR="<<dr_min<<endl;
-		}	
+		}
 	      }
 	    }
 	    probejet_drminparton = dr_min;
@@ -2232,7 +2232,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
 	idx_g = -1;
 	dr_min = 1000.; parton_pt_max=15;
-	
+
 	//Tag jet
 	if(idx_matched_RecoGenjets[idx_barreljet]>-1){
 	  for(GenParticle & genp: *event.genparticles){
@@ -2242,9 +2242,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 		double dr = deltaR(event.genjets->at(idx_matched_RecoGenjets[idx_barreljet]),genp);
 		if(dr < dr_min){
 		  dr_min = dr;
-		  idx_genp_min = idx_g;	
+		  idx_genp_min = idx_g;
 		  if(debug) cout<<"PYTHIA8 gen jet and gen particle might be matched, status = "<<genp.status()<<" idx_genp_min = "<<idx_genp_min<<" dR="<<dr_min<<endl;
-		}	
+		}
 	      }
 	      else{//Herwig, etc
 		if(genp.status()!=11) continue;//Herwig++: only particle with status 11 can contain parton from ME we are interested in
@@ -2255,7 +2255,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 		  dr_min = dr;
 		  idx_genp_min = idx_g;
 		  if(debug) cout<<"HERWIG++ gen jet and gen particle might be matched, status = "<<genp.status()<<" idx_genp_min = "<<idx_genp_min<<" dR="<<dr_min<<endl;
-		}	
+		}
 	      }
 	    }
 	    barreljet_drminparton = dr_min;
@@ -2266,30 +2266,30 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	probejet_drminparton = -1; barreljet_drminparton = -1;
       }
 
-      
 
-      if(debug) cout << "barreljet is jet no. " << idx_barreljet << ", alpha = " << event.get(tt_alpha) << ", flavor of barreljet = " << flavor_barreljet 
+
+      if(debug) cout << "barreljet is jet no. " << idx_barreljet << ", alpha = " << event.get(tt_alpha) << ", flavor of barreljet = " << flavor_barreljet
  		     <<", status of barrel jet = "<<barreljet_statusptcl<<" the closest parton with dR = "<<barreljet_drminparton<< endl;
       if(debug) cout << "probejet is jet no. " << idx_probejet << ", alpha = " << event.get(tt_alpha) << ", flavor of probejet = " << flavor_probejet <<" status of probejet = " <<
  		  probejet_statusptcl <<" the closest parton with dR = "<<probejet_drminparton<< endl;
       if(debug)
  	if(probejet_drminparton>1000. || barreljet_drminparton>1000.) cout<<"AAAAAAAAAAAAAAAAA! LOOK!"<<endl;
-      
+
       //same for leading jet
-      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle 
+      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle
       if(idx_matched_jets[0] != -1) flavor_leadingjet = fabs(event.genparticles->at(idx_matched_jets[0]).partonFlavour());
       else flavor_leadingjet = -1;
       if(debug) cout << "leadingjet is jet no. " << 0 << ", alpha = " << event.get(tt_alpha) << ", flavor of leadingjet = " << flavor_leadingjet << endl;
-      
+
 
       //same for subleading jet
-      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle 
+      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle
       if(idx_matched_jets[1] != -1) flavor_subleadingjet = fabs(event.genparticles->at(idx_matched_jets[1]).partonFlavour());
       else flavor_subleadingjet = -1;
       if(debug) cout << "subleadingjet is jet no. " << 1 << ", alpha = " << event.get(tt_alpha) << ", flavor of subleadingjet = " << flavor_subleadingjet << endl;
 
       //same for 3rd jet
-      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle 
+      //-1: unmatched, 0: alpha too large, >0: flavor of matching genparticle
       if(jet_n>2){
  	if(idx_matched_jets[2] != -1) {
  	  flavor_3rdjet = fabs(event.genparticles->at(idx_matched_jets[2]).partonFlavour());
@@ -2302,26 +2302,26 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
  	if(debug) cout << "3rd is jet no. " << idx_matched_jets[2] << ", alpha = " << event.get(tt_alpha) << ", flavor of the 3rd jet = " << flavor_3rdjet <<", status = "<<jet3_statusptcl<< endl;
       }
       else{
- 	flavor_3rdjet = -1;  
+ 	flavor_3rdjet = -1;
 	jet3_statusptcl = -1;
       }
-      //      if(fabs(jet3_eta)>2.4) return false;//TEST with 3rd jet in the barrel   
+      //      if(fabs(jet3_eta)>2.4) return false;//TEST with 3rd jet in the barrel
       //      if(flavor_3rdjet<0 && isMC) return false;//TEST. VERY LOW STATS!
       //      if(debug) cout<<"NOW WE SET FLOATS!"<<endl;
-      event.set(tt_flavor3rdjet,flavor_3rdjet);   
-      event.set(tt_flavorBarreljet,flavor_barreljet);   
+      event.set(tt_flavor3rdjet,flavor_3rdjet);
+      event.set(tt_flavorBarreljet,flavor_barreljet);
       event.set(tt_responseBarreljet,response_barreljet);
-      event.set(tt_barreljet_ptgen,barreljet_ptgen); 
-      event.set(tt_barreljet_ptptcl,barreljet_ptptcl); 
-      event.set(tt_flavorProbejet,flavor_probejet);  
-      event.set(tt_responseProbejet,response_probejet);   
-      event.set(tt_flavorLeadingjet,flavor_leadingjet);  
+      event.set(tt_barreljet_ptgen,barreljet_ptgen);
+      event.set(tt_barreljet_ptptcl,barreljet_ptptcl);
+      event.set(tt_flavorProbejet,flavor_probejet);
+      event.set(tt_responseProbejet,response_probejet);
+      event.set(tt_flavorLeadingjet,flavor_leadingjet);
       event.set(tt_flavorSubleadingjet,flavor_subleadingjet);
-      event.set(tt_probejet_ptgen,probejet_ptgen);   
-      event.set(tt_probejet_etagen,probejet_etagen);   
-      event.set(tt_probejet_phigen,probejet_phigen);   
-      event.set(tt_probejet_ptptcl,probejet_ptptcl); 
-     
+      event.set(tt_probejet_ptgen,probejet_ptgen);
+      event.set(tt_probejet_etagen,probejet_etagen);
+      event.set(tt_probejet_phigen,probejet_phigen);
+      event.set(tt_probejet_ptptcl,probejet_ptptcl);
+
       event.set(tt_barreljet_statusptcl,barreljet_statusptcl);
       event.set(tt_probejet_statusptcl,probejet_statusptcl);
       event.set(tt_jet3_statusptcl,jet3_statusptcl);
@@ -2330,7 +2330,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       // if(debug) cout<<"barreljet_drminparton = "<<barreljet_drminparton<<endl;
       event.set(tt_probejet_dRminParton,probejet_drminparton);
       event.set(tt_barreljet_dRminParton,barreljet_drminparton);
-      //      if(barreljet_ptgen<0 || probejet_ptgen<0) return false;// TEST store only matched events   
+      //      if(barreljet_ptgen<0 || probejet_ptgen<0) return false;// TEST store only matched events
       //      if(debug) cout<<"NOW WE DONE with FLOATS!"<<endl;
 
       if (debug) cout << "probejet_ptgen = "<<probejet_ptgen<<" barreljet_ptgen = "<<barreljet_ptgen<< " probejet_ptptcl = "<<probejet_ptptcl<<" barreljet_ptptcl = "<<barreljet_ptptcl<<endl;
@@ -2344,8 +2344,8 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       }
       double response_jet1 = -1;
       if(idx_corresponding_genjet != -1) response_jet1 = event.jets->at(0).pt() / event.genjets->at(idx_corresponding_genjet).pt();
-      event.set(tt_response_leadingjet,response_jet1);  
-     
+      event.set(tt_response_leadingjet,response_jet1);
+
       event.set(tt_dR_GenJet_GenParticle_barrel_matched, dR_GenJet_GenParticle_barrel_matched);
       event.set(tt_dR_GenJet_GenParticle_probe_matched, dR_GenJet_GenParticle_probe_matched);
       event.set(tt_dR_jet3_RECO_GEN,dR_jet3_RECO_GEN);
@@ -2385,7 +2385,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       // if(debug){
       // 	for(int i=0; i<4; i++){
       // 	  cout<<" parton # "<<i<<" genJET = "<<idx_parton_genJet[i]<<" recoJET = "<<idx_parton_recoJet[i]<<endl;
-      // 	}      
+      // 	}
       // }
 
       event.set(tt_genjet_n,event.genjets->size());
@@ -2448,20 +2448,20 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 	}
       }
 
-      event.set(tt_flavor3rdjet,-1);   
-      event.set(tt_flavorBarreljet,-1);   
-      event.set(tt_responseBarreljet,-1);   
-      event.set(tt_flavorProbejet,-1);  
-      event.set(tt_responseProbejet,-1);  
-      event.set(tt_flavorLeadingjet,-1);  
-      event.set(tt_flavorSubleadingjet,-1);  
-      event.set(tt_response_leadingjet,-1); 
-      event.set(tt_probejet_ptgen,-1);  
-      event.set(tt_probejet_etagen,-1);  
-      event.set(tt_probejet_phigen,-1);  
-      event.set(tt_probejet_ptptcl,-1);   
-      event.set(tt_barreljet_ptgen,-1);   
-      event.set(tt_barreljet_ptptcl,-1); 
+      event.set(tt_flavor3rdjet,-1);
+      event.set(tt_flavorBarreljet,-1);
+      event.set(tt_responseBarreljet,-1);
+      event.set(tt_flavorProbejet,-1);
+      event.set(tt_responseProbejet,-1);
+      event.set(tt_flavorLeadingjet,-1);
+      event.set(tt_flavorSubleadingjet,-1);
+      event.set(tt_response_leadingjet,-1);
+      event.set(tt_probejet_ptgen,-1);
+      event.set(tt_probejet_etagen,-1);
+      event.set(tt_probejet_phigen,-1);
+      event.set(tt_probejet_ptptcl,-1);
+      event.set(tt_barreljet_ptgen,-1);
+      event.set(tt_barreljet_ptptcl,-1);
       event.set(tt_dR_jet3_RECO_GEN,-1);
       event.set(tt_dR_GenJet_GenParticle_barrel_matched, -1);
       event.set(tt_dR_GenJet_GenParticle_probe_matched, -1);
@@ -2486,22 +2486,22 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
       event.set(tt_genMET,-1);
       // event.set(tt_parton1_genjetID,-1);
       // event.set(tt_parton2_genjetID,-1);
-      // event.set(tt_parton1_jetID,-1);                                                                                                               
-      // event.set(tt_parton2_jetID,-1);                                                                                                               
+      // event.set(tt_parton1_jetID,-1);
+      // event.set(tt_parton2_jetID,-1);
       event.set(tt_probejet_dRminParton,-1);
       event.set(tt_barreljet_dRminParton,-1);
     }
 
 
-    
-   
+
+
     if(debug) {
       cout<<"After full Selection!! Njet="<<jet_n<<endl;
       cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl<<endl;
     }
- 
+
     event.set(tt_dR_jet3_barreljet,dR_jet3_barreljet);
-    event.set(tt_dR_jet3_probejet,dR_jet3_probejet);   
+    event.set(tt_dR_jet3_probejet,dR_jet3_probejet);
     event.set(tt_ev_weight,event.weight);
     if(debug) cout<<"THIS IS THE END"<<endl;
     //    if(debug) cout<<"parton - GEN jet "<<event.get(tt_parton1_genjetID)<<" "<<event.get(tt_parton2_genjetID)<<" parton - RECO jet "<<event.get(tt_parton1_jetID)<<" "<<event.get(tt_parton2_jetID)<<endl;

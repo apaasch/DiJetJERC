@@ -1,5 +1,5 @@
-#include "UHH2/BaconJets/include/JECAnalysisPUjetsHists.h"
-#include "UHH2/BaconJets/include/constants.h"
+#include "UHH2/DiJetJERC/include/JECAnalysisPUjetsHists.h"
+#include "UHH2/DiJetJERC/include/constants.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/Jet.h"
 #include "UHH2/common/include/Utils.h"
@@ -26,8 +26,8 @@ JECAnalysisPUjetsHists::JECAnalysisPUjetsHists(Context & ctx, const string & dir
     // jets
     TH1::SetDefaultSumw2();
 
-    double eta_bins[n_eta_RelVals];                                                                                                                                           
-    for(int i=0; i<n_eta_RelVals; i++) eta_bins[i] = eta_range_RelVals[i];  
+    double eta_bins[n_eta_RelVals];
+    for(int i=0; i<n_eta_RelVals; i++) eta_bins[i] = eta_range_RelVals[i];
     book<TH2D>("Jet_eta_pt", "Jet_eta_pt;RECO jet #eta; jet pt", n_eta_RelVals-1, eta_bins, 100,0,1000);
 
     book<TH1F>("nPu","Number of PU events",100,0,100);
@@ -121,43 +121,43 @@ void JECAnalysisPUjetsHists::fill(const uhh2::Event & ev, const int reco_jet_id)
   ((TH2D*)hist("Jet_PU_id_chHAD"))->Fill(probe_jet_pileupID,probe_jet_chHAD,weight);
   ((TH2D*)hist("Jet_PU_id_neuHAD"))->Fill(probe_jet_pileupID,probe_jet_neutHAD,weight);
 
-  hist("PU_id")->Fill(probe_jet_pileupID, weight); 
+  hist("PU_id")->Fill(probe_jet_pileupID, weight);
   hist("nPu")->Fill(ev.get(tt_nPU), weight);
   hist("N_PV")->Fill(ev.get(tt_nvertices), weight);
 
-  if(probe_jet_eta<1.3){ 
-    hist("PU_id_BB1")->Fill(probe_jet_pileupID, weight); 
+  if(probe_jet_eta<1.3){
+    hist("PU_id_BB1")->Fill(probe_jet_pileupID, weight);
     ((TH2D*)hist("Jet_PU_id_chEM_BB1"))->Fill(probe_jet_pileupID,probe_jet_chEM,weight);
     ((TH2D*)hist("Jet_PU_id_neuEM_BB1"))->Fill(probe_jet_pileupID,probe_jet_neutEM,weight);
     ((TH2D*)hist("Jet_PU_id_chHAD_BB1"))->Fill(probe_jet_pileupID,probe_jet_chHAD,weight);
     ((TH2D*)hist("Jet_PU_id_neuHAD_BB1"))->Fill(probe_jet_pileupID,probe_jet_neutHAD,weight);
-    //    if(fabs(probe_jet_pileupID)>1) 
+    //    if(fabs(probe_jet_pileupID)>1)
     // if(probe_jet_neutEM>0.8)
     //   cout<<"probe_jet_pileupID, chEm, neuEm = "<<probe_jet_pileupID<<", "<<probe_jet_chEM<<" "<<probe_jet_neutEM<<" chHad, neutHad = "<<probe_jet_chHAD<<", "<<probe_jet_neutHAD<<" weight = "<<weight<<" chargedMultiplicity() = "<<probe_jet.chargedMultiplicity()<<", PF sum = "<<probe_jet_chEM+probe_jet_neutEM+probe_jet_chHAD+probe_jet_neutHAD<<endl;
   }
-  if(probe_jet_eta>1.3 && probe_jet_eta<2.1){ 
-    hist("PU_id_BB2")->Fill(probe_jet_pileupID, weight); 
+  if(probe_jet_eta>1.3 && probe_jet_eta<2.1){
+    hist("PU_id_BB2")->Fill(probe_jet_pileupID, weight);
     ((TH2D*)hist("Jet_PU_id_chEM_BB2"))->Fill(probe_jet_pileupID,probe_jet_chEM,weight);
     ((TH2D*)hist("Jet_PU_id_neuEM_BB2"))->Fill(probe_jet_pileupID,probe_jet_neutEM,weight);
     ((TH2D*)hist("Jet_PU_id_chHAD_BB2"))->Fill(probe_jet_pileupID,probe_jet_chHAD,weight);
     ((TH2D*)hist("Jet_PU_id_neuHAD_BB2"))->Fill(probe_jet_pileupID,probe_jet_neutHAD,weight);
   }
-  if(probe_jet_eta>2.1 && probe_jet_eta<2.5){ 
-    hist("PU_id_EC1")->Fill(probe_jet_pileupID, weight); 
+  if(probe_jet_eta>2.1 && probe_jet_eta<2.5){
+    hist("PU_id_EC1")->Fill(probe_jet_pileupID, weight);
     ((TH2D*)hist("Jet_PU_id_chEM_EC1"))->Fill(probe_jet_pileupID,probe_jet_chEM,weight);
     ((TH2D*)hist("Jet_PU_id_neuEM_EC1"))->Fill(probe_jet_pileupID,probe_jet_neutEM,weight);
     ((TH2D*)hist("Jet_PU_id_chHAD_EC1"))->Fill(probe_jet_pileupID,probe_jet_chHAD,weight);
     ((TH2D*)hist("Jet_PU_id_neuHAD_EC1"))->Fill(probe_jet_pileupID,probe_jet_neutHAD,weight);
   }
-  if(probe_jet_eta>2.5 && probe_jet_eta<3.0){ 
-    hist("PU_id_EC2")->Fill(probe_jet_pileupID, weight); 
+  if(probe_jet_eta>2.5 && probe_jet_eta<3.0){
+    hist("PU_id_EC2")->Fill(probe_jet_pileupID, weight);
     ((TH2D*)hist("Jet_PU_id_chEM_EC2"))->Fill(probe_jet_pileupID,probe_jet_chEM,weight);
     ((TH2D*)hist("Jet_PU_id_neuEM_EC2"))->Fill(probe_jet_pileupID,probe_jet_neutEM,weight);
     ((TH2D*)hist("Jet_PU_id_chHAD_EC2"))->Fill(probe_jet_pileupID,probe_jet_chHAD,weight);
     ((TH2D*)hist("Jet_PU_id_neuHAD_EC2"))->Fill(probe_jet_pileupID,probe_jet_neutHAD,weight);
   }
-  if(probe_jet_eta>3.0){ 
-    hist("PU_id_HF")->Fill(probe_jet_pileupID, weight); 
+  if(probe_jet_eta>3.0){
+    hist("PU_id_HF")->Fill(probe_jet_pileupID, weight);
     ((TH2D*)hist("Jet_PU_id_chEM_HF"))->Fill(probe_jet_pileupID,probe_jet_chEM,weight);
     ((TH2D*)hist("Jet_PU_id_neuEM_HF"))->Fill(probe_jet_pileupID,probe_jet_neutEM,weight);
     ((TH2D*)hist("Jet_PU_id_chHAD_HF"))->Fill(probe_jet_pileupID,probe_jet_chHAD,weight);

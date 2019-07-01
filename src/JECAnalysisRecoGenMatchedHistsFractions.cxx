@@ -1,6 +1,6 @@
 
-#include "UHH2/BaconJets/include/JECAnalysisRecoGenMatchedHistsFractions.h"
-#include "UHH2/BaconJets/include/constants.h"
+#include "UHH2/DiJetJERC/include/JECAnalysisRecoGenMatchedHistsFractions.h"
+#include "UHH2/DiJetJERC/include/constants.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/Jet.h"
 #include "UHH2/common/include/Utils.h"
@@ -22,8 +22,8 @@ JECAnalysisRecoGenMatchedHistsFractions::JECAnalysisRecoGenMatchedHistsFractions
     // jets
     TH1::SetDefaultSumw2();
 
-    double eta_bins[n_eta_RelVals];                                                                                                                                           
-    for(int i=0; i<n_eta_RelVals; i++) eta_bins[i] = eta_range_RelVals[i];  
+    double eta_bins[n_eta_RelVals];
+    for(int i=0; i<n_eta_RelVals; i++) eta_bins[i] = eta_range_RelVals[i];
     const int fr_vec_nr_pf = 110;
     double frac_vec_pf[fr_vec_nr_pf];
     for(int i=0;i<fr_vec_nr_pf;i++){
@@ -57,7 +57,7 @@ JECAnalysisRecoGenMatchedHistsFractions::JECAnalysisRecoGenMatchedHistsFractions
 
     const int pf_label_nr_had = 7;
     double pf_label_had[pf_label_nr_had];
-    for(int i=0;i<pf_label_nr_had;i++) pf_label_had[i] = i;   
+    for(int i=0;i<pf_label_nr_had;i++) pf_label_had[i] = i;
     book<TH3D>("PF_to_HAD_event_eta", "PF_to_HAD_event_eta;RECO jet #eta;PF jet fraction/Hadron jet fraction;", n_eta_RelVals-1, eta_bins, fr_vec_nr-1, frac_vec, pf_label_nr_had-1,pf_label_had);
 
     ((TH3D*)hist("PF_to_HAD_event_eta"))->GetZaxis()->SetBinLabel(1,"(chEM+chHAD)/(GEN charged)");

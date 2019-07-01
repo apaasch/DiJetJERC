@@ -1,13 +1,13 @@
 from utils import *
 
 @timeit
-def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], JECVersions_Data=["Autumn18_V4"], JECVersions_MC=["Autumn18_V4"], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False):
+def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], JECVersions_Data=["Autumn18_V4"], JECVersions_MC=["Autumn18_V4"], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False,extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
     print add_name
     check_dir = add_name!="" or isMB or test_trigger or isThreshold or isLowPt or isL1Seed
     for index_JEC, newJECVersion in enumerate(JECVersions_Data):
         for newJetLabel in JetLabels:
-            add_path = newJECVersion+"/"+newJetLabel+"/"
+            add_path = newJECVersion+"/"+newJetLabel+extratext+"/"
             path = original_dir+add_path
             if not os.path.exists(path):
                 os.makedirs(path)

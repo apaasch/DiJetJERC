@@ -11,7 +11,6 @@
 #include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
-//#include "UHH2/BaconTrans/baconheaders/TEventInfo.hh"
 
 namespace uhh2bacon {
 
@@ -20,10 +19,10 @@ namespace uhh2bacon {
     int lumiblock;
     long long event;
   };
-  
-class Selection {
 
-    private:
+  class Selection {
+
+  private:
     uhh2::Context& context;
     uhh2::Event* event;
 
@@ -49,47 +48,47 @@ class Selection {
     TFile* cut_map;
     TH2D* h_map;
 
-  bool diJetTrg;
-  bool central;
-  bool fwd;
-  
-  bool no_genp;
-  
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger40;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger60;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger80;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger140;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger200;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger260;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger320;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger400;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger450;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger500;
-  
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger60_HF;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger80_HF;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger100_HF;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger160_HF;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger220_HF;
-  uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger300_HF;
-  
-  uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
-  
-    public:
+    bool diJetTrg;
+    bool central;
+    bool fwd;
+
+    bool no_genp;
+
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger40;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger60;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger80;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger140;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger200;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger260;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger320;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger400;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger450;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger500;
+
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger60_HF;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger80_HF;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger100_HF;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger160_HF;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger220_HF;
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger300_HF;
+
+    uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
+
+  public:
     Selection(uhh2::Context & ctx);
     ~Selection();
 
     void SetEvent(uhh2::Event& evt);
 
-  // bool Trigger(uhh2::Event& evt);
+    // bool Trigger(uhh2::Event& evt);
     bool PtMC(); //apply lowest Pt cut on MC
     bool PtMC(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return PtMC();} //apply lowest Pt cut on MC
 
-  bool DiJet();
-  
+    bool DiJet();
+
     bool DiJetAdvanced();
     bool DiJetAdvanced(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return DiJetAdvanced();}
-  
+
     int goodPVertex();
     bool triggerFired(float bin1, float bin2);
 
@@ -104,27 +103,27 @@ class Selection {
 
     bool EtaPtCut();
     bool EtaPtCut(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return EtaPtCut();}
-  
+
     bool EtaPhi();
     bool EtaPhi(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return EtaPhi();}
-  
+
     bool EtaPhiCleaning();
     bool EtaPhiCleaning(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return EtaPhiCleaning();}
-  
+
     bool ChEMFrakCut();
     bool ChEMFrakCut(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return ChEMFrakCut();}
-  
+
     //jetmatching, find the jet in the event that corresponds to the jetid-th jet in the trigger object of the trigger with threshold trigger_th
     //returns -1 if the triggerobject does not contain less than jetid jets
     //returns -2 if no jet is matched within dR
     int FindMatchingJet(unsigned int jetid, unsigned int trigger_th, bool use_fwd = false);
 
-  bool L1JetBXclean(Jet& jet, bool usePtRatioFilter = false);
-  bool L1JetBXcleanFull();
-  bool L1JetBXcleanSmart();
-  
-  bool Unprefirable(std::vector<run_lumi_ev> rlsev);
-  
-};
+    bool L1JetBXclean(Jet& jet, bool usePtRatioFilter = false);
+    bool L1JetBXcleanFull();
+    bool L1JetBXcleanSmart();
+
+    bool Unprefirable(std::vector<run_lumi_ev> rlsev);
+
+  };
 
 }
