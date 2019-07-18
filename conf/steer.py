@@ -126,22 +126,7 @@ else:
 QCD_process= []
 QCD_process.append("QCD_Flat2018")
 QCD_process.append("QCD_Flat")
-# QCD_process.append("QCDPt15to30")
-# QCD_process.append("QCDPt30to50")
-# QCD_process.append("QCDPt50to80")
-# QCD_process.append("QCDPt80to120")
-# QCD_process.append("QCDPt120to170")
-# QCD_process.append("QCDPt170to300")
-# QCD_process.append("QCDPt300to470")
-# QCD_process.append("QCDPt470to600")
-# QCD_process.append("QCDPt600to800")
-# QCD_process.append("QCDPt800to1000")
-# QCD_process.append("QCDPt1000to1400")
-# QCD_process.append("QCDPt1400to1800")
-# QCD_process.append("QCDPt1800to2400")
-# QCD_process.append("QCDPt2400to3200")
-# QCD_process.append("QCDPt3200toInf")
-#
+
 QCD_process.append("QCDHT50to100")
 QCD_process.append("QCDHT100to200")
 QCD_process.append("QCDHT200to300")
@@ -151,7 +136,6 @@ QCD_process.append("QCDHT700to1000")
 QCD_process.append("QCDHT1000to1500")
 QCD_process.append("QCDHT1500to2000")
 QCD_process.append("QCDHT2000toInf")
-
 
 Data_process= []
 Data_process.append("DATA_RunA_2018")
@@ -170,11 +154,12 @@ original_file = "DiJetJERC_DiJetHLT.xml"
 outdir = "DiJetJERC_DiJetHLT"
 original_dir_ = os.getcwd()
 
-JECVersions_Data = ["Autumn18_V13h"]
-JECVersions_MC = ["Autumn18_V13h"]
+JECVersions_Data = ["Autumn18_V15"]
+JECVersions_MC = ["Autumn18_V15"]
 JetLabels = ["AK4CHS"]
-# systematics = ["", "PU", "JEC", "JER"]
-systematics = [""]
+systematics = ["", "PU", "JEC", "JER"]
+systematics = ["", "PU", "JEC"]
+#systematics = [""]
 
 isLowPt = False
 isMB = False

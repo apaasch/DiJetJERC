@@ -12,7 +12,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 
-namespace uhh2bacon {
+namespace uhh2DiJetJERC {
 
   struct run_lumi_ev {
     int run;
@@ -40,7 +40,7 @@ namespace uhh2bacon {
     uhh2::Event::Handle<float> tt_barreljet_eta;  uhh2::Event::Handle<float> tt_barreljet_phi; uhh2::Event::Handle<float> tt_barreljet_pt; uhh2::Event::Handle<float> tt_barreljet_ptRaw;
     uhh2::Event::Handle<float> tt_pt_ave;
     uhh2::Event::Handle<float> tt_alpha;
-    uhh2::Event::Handle<float> tt_rel_r; uhh2::Event::Handle<float> tt_mpf_r; uhh2::Event::Handle<float> tt_asymmetry; uhh2::Event::Handle<int> tt_nPU;
+    uhh2::Event::Handle<float> tt_rel_r; uhh2::Event::Handle<float> tt_mpf_r; uhh2::Event::Handle<float> tt_asymmetry; uhh2::Event::Handle<float> tt_nPU;
 
     TString Cut_Dir;
     TString dataset_version;
@@ -85,33 +85,23 @@ namespace uhh2bacon {
     bool PtMC(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return PtMC();} //apply lowest Pt cut on MC
 
     bool DiJet();
-
     bool DiJetAdvanced();
-    bool DiJetAdvanced(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return DiJetAdvanced();}
-
-    int goodPVertex();
-    bool triggerFired(float bin1, float bin2);
 
     //  bool FullSelection();
     //Cut events with pthat in PU higher than pthat
     bool PUpthat();
-    bool PUpthat(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return PUpthat();}
     bool PtaveVsQScale(double cutValue=2.);
-    bool PtaveVsQScale(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return PUpthat();}
 
     bool EnergyEtaCut();// cut away events with jets containing energy more than sqrt(s)/2
 
     bool EtaPtCut();
-    bool EtaPtCut(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return EtaPtCut();}
-
-    bool EtaPhi();
-    bool EtaPhi(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return EtaPhi();}
-
+    // bool EtaPhi();
     bool EtaPhiCleaning();
-    bool EtaPhiCleaning(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return EtaPhiCleaning();}
-
     bool ChEMFrakCut();
-    bool ChEMFrakCut(uhh2::Event& evt){std::cerr<<"selection.C: The event in the argument is not needed! The private event variable will be used anyways.\n"; return ChEMFrakCut();}
+    bool ApplyHotMap();
+
+    int goodPVertex();
+    bool triggerFired(float bin1, float bin2);
 
     //jetmatching, find the jet in the event that corresponds to the jetid-th jet in the trigger object of the trigger with threshold trigger_th
     //returns -1 if the triggerobject does not contain less than jetid jets

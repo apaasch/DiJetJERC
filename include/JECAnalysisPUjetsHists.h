@@ -24,5 +24,5 @@ public:
 
 private:
   uhh2::Event::Handle<int> tt_nvertices;
-  uhh2::Event::Handle<int> tt_nPU;
+  uhh2::Event::Handle<float> tt_nPU;
 };

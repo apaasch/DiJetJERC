@@ -89,8 +89,6 @@ JECAnalysisHists::JECAnalysisHists(Context & ctx, const string & dirname): Hists
   tt_jet1_ptRaw = ctx.get_handle<float>("jet1_ptRaw");
   tt_jet2_ptRaw = ctx.get_handle<float>("jet2_ptRaw");
   tt_jet3_ptRaw = ctx.get_handle<float>("jet3_ptRaw");
-  tt_jet1_pt_onoff_Resp = ctx.get_handle<float>("jet1_pt_onoff_Resp");
-  tt_jet2_pt_onoff_Resp = ctx.get_handle<float>("jet2_pt_onoff_Resp");
   tt_nvertices = ctx.get_handle<int>("nvertices");
   tt_probejet_eta = ctx.get_handle<float>("probejet_eta");
   tt_probejet_phi = ctx.get_handle<float>("probejet_phi");
@@ -106,7 +104,7 @@ JECAnalysisHists::JECAnalysisHists(Context & ctx, const string & dirname): Hists
   tt_rel_r = ctx.get_handle<float>("rel_r");
   tt_mpf_r = ctx.get_handle<float>("mpf_r");
   tt_asymmetry = ctx.get_handle<float>("asymmetry");
-  tt_nPU = ctx.get_handle<int>("nPU");
+  tt_nPU = ctx.get_handle<float>("nPU");
   tt_matchJetId_0 =ctx.get_handle<int>("matchJetId_0");
   tt_matchJetId_1 =ctx.get_handle<int>("matchJetId_1");
 }
@@ -143,9 +141,6 @@ void JECAnalysisHists::fill(const uhh2::Event & ev, const int rand){
     hist("eta")->Fill(jets->eta(), weight);
     hist("eta_binned")->Fill(jets->eta(), weight);
     hist("phi")->Fill(jets->phi(), weight);
-
-    hist("pt_1_onoff_Resp")->Fill(ev.get(tt_jet1_pt_onoff_Resp), weight);
-    hist("pt_2_onoff_Resp")->Fill(ev.get(tt_jet2_pt_onoff_Resp), weight);
 
     hist("MET")->Fill(ev.met->pt(), weight);
     hist("rawchsMET")->Fill(hypot(ev.met->rawCHS_px(),ev.met->rawCHS_py()), weight);

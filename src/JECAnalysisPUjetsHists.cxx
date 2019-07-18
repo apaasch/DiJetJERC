@@ -33,7 +33,7 @@ JECAnalysisPUjetsHists::JECAnalysisPUjetsHists(Context & ctx, const string & dir
     book<TH1F>("nPu","Number of PU events",100,0,100);
     book<TH1F>("N_PV","Number of PVtx",100,0,100);
 
-    tt_nPU = ctx.get_handle<int>("nPU");
+    tt_nPU = ctx.get_handle<float>("nPU");
     tt_nvertices = ctx.get_handle<int>("nvertices");
 
     book<TH1F>("PU_id","PU id discrimintant",120,-1.1,1.1);

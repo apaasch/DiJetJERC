@@ -10,6 +10,8 @@ core/python/__init__.py
 **/*.png
 *~
 *.local
+**/file/**
+**/lists/**
 **/*.pyc
 
 **jobTempOutput_**/**

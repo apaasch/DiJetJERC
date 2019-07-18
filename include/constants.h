@@ -14,6 +14,20 @@ constexpr static double s_delta_phi = 2.7;
 constexpr static double jet_threshold      = 15;
 constexpr static double jet_threshold_min  = 10;
 
+const int n_eta_bins_JER = 15;
+const double eta_bins_JER[n_eta_bins_JER] = { 0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.650, 2.853, 2.964, 3.139, 5.191 };
+
+const int n_pt_bins_Di_HF = 6;
+const double pt_bins_Di_HF[n_pt_bins_Di_HF] = { 93, 116, 141, 210, 278, 378 };
+
+const int n_pt_bins_Di = 9;
+const double pt_bins_Di[n_pt_bins_Di]         = { 66, 92, 118, 188, 257, 325, 391, 477, 585};
+
+const int n_pt_bins_Di_ext = 13;
+const double pt_bins_Di_ext[n_pt_bins_Di_ext] = { 66, 92, 118, 188, 257, 291, 325, 358, 391, 434, 477, 531, 585};
+
+constexpr static double s_delta_R   = 0.3;
+
 //Eta bins:
 //Abs eta range:
 const int n_eta = 19;
@@ -124,7 +138,7 @@ const TString eta_common_range_2[n_eta_common_2] = {
   /** \brief The trigger thresholds of pt_ave **/
 
   constexpr static int n_pt_bins = 9;
-  constexpr static float Pt_AveMC_cut   =  51;
+  constexpr static float Pt_AveMC_cut = 51; // TODO to generalise for years
 
  //from Di triggers 94X 17Nov2017
   constexpr static float d_Pt_Ave40_cut_2017   =  73;

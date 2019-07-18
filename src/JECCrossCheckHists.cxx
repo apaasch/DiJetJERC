@@ -34,9 +34,7 @@ JECCrossCheckHists::JECCrossCheckHists(Context & ctx, const string & dirname): H
     book<TH1F>("pt","p_{T} all jets; p_{T} (GeV)",100,0,1500);
     book<TH1F>("pt_modT1METjets","p_{T} all jets in 2.650<#eta<3.139; p_{T} (GeV)",100,0,1500);
     book<TH1F>("eta","#eta all jets; #eta",100,-5,5);
-    double eta_bins_[n_eta];
-    for(int i=0; i<n_eta; i++) eta_bins_[i] = eta_bins[i];
-    book<TH1F>("eta_binned","|#eta| all jets; |#eta|",n_eta-1, eta_bins_);
+    book<TH1F>("eta_binned","|#eta| all jets; |#eta|",n_eta-1, eta_bins);
     book<TH1F>("phi","#phi all jets; #phi",50,-M_PI,M_PI);
 
     book<TH1F>("MET","PF MET; PF MET",1000,0,1000);
@@ -79,9 +77,10 @@ void JECCrossCheckHists::fill(const uhh2::Event & ev, const int rand){
   double weight = ev.weight;
   const int njets = ev.jets->size();
   hist("N_jets")->Fill(njets, weight);
-   if(!ev.isRealData && !no_genp){
-  // if(!ev.isRealData){
-    double pt_hat = ev.genInfo->binningValues()[0];
+   // if(!ev.isRealData && !no_genp){
+  if(!ev.isRealData){
+    // double pt_hat = ev.genInfo->binningValues()[0];
+    double pt_hat = ev.genInfo->qScale();
     double PU_pt_hat = ev.genInfo->PU_pT_hat_max();
     hist("pt_hat")->Fill(pt_hat,weight);
     hist("PU_pt_hat")->Fill(PU_pt_hat, weight);

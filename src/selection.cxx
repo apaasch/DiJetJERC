@@ -19,7 +19,7 @@
 #include <stdexcept>
 
 using namespace std;
-namespace uhh2bacon {
+namespace uhh2DiJetJERC {
 
   Selection::Selection(uhh2::Context & ctx) : context(ctx), event(0) {
 
@@ -46,7 +46,7 @@ namespace uhh2bacon {
     tt_rel_r = ctx.declare_event_output<float>("rel_r");
     tt_mpf_r = ctx.declare_event_output<float>("mpf_r");
     tt_asymmetry = ctx.declare_event_output<float>("asymmetry");
-    tt_nPU = ctx.declare_event_output<int>("nPU");
+    tt_nPU = ctx.declare_event_output<float>("nPU");
     tt_probejet_chEmEF = ctx.declare_event_output<float>("probejet_chEmEF");
 
     dataset_version = ctx.get("dataset_version");
@@ -136,91 +136,7 @@ namespace uhh2bacon {
 
   bool Selection::PtMC() {
     assert(event);
-
-    //  std::cout<<"evt.get(tt_pt_ave) = "<<evt.get(tt_pt_ave)<<" s_Pt_Ave40_cut = "<<s_Pt_Ave40_cut<<std::endl;
-    if (event->get(tt_pt_ave) < Pt_AveMC_cut)
-    return false;
-    return true;
-  }
-
-
-  int Selection::FindMatchingJet(unsigned int jetid, unsigned int trigger_th, bool use_fwd){
-    assert(event);
-
-    float dR_min=0.2;
-
-    float eta = 1000;
-    float phi = 1000;
-
-    //DEBUG
-    // cout<<"DEBUG in Selection::FindMatchingJet"<<endl;
-
-    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_sw;
-
-    // if(use_fwd){
-    //   switch(trigger_th){
-    //   case 60: handle_sw = handle_trigger60_HF;
-    // 	break;
-    //   case 80: handle_sw = handle_trigger80_HF;
-    // 	break;
-    //   case 100: handle_sw = handle_trigger100_HF;
-    // 	break;
-    //   case 160: handle_sw = handle_trigger160_HF;
-    // 	break;
-    //   case 220: handle_sw = handle_trigger220_HF;
-    // 	break;
-    //   case 300: handle_sw = handle_trigger300_HF;
-    // 	break;
-    //   }
-    // }
-    // else{
-    // switch(trigger_th){
-    // case 40: handle_sw = handle_trigger40;
-    //   break;
-    // case 60: handle_sw = handle_trigger60;
-    //   break;
-    // case 80: handle_sw = handle_trigger80;
-    //   break;
-    // case 140: handle_sw = handle_trigger140;
-    //   break;
-    // case 200: handle_sw = handle_trigger200;
-    //   break;
-    // case 260: handle_sw = handle_trigger260;
-    //   break;
-    // case 320: handle_sw = handle_trigger320;
-    //   break;
-    // case 450: handle_sw = handle_trigger450;
-    //   break;
-    // case 400: handle_sw = handle_trigger400;
-    //   break;
-    // case 500: handle_sw = handle_trigger500;
-    //   break;
-    // }
-    // }
-    //DEBUG
-    // cout<<"Selection::FindMatchingJet after switch, jet id: "<<jetid<<" th: "<<trigger_th<<endl;
-
-    if(jetid >= event->get(handle_sw).size()){
-      return -1;
-    }
-
-    const unsigned int njets = event->jets->size();
-    unsigned int jetid_new = -2;
-
-    float dR = 1000.;
-    float dR_min_ = dR_min;
-    for(unsigned int i = 0 ; i < njets ; i++){
-      dR = uhh2::deltaR(event->jets->at(i), event->get(handle_sw).at(jetid));
-      if(dR < dR_min_){
-        dR_min_ = dR;
-        jetid_new = i;
-      }
-    }
-
-    //DEBUG
-    // cout<<jetid_new<<"  "<<dR<<endl;
-
-    return jetid_new;
+    return (event->get(tt_pt_ave) > Pt_AveMC_cut);
   }
 
   bool Selection::DiJet() {
@@ -247,48 +163,14 @@ namespace uhh2bacon {
     no_genp=true; //FIXME needed for madgraph, should already be set globally, no idea why it does not work...
 
     //(pTgen1 < 1.5*pThat || pTreco1 < 1.5* pTgen1)
-    if(!event->isRealData && !no_genp){
+    // if(!event->isRealData && !no_genp){
+    if(!event->isRealData){
       if(event->genjets->size() < 1) return false;
-
-
-
-
-      if(!(event->genjets->at(0).pt() < 1.5*event->genInfo->binningValues()[0] || event->jets->at(0).pt() < 1.5*event->genjets->at(0).pt())) return false;
+      // if(!(event->genjets->at(0).pt() < 1.5*event->genInfo->binningValues()[0] || event->jets->at(0).pt() < 1.5*event->genjets->at(0).pt())) return false; //FIXME
+      if(!(event->genjets->at(0).pt() < 1.5*event->genInfo->qScale() || event->jets->at(0).pt() < 1.5*event->genjets->at(0).pt())) return false;
     }
     return true;
   }
-
-  int Selection::goodPVertex() {
-    assert(event);
-    Int_t nvertices = event->pvs->size();
-    // require in the event that there is at least one reconstructed vertex
-    if(nvertices<=0) return 0;//false;
-    float nPrVer = 0;
-    // pick the first (i.e. highest sum pt) verte
-    for (int i=0; i<nvertices; i++){
-      PrimaryVertex* vertices = &event->pvs->at(i);
-      // require that the vertex meets certain criteria
-      //if(vertices->nTracksFit)
-      //std::cout<<" vertices->nTracksFit = "<<vertices->nTracksFit<<" "<<fabs(vertices->z)<<" cut at "<<s_n_PvTracks<<std::endl;
-      //        if((vertices->nTracksFit > s_n_PvTracks) && (fabs(vertices->z) < s_n_Pv_z) && (fabs(vertices->y) < s_n_Pv_xy) && (fabs(vertices->x) < s_n_Pv_xy)){
-      //SHOULD BE LIKE
-      //cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2.")
-      // std::cout<<fabs(vertices->z())<<" "<<fabs(vertices->rho())<<" "<<vertices->ndof()<<" "<<vertices->chi2()<<" "<<std::endl;
-      if((fabs(vertices->z()) < 24.) && (fabs(vertices->rho()) < 2.) && (vertices->ndof() >= 4)
-      && (vertices->chi2()) > 0){
-        nPrVer++;
-      }
-    }
-    return nPrVer;
-    //    std::cout<<" nPrVer = "<<nPrVer<<" all vtxs = "<<nvertices<<std::endl;
-    //    event->set(tt_nGoodvertices,nPrVer);
-    // goodVtx = nPrVer;
-    // if(nPrVer<=0) return false;
-    // else
-    //   return true;
-  }
-
-
 
   bool Selection::PUpthat() {
     assert(event);
@@ -297,11 +179,8 @@ namespace uhh2bacon {
 
     double  gen_pthat = event->genInfo->qScale();
     double  PU_pt_hat = event->genInfo->PU_pT_hat_max();
-    double Ratio = PU_pt_hat/gen_pthat;
+    return (PU_pt_hat/gen_pthat)<1;
 
-    if(Ratio < 1) return true;
-
-    return false;
   }
 
   bool Selection::PtaveVsQScale(double cutValue) {
@@ -311,27 +190,9 @@ namespace uhh2bacon {
 
     double  pt_hat = event->genInfo->qScale();
     double ptave = event->get(tt_pt_ave);
-
-    double Ratio = ptave/pt_hat;
-
-
-    if(Ratio < cutValue) return true;
+    return (ptave/pt_hat)<cutValue;
 
     return false;
-  }
-
-  bool Selection::EtaPtCut()
-  {
-    assert(event);
-
-    double probejet_eta = event->get(tt_probejet_eta);
-    double ptave = event->get(tt_pt_ave);
-
-    if( fabs(probejet_eta)>2.500 && fabs(probejet_eta)<3.139 && ptave > 370 ){
-      return false;
-    }
-
-    return true;
   }
 
   bool Selection::EnergyEtaCut() {
@@ -344,76 +205,26 @@ namespace uhh2bacon {
     return true;
   }
 
-  bool Selection::ChEMFrakCut() {
+  bool Selection::EtaPhiCleaning() {
     assert(event);
+    if (dataset_version.Contains("RunC") || dataset_version.Contains("RunD")) {
 
-    double probejet_eta = event->get(tt_probejet_eta);
-    double chEM = event->get(tt_probejet_chEmEF);
-
-    if( fabs(probejet_eta)>2.650 && fabs(probejet_eta)<2.853 && chEM > 0.1 ){
-      return false;
-    }
-
-    return true;
-  }
-
-  bool Selection::EtaPhi() {
-    assert(event);
-
-    double EtaPhi_regions[8][4]={{2.853, 2.964, 0.6, 1.},
-    {-2.964,-2.853, 0.6, 1.},
-    {2.853, 2.964, 2.2, 2.6},
-    {-2.964,-2.853, 2.2, 2.6},
-    {2.853, 2.964, -2.8, -2.2},
-    {-2.964,-2.853, -2.8, -2.2},
-    {-2.964,-2.853, 2.9, 3.1},
-    {2.853, 2.964, 2.9, 3.1}};
-
-    double probejet_eta = event->get(tt_probejet_eta);
-    double probejet_phi = event->get(tt_probejet_phi);
-
-    for(int i=0; i<8; i++){
-      if(probejet_eta > EtaPhi_regions[i][0] && probejet_eta < EtaPhi_regions[i][1] && probejet_phi > EtaPhi_regions[i][2] && probejet_phi < EtaPhi_regions[i][3]){
-        //	cout<<"Event rejected!"<<endl<<endl;
-        return false;
+      // None of the first 3 jets should be in that region.
+      for (size_t i = 0; i < 3; i++) {
+        if (event->jets->size()<i+1) continue;
+        if (-2.964 < event->jets->at(i).eta() && event->jets->at(i).eta() < -1.305 && -1.6 < event->jets->at(i).phi() && event->jets->at(i).phi() < -0.7) return false;
       }
     }
     return true;
+
   }
 
 
-
-  bool Selection::EtaPhiCleaning() {
+  bool Selection::ApplyHotMap() {
     assert(event);
-
-    int n_bins_x = h_map->GetNbinsX();
-    int n_bins_y = h_map->GetNbinsY();
-
-
-    double xMin = h_map->GetXaxis()->GetXmin();
-    double xWidth = h_map->GetXaxis()->GetBinWidth(1);
-
-
-    double yMin = h_map->GetYaxis()->GetXmin();
-    double yWidth = h_map->GetYaxis()->GetBinWidth(1);
-    double cutValue=0;
-
-    const int njets = event->jets->size();
-
-    for(int i=0; i < njets; i++){
-      int idx_x = 0;
-      int idx_y = 0;
-      Jet* jet = &event->jets->at(i);// loop over all jets in event
-
-      while(jet->eta() > xMin+xWidth + idx_x * xWidth) idx_x++;
-      while(jet->phi() > yMin+yWidth + idx_y * yWidth) idx_y++;
-
-      cutValue = h_map->GetBinContent(idx_x+1, idx_y+1);
-
-      if(cutValue > 0) break;
+    for(auto jet: *event->jets) {
+      if(h_map->GetBinContent(h_map->GetXaxis()->FindBin(jet.eta()), h_map->GetYaxis()->FindBin(jet.phi())) > 0) return false;
     }
-
-    if(cutValue > 0) return false;
     return true;
   }
 
@@ -498,9 +309,202 @@ namespace uhh2bacon {
     return _return;
   }
 
-  Selection::~Selection()
-  {
+  Selection::~Selection() { }
+
+
+  int Selection::goodPVertex() {
+    assert(event);
+    Int_t nvertices = event->pvs->size();
+    // require in the event that there is at least one reconstructed vertex
+    if(nvertices<=0) return 0;//false;
+    float nPrVer = 0;
+    // pick the first (i.e. highest sum pt) verte
+    for (int i=0; i<nvertices; i++){
+      PrimaryVertex* vertices = &event->pvs->at(i);
+      // require that the vertex meets certain criteria
+      //if(vertices->nTracksFit)
+      //std::cout<<" vertices->nTracksFit = "<<vertices->nTracksFit<<" "<<fabs(vertices->z)<<" cut at "<<s_n_PvTracks<<std::endl;
+      //        if((vertices->nTracksFit > s_n_PvTracks) && (fabs(vertices->z) < s_n_Pv_z) && (fabs(vertices->y) < s_n_Pv_xy) && (fabs(vertices->x) < s_n_Pv_xy)){
+      //SHOULD BE LIKE
+      //cms.string("isValid & ndof >= 4 & chi2 > 0 & tracksSize > 0 & abs(z) < 24 & abs(position.Rho) < 2.")
+      // std::cout<<fabs(vertices->z())<<" "<<fabs(vertices->rho())<<" "<<vertices->ndof()<<" "<<vertices->chi2()<<" "<<std::endl;
+      if((fabs(vertices->z()) < 24.) && (fabs(vertices->rho()) < 2.) && (vertices->ndof() >= 4)
+      && (vertices->chi2()) > 0){
+        nPrVer++;
+      }
+    }
+    return nPrVer;
+    //    std::cout<<" nPrVer = "<<nPrVer<<" all vtxs = "<<nvertices<<std::endl;
+    //    event->set(tt_nGoodvertices,nPrVer);
+    // goodVtx = nPrVer;
+    // if(nPrVer<=0) return false;
+    // else
+    //   return true;
   }
+
+  bool Selection::EtaPtCut()
+  {
+    assert(event);
+
+    double probejet_eta = event->get(tt_probejet_eta);
+    double ptave = event->get(tt_pt_ave);
+
+    if( fabs(probejet_eta)>2.500 && fabs(probejet_eta)<3.139 && ptave > 370 ){
+      return false;
+    }
+
+    return true;
+  }
+
+  bool Selection::ChEMFrakCut() {
+    assert(event);
+
+    double probejet_eta = event->get(tt_probejet_eta);
+    double chEM = event->get(tt_probejet_chEmEF);
+
+    if( fabs(probejet_eta)>2.650 && fabs(probejet_eta)<2.853 && chEM > 0.1 ){
+      return false;
+    }
+
+    return true;
+  }
+
+  int Selection::FindMatchingJet(unsigned int jetid, unsigned int trigger_th, bool use_fwd){
+    assert(event);
+
+    float dR_min=0.2;
+
+    float eta = 1000;
+    float phi = 1000;
+
+    //DEBUG
+    // cout<<"DEBUG in Selection::FindMatchingJet"<<endl;
+
+    uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_sw;
+
+    // if(use_fwd){
+    //   switch(trigger_th){
+    //   case 60: handle_sw = handle_trigger60_HF;
+    // 	break;
+    //   case 80: handle_sw = handle_trigger80_HF;
+    // 	break;
+    //   case 100: handle_sw = handle_trigger100_HF;
+    // 	break;
+    //   case 160: handle_sw = handle_trigger160_HF;
+    // 	break;
+    //   case 220: handle_sw = handle_trigger220_HF;
+    // 	break;
+    //   case 300: handle_sw = handle_trigger300_HF;
+    // 	break;
+    //   }
+    // }
+    // else{
+    // switch(trigger_th){
+    // case 40: handle_sw = handle_trigger40;
+    //   break;
+    // case 60: handle_sw = handle_trigger60;
+    //   break;
+    // case 80: handle_sw = handle_trigger80;
+    //   break;
+    // case 140: handle_sw = handle_trigger140;
+    //   break;
+    // case 200: handle_sw = handle_trigger200;
+    //   break;
+    // case 260: handle_sw = handle_trigger260;
+    //   break;
+    // case 320: handle_sw = handle_trigger320;
+    //   break;
+    // case 450: handle_sw = handle_trigger450;
+    //   break;
+    // case 400: handle_sw = handle_trigger400;
+    //   break;
+    // case 500: handle_sw = handle_trigger500;
+    //   break;
+    // }
+    // }
+    //DEBUG
+    // cout<<"Selection::FindMatchingJet after switch, jet id: "<<jetid<<" th: "<<trigger_th<<endl;
+
+    if(jetid >= event->get(handle_sw).size()){
+      return -1;
+    }
+
+    const unsigned int njets = event->jets->size();
+    unsigned int jetid_new = -2;
+
+    float dR = 1000.;
+    float dR_min_ = dR_min;
+    for(unsigned int i = 0 ; i < njets ; i++){
+      dR = uhh2::deltaR(event->jets->at(i), event->get(handle_sw).at(jetid));
+      if(dR < dR_min_){
+        dR_min_ = dR;
+        jetid_new = i;
+      }
+    }
+
+    //DEBUG
+    // cout<<jetid_new<<"  "<<dR<<endl;
+
+    return jetid_new;
+  }
+
+  // bool Selection::EtaPhiCleaning() {
+  //   assert(event);
+  //
+  //   int n_bins_x = h_map->GetNbinsX();
+  //   int n_bins_y = h_map->GetNbinsY();
+  //
+  //
+  //   double xMin = h_map->GetXaxis()->GetXmin();
+  //   double xWidth = h_map->GetXaxis()->GetBinWidth(1);
+  //
+  //
+  //   double yMin = h_map->GetYaxis()->GetXmin();
+  //   double yWidth = h_map->GetYaxis()->GetBinWidth(1);
+  //   double cutValue=0;
+  //
+  //   const int njets = event->jets->size();
+  //
+  //   for(int i=0; i < njets; i++){
+  //     int idx_x = 0;
+  //     int idx_y = 0;
+  //     Jet* jet = &event->jets->at(i);// loop over all jets in event
+  //
+  //     while(jet->eta() > xMin+xWidth + idx_x * xWidth) idx_x++;
+  //     while(jet->phi() > yMin+yWidth + idx_y * yWidth) idx_y++;
+  //
+  //     cutValue = h_map->GetBinContent(idx_x+1, idx_y+1);
+  //
+  //     if(cutValue > 0) break;
+  //   }
+  //
+  //   if(cutValue > 0) return false;
+  //   return true;
+  // }
+
+  // bool Selection::EtaPhi() {
+  //   assert(event);
+  //
+  //   double EtaPhi_regions[8][4]={{2.853, 2.964, 0.6, 1.},
+  //   {-2.964,-2.853, 0.6, 1.},
+  //   {2.853, 2.964, 2.2, 2.6},
+  //   {-2.964,-2.853, 2.2, 2.6},
+  //   {2.853, 2.964, -2.8, -2.2},
+  //   {-2.964,-2.853, -2.8, -2.2},
+  //   {-2.964,-2.853, 2.9, 3.1},
+  //   {2.853, 2.964, 2.9, 3.1}};
+  //
+  //   double probejet_eta = event->get(tt_probejet_eta);
+  //   double probejet_phi = event->get(tt_probejet_phi);
+  //
+  //   for(int i=0; i<8; i++){
+  //     if(probejet_eta > EtaPhi_regions[i][0] && probejet_eta < EtaPhi_regions[i][1] && probejet_phi > EtaPhi_regions[i][2] && probejet_phi < EtaPhi_regions[i][3]){
+  //       //	cout<<"Event rejected!"<<endl<<endl;
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
 
 }
 
