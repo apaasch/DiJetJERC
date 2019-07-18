@@ -941,3 +941,46 @@ bool removePointsforFit2(bool isFE, int m, int p) {
   if (  isFE && m==13 && p>=5 ) check = true;
   return check;
 }
+
+
+TH2Poly* fill_2Dhist( TString name1, std::vector< std::vector< double > > SFs, std::vector< std::vector< double > > SFsError, std::vector<double> Pt_bins_Central, std::vector<double> Pt_bins_HF,std::vector<double> eta_bins, double eta_cut) {
+
+  TH2Poly* h2 = new TH2Poly();
+  for( unsigned int m = 0; m <  SFs.size(); m++ ) {
+    //    for( unsigned int p = 0; p <  SFs.at(m).size(); p++ ) {
+    for( unsigned int p = 0; p <  SFs.at(m).size()-1; p++ ) {
+      bool eta_cut_bool = (fabs(eta_bins[m])+1e-3)>eta_cut;
+      double pt_low = (eta_cut_bool?Pt_bins_HF:Pt_bins_Central)[p];
+      double pt_up = (eta_cut_bool?Pt_bins_HF:Pt_bins_Central)[p+1];
+      //      if(p==0) cout<<eta_cut_bool<<" eta = "<<eta_bins[m]<<" "<<eta_bins[m+1]<<" pt_low = "<<pt_low<<" pt_up = "<<pt_up<<" SFs.at(m).size() = "<<SFs.at(m).size()<<" eta_cut = "<<eta_cut<<endl;
+      int realbinnumber = h2->AddBin(pt_low, eta_bins[m], pt_up, eta_bins[m+1]);
+    }
+  }
+
+  h2->SetName(name1);  
+  h2->SetTitle(name1);
+  h2->GetXaxis()->SetTitle("p_{T}^{ave}"); 
+  h2->GetYaxis()->SetTitle("|#eta|");
+  h2->GetZaxis()->SetRangeUser(0,3.0);
+  h2->SetStats(kFALSE);
+  if (name1.Contains("SF_")) h2 ->GetZaxis()->SetTitle("Scale factor");
+  else                       h2 ->GetZaxis()->SetTitle("#sigma_{JER}");
+
+
+    // for( unsigned int m = 0; m <  SFs.size(); m++ ) {
+    //   for( unsigned int p = 0; p <  SFs.at(m).size(); p++ ) {
+    for( unsigned int m = 0; m < SFs.size(); m++ ) {
+      //      cout<<"SFs.at(m).size() = "<<SFs.at(m).size()<<endl;
+      //      for( unsigned int p = 0; p < SFs.at(m).size(); p++ ) {
+      for( unsigned int p = 0; p < SFs.at(m).size()-1; p++ ) {
+	bool eta_cut_bool = (fabs(eta_bins[m])+1e-3)>eta_cut;
+	double eta = fabs(eta_bins[m])+1e-3;
+	double pT = (eta_cut_bool?Pt_bins_HF:Pt_bins_Central)[p]+1e-3;
+	//	cout<<"m (eta) = "<<m<<" p (pT) = "<<p<<" pT = "<<pT<<" eta = "<<eta<<" Bin #"<<h2 -> FindBin(pT,eta)<<" SFs.at(m).at(p) = "<<SFs.at(m).at(p)<<" Error = "<<SFsError.at(m).at(p)<<endl;
+	if ( ( !(TMath::IsNaN(SFs.at(m).at(p))) ) && SFs.at(m).at(p)!= 0. )      h2 -> SetBinContent(h2 -> FindBin(pT,eta), SFs.at(m).at(p) );
+	if ( ( !(TMath::IsNaN(SFsError.at(m).at(p))) ) && SFs.at(m).at(p)!= 0. ) h2 -> SetBinError(h2 -> FindBin(pT,eta), SFsError.at(m).at(p) );
+      }
+  } 
+    //    cout<<"END pof 2D fill"<<endl;
+    return h2;
+}
