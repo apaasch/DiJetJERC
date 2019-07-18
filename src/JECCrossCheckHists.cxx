@@ -1,5 +1,5 @@
-#include "UHH2/BaconJets/include/JECCrossCheckHists.h"
-#include "UHH2/BaconJets/include/constants.h"
+#include "UHH2/DiJetJERC/include/JECCrossCheckHists.h"
+#include "UHH2/DiJetJERC/include/constants.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/Jet.h"
 
@@ -34,8 +34,6 @@ JECCrossCheckHists::JECCrossCheckHists(Context & ctx, const string & dirname): H
     book<TH1F>("pt","p_{T} all jets; p_{T} (GeV)",100,0,1500);
     book<TH1F>("pt_modT1METjets","p_{T} all jets in 2.650<#eta<3.139; p_{T} (GeV)",100,0,1500);
     book<TH1F>("eta","#eta all jets; #eta",100,-5,5);
-    double eta_bins[n_eta];
-    for(int i=0; i<n_eta; i++) eta_bins[i] = eta_range[i];
     book<TH1F>("eta_binned","|#eta| all jets; |#eta|",n_eta-1, eta_bins);
     book<TH1F>("phi","#phi all jets; #phi",50,-M_PI,M_PI);
 
@@ -79,9 +77,10 @@ void JECCrossCheckHists::fill(const uhh2::Event & ev, const int rand){
   double weight = ev.weight;
   const int njets = ev.jets->size();
   hist("N_jets")->Fill(njets, weight);
-   if(!ev.isRealData && !no_genp){
-  // if(!ev.isRealData){
-    double pt_hat = ev.genInfo->binningValues()[0];
+   // if(!ev.isRealData && !no_genp){
+  if(!ev.isRealData){
+    // double pt_hat = ev.genInfo->binningValues()[0];
+    double pt_hat = ev.genInfo->qScale();
     double PU_pt_hat = ev.genInfo->PU_pT_hat_max();
     hist("pt_hat")->Fill(pt_hat,weight);
     hist("PU_pt_hat")->Fill(PU_pt_hat, weight);
@@ -89,7 +88,7 @@ void JECCrossCheckHists::fill(const uhh2::Event & ev, const int rand){
     PU_vs_pt_hat->Fill(pt_hat, PU_pt_hat,weight);
     Weight_vs_pt_hat->Fill(pt_hat, weight, weight);
   }
-    
+
   for (int i=0; i<njets; i++){
     Jet* jets = &ev.jets->at(i);
     hist("pt")->Fill(jets->pt(), weight);
@@ -106,11 +105,11 @@ void JECCrossCheckHists::fill(const uhh2::Event & ev, const int rand){
   // if(!ev.isRealData) nPU = ev.genInfo->pileup_TrueNumInteractions();
   hist("nPu")->Fill(nPU, weight);
   hist("weight_histo")->Fill(weight, 1);
-  
-  
+
+
   hist("N_PV")->Fill(ev.pvs->size(), weight);
-    
-  
+
+
   if(njets > 0){
     Jet* jet1 = &ev.jets->at(0);
     hist("pt_1")->Fill(jet1->pt(), weight);

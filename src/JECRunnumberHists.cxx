@@ -1,4 +1,4 @@
-#include "UHH2/BaconJets/include/JECRunnumberHists.h"
+#include "UHH2/DiJetJERC/include/JECRunnumberHists.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/Jet.h"
 
@@ -26,7 +26,7 @@ JECRunnumberHists::JECRunnumberHists(Context & ctx, const string & dirname): His
     TH1::SetDefaultSumw2();
 
     book<TH1F>("runnr", "run number", 20001, 269999.5, 290000.5);
-    
+
 }
 
 void JECRunnumberHists::fill(const uhh2::Event & ev){
@@ -38,10 +38,10 @@ void JECRunnumberHists::fill(const uhh2::Event & ev){
 
 
   double weight = ev.weight;
-  
+
   hist("runnr")->Fill(ev.run, weight);
-    
-  
+
+
 }
 
 JECRunnumberHists::~JECRunnumberHists(){}
