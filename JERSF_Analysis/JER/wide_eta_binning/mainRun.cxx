@@ -1247,8 +1247,8 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
   PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
   fMCTruth.Close();
 
-  bool plot_all = true;
-  // bool plot_all = false;
+  // bool plot_all = true;
+  bool plot_all = false;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
