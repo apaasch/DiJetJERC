@@ -9,7 +9,7 @@
 #include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/PersonalCode/tdrstyle_all.C"
 
 
-int shift_SM = 8;
+int shift_SM = 11;
 int shift_FE = 3;
 int shift_barrel = 1;
 
@@ -388,8 +388,8 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
 
 
   double etaAutumn18_V4[] = {0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.853, 2.964, 3.139, 5.191};
-  double jerAutumn18_V4[13][2] = {{1.1588,0.0392},{1.1504,0.0728},{1.1253,0.0343},{1.1217,0.0826},{1.1069,0.0890},{1.0916,0.0430},{1.0977,0.0951},{1.1177,0.0721},{1.4494,0.1502},{2.3588,0.6411},{2.2520,0.3542},{1.1759,0.0540},{1.0777,0.0542}}; // RunD
-  //double jerAutumn18_V4[13][2] = {{1.1677,0.0477},{1.1475,0.0520},{1.1029,0.0310},{1.0781,0.0950},{1.1006,0.0846},{1.1019,0.0386},{1.0459,0.1578},{1.1612,0.0646},{1.2299,0.1087},{1.6736,0.3792},{1.7292,0.2007},{1.2257,0.0452},{1.0733,0.0676}}; // RunABC
+  // double jerAutumn18_V4[13][2] = {{1.1588,0.0392},{1.1504,0.0728},{1.1253,0.0343},{1.1217,0.0826},{1.1069,0.0890},{1.0916,0.0430},{1.0977,0.0951},{1.1177,0.0721},{1.4494,0.1502},{2.3588,0.6411},{2.2520,0.3542},{1.1759,0.0540},{1.0777,0.0542}}; // RunD
+  double jerAutumn18_V4[13][2] = {{1.1677,0.0477},{1.1475,0.0520},{1.1029,0.0310},{1.0781,0.0950},{1.1006,0.0846},{1.1019,0.0386},{1.0459,0.1578},{1.1612,0.0646},{1.2299,0.1087},{1.6736,0.3792},{1.7292,0.2007},{1.2257,0.0452},{1.0733,0.0676}}; // RunABC
   //double jerAutumn18_V4[13][2] = {{1.1545,0.0308},{1.1481,0.0515},{1.0998,0.0386},{1.0929,0.0856},{1.1093,0.0718},{1.1005,0.0515},{1.0603,0.1301},{1.1287,0.0531},{1.3397,0.1147},{2.0325,0.5361},{2.0567,0.3060},{1.1868,0.0376},{1.0922,0.0489}}; // RunABCD
 
   double etaAutumn18_V4_wPUId[] = {0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.853, 2.964, 3.139, 5.191};
@@ -399,6 +399,15 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
 
   double etaAutumn18_V5[] = {0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 5.191};
   double jerAutumn18_V5[14][2] = {{1.0962,0.0708},{1.1206,0.0519},{1.0429,0.0357},{1.0626,0.0519},{1.1010,0.0573},{1.0391,0.0708},{1.0263,0.0714},{1.0883,0.0400},{1.1464,0.1022},{1.3271,0.0856},{1.7342,0.2126},{1.7644,0.2034},{1.2714,0.0433},{1.0248,0.1092}};//RunABC
+
+  double etaAutumn18_V5_1[] = {0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 5.191};
+  double jerAutumn18_V5_1[14][2] = {{1.1631,0.0366},{1.1680,0.0564},{1.1300,0.0706},{1.1187,0.0441},{1.1393,0.0728},{1.1054,0.0764},{1.1242,0.0258},{1.1837,0.1065},{1.2067,0.0595},{1.5080,0.1476},{1.9058,0.2898},{1.8627,0.1835},{1.3025,0.0532},{1.1315,0.1257}};//RunABC
+
+  double etaAutumn18_V6[] = {0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.65, 2.853, 2.964, 3.139, 5.191};
+  double jerAutumn18_V6[14][2] = {{1.1653,0.0273},{1.1929,0.0490},{1.1171,0.0474},{1.1071,0.0740},{1.1338,0.0567},{1.0909,0.0792},{1.1194,0.0491},{1.1889,0.1341},{1.1850,0.0401},{1.4596,0.1404},{1.8143,0.2356},{1.7414,0.2295},{1.2764,0.0606},{1.0986,0.1152}};//RunABC
+  // double jerAutumn18_V6[14][2] = {{1.1639,0.0312},{1.1808,0.0168},{1.1340,0.0530},{1.1316,0.0738},{1.1389,0.0766},{1.1310,0.0600},{1.1388,0.0405},{1.1827,0.1309},{1.2874,0.0616},{1.8381,0.3179},{2.2087,0.2865},{2.1285,0.3096},{1.2063,0.0817},{1.0760,0.1492}};//RunABCD
+  // double jerAutumn18_V6[14][2] = {{1.1742,0.0327},{1.1930,0.0372},{1.1451,0.0639},{1.1413,0.0601},{1.1396,0.0678},{1.1661,0.0905},{1.1581,0.0693},{1.1912,0.1294},{1.4015,0.1590},{2.1665,0.4095},{2.5335,0.3138},{2.3392,0.3996},{1.2284,0.1264},{1.0495,0.1725}};//RunD
+
 
 
 
@@ -411,6 +420,8 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
   std::vector<double> etaAutumn18_V4_wPUId_center, etaAutumn18_V4_wPUId_err, SFAutumn18_V4_wPUId, SFAutumn18_V4_wPUId_Err;
   std::vector<double> etaAutumn18_V4_noPUId_center, etaAutumn18_V4_noPUId_err, SFAutumn18_V4_noPUId, SFAutumn18_V4_noPUId_Err;
   std::vector<double> etaAutumn18_V5_center, etaAutumn18_V5_err, SFAutumn18_V5, SFAutumn18_V5_Err;
+  std::vector<double> etaAutumn18_V5_1_center, etaAutumn18_V5_1_err, SFAutumn18_V5_1, SFAutumn18_V5_1_Err;
+  std::vector<double> etaAutumn18_V6_center, etaAutumn18_V6_err, SFAutumn18_V6, SFAutumn18_V6_Err;
 
 
   for (unsigned int i = 0; i < 13; i++) {
@@ -467,6 +478,16 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
     /**********/SFAutumn18_V5.push_back(jerAutumn18_V5[i][0]);
     /******/SFAutumn18_V5_Err.push_back(jerAutumn18_V5[i][1]);
 
+    /**/etaAutumn18_V5_1_center.push_back((etaAutumn18_V5_1[i+1]+etaAutumn18_V5_1[i])/2);
+    /*****/etaAutumn18_V5_1_err.push_back((etaAutumn18_V5_1[i+1]-etaAutumn18_V5_1[i])/2);
+    /**********/SFAutumn18_V5_1.push_back(jerAutumn18_V5_1[i][0]);
+    /******/SFAutumn18_V5_1_Err.push_back(jerAutumn18_V5_1[i][1]);
+
+    /**/etaAutumn18_V6_center.push_back((etaAutumn18_V6[i+1]+etaAutumn18_V6[i])/2);
+    /*****/etaAutumn18_V6_err.push_back((etaAutumn18_V6[i+1]-etaAutumn18_V6[i])/2);
+    /**********/SFAutumn18_V6.push_back(jerAutumn18_V6[i][0]);
+    /******/SFAutumn18_V6_Err.push_back(jerAutumn18_V6[i][1]);
+
   }
 
 
@@ -479,6 +500,8 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
   TGraphErrors* gr_SFAutumn18_V4_wPUId= new TGraphErrors(SFAutumn18_V4_wPUId.size(), &(etaAutumn18_V4_wPUId_center[0]), &SFAutumn18_V4_wPUId[0], &(etaAutumn18_V4_wPUId_err[0]), &SFAutumn18_V4_wPUId_Err[0]);
   TGraphErrors* gr_SFAutumn18_V4_noPUId= new TGraphErrors(SFAutumn18_V4_noPUId.size(), &(etaAutumn18_V4_noPUId_center[0]), &SFAutumn18_V4_noPUId[0], &(etaAutumn18_V4_noPUId_err[0]), &SFAutumn18_V4_noPUId_Err[0]);
   TGraphErrors* gr_SFAutumn18_V5      = new TGraphErrors(SFAutumn18_V5.size(), &(etaAutumn18_V5_center[0]), &SFAutumn18_V5[0], &(etaAutumn18_V5_err[0]), &SFAutumn18_V5_Err[0]);
+  TGraphErrors* gr_SFAutumn18_V5_1    = new TGraphErrors(SFAutumn18_V5_1.size(), &(etaAutumn18_V5_1_center[0]), &SFAutumn18_V5_1[0], &(etaAutumn18_V5_1_err[0]), &SFAutumn18_V5_1_Err[0]);
+  TGraphErrors* gr_SFAutumn18_V6      = new TGraphErrors(SFAutumn18_V6.size(), &(etaAutumn18_V6_center[0]), &SFAutumn18_V6[0], &(etaAutumn18_V6_err[0]), &SFAutumn18_V6_Err[0]);
   TGraphErrors* gr_final              = new TGraphErrors(SF_final.size(), &(eta_bin_all_center[0]), &SF_final[0], &(eta_bin_all_error[0]), &SF_final_error[0]); //tot
   // TGraphErrors* gr_final           = new TGraphErrors(SF_final.size(), &(eta_bin_all_center[0]), &SF_final[0], &(eta_bin_all_error[0]), &SF_final_error_stat[0]); //stat
   // TGraphErrors* gr_final           = new TGraphErrors(SF_final.size(), &(eta_bin_all_center[0]), &SF_final[0], &(eta_bin_all_error[0]), &SF_final_error_syst[0]); //sys
@@ -487,8 +510,10 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
   // tdrDraw(gr_SFFall17_V3, "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3004, kGreen-1);
   // tdrDraw(gr_SFAutumn18_V1, "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
   // tdrDraw(gr_SFAutumn18_V3, "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
-  tdrDraw(gr_SFAutumn18_V4, "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
-  tdrDraw(gr_SFAutumn18_V5, "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
+  // tdrDraw(gr_SFAutumn18_V4, "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
+  tdrDraw(gr_SFAutumn18_V5_1, "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
+  // tdrDraw(gr_SFAutumn18_V5, "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
+  tdrDraw(gr_SFAutumn18_V6, "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
   // tdrDraw(gr_SFAutumn18_V4_noPUId, "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
   tdrDraw(gr_final, "P5", kFullDotLarge, kBlue-4, kSolid, kBlue-4, 3005, kBlue-4);
   // tdrDraw(gr_SFAutumn18_V4_wPUId, "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
@@ -497,10 +522,13 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
   // leg_final->AddEntry(gr_SFFall17_V3,       "Fall17_V3","f");
   // leg_final->AddEntry(gr_SFAutumn18_V1,  "Autumn18_V1RunABC","f");
   // leg_final->AddEntry(gr_SFAutumn18_V3,  "Autumn18_V3","f");
-  leg_final->AddEntry(gr_SFAutumn18_V4,  "Autumn18_V4RunABC","f");
-  leg_final->AddEntry(gr_SFAutumn18_V5,  "Autumn18_V5RunABC","f");
+  // leg_final->AddEntry(gr_SFAutumn18_V4,  "Autumn18_V4RunABC","f");
+  // leg_final->AddEntry(gr_SFAutumn18_V5,  "Autumn18_V5","f");
+  leg_final->AddEntry(gr_SFAutumn18_V5_1,"Autumn18_JEC15","f");
+  leg_final->AddEntry(gr_SFAutumn18_V6,"Autumn18_JEC16","f");
   // leg_final->AddEntry(gr_SFAutumn18_V4_noPUId,  "Autumn18_V4RunABC","f");
-  leg_final->AddEntry(gr_final,             "Autumn18_"+QCD_DATA(QCD_DATA.Index("Run"), QCD_DATA.Length()-QCD_DATA.Index("Run")-1),"f");
+  leg_final->AddEntry(gr_final,             "Autumn18_JEC16h","f");
+  // leg_final->AddEntry(gr_final,             "Autumn18_JEC16h"+QCD_DATA(QCD_DATA.Index("Run"), QCD_DATA.Length()-QCD_DATA.Index("Run")-1),"f");
   // leg_final->AddEntry(gr_final,             "Autumn18_NoCut","f");
   // leg_final->AddEntry(gr_SFAutumn18_V4_wPUId,  "Autumn18_V4_NoCut_PuId","f");
   // leg_final->AddEntry(gr_SFSummer16_25nsV1, "RunF_ECAL","f");
@@ -603,33 +631,36 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
     std::vector<double> sys_comb(eta_bins_all.size(),0);
     for (size_t i = 0; i < sys_SM.size(); i++) sys_SM[i] /=  SF_SM[i];
     for (size_t i = 0; i < sys_FE.size(); i++) sys_FE[i] /=  SF_FE[i];
+    for (unsigned int i = 0; i < eta_bins_all.size()-1; i++) {
+      if (i < shift_FE) sys_comb[i] = sys_SM.at(i);
+      else if (i < eta_bins_all.size() - 1 - shift_SM) sys_comb[i] = TMath::Sqrt(TMath::Power(sys_SM.at(i),2)+TMath::Power(sys_FE.at(i-shift_FE+shift_barrel+1),2));
+      else sys_comb[i] = sys_FE.at(i-shift_barrel);
+    }
+
     if (sysName!="JEC_up" && sysName!="JEC_down" && sysName!="gaustails_0.95") {
       std::cout << "Adding " << sysName << '\n';
       for (unsigned int j = 0; j < systematics_SM_rest.size(); j++) systematics_SM_rest.at(j) += TMath::Power(sys_SM.at(j)/SF_SM[j],2);
       for (unsigned int j = 0; j < systematics_FE_rest.size(); j++) systematics_FE_rest.at(j) += TMath::Power(sys_FE.at(j)/SF_FE[j],2);
     }
 
-    for (unsigned int i = 0; i < eta_bins_all.size()-1; i++) {
-      if (i < shift_FE) systematics_rest[i] = systematics_SM_rest.at(i);
-      else if (i < eta_bins_all.size() - 1 - shift_SM) systematics_rest[i] = TMath::Sqrt(TMath::Power(systematics_SM_rest.at(i),2)+TMath::Power(systematics_FE_rest.at(i-shift_FE+shift_barrel+1),2)+TMath::Power((SF_SM.at(i)-SF_FE.at(i-shift_FE+shift_barrel+1))/2, 2));
-      else systematics_rest[i] = systematics_FE_rest.at(i-shift_barrel);
-    }
-
-    std::vector<double> dummy_SM(eta_bin_SM_center.size(),0.001); std::vector<double> dummy_FE(eta_bin_FE_center.size(),0.001);
+    std::vector<double> dummy_SM(eta_bin_SM_center.size(),0.001); std::vector<double> dummy_FE(eta_bin_FE_center.size(),0.001); std::vector<double> dummy(eta_bin_all_center.size(),0.001);
     TGraphErrors* gr_SM = new TGraphErrors(eta_bin_SM_center.size(), &(eta_bin_SM_center[0]), &(sys_SM[0]), &(eta_bin_SM_error[0]), &(dummy_SM[0]));
     TGraphErrors* gr_FE = new TGraphErrors(eta_bin_FE_center.size(), &(eta_bin_FE_center[0]), &(sys_FE[0]), &(eta_bin_FE_error[0]), &(dummy_FE[0]));
+    TGraphErrors* gr_comb = new TGraphErrors(eta_bin_all_center.size(), &(eta_bin_all_center[0]), &(sys_comb[0]), &(eta_bin_all_error[0]), &(dummy[0]));
     double ymax = std::max(*std::max_element(sys_SM.begin(), sys_SM.end()), *std::max_element(sys_FE.begin(), sys_FE.end()));
     double ymin = std::min(*std::min_element(sys_SM.begin(), sys_SM.end()), *std::min_element(sys_FE.begin(), sys_FE.end()));
     ymax = std::max(ymax+0.02,1.2*ymax);
     ymin = std::min(ymin-0.02,1.2*ymin);
     ymax = 0.2; ymin=-0.2;
-    TCanvas* canv_sys = tdrCanvas(sysName, eta_bins_all[0]-0.1, eta_bins_all[eta_bins_all.size()-1]+0.1, ymin, ymax, "#eta", "SF_{nominal} - SF_{"+sysName+"}");
+    TCanvas* canv_sys = tdrCanvas(sysName, eta_bins_all[0]-0.1, eta_bins_all[eta_bins_all.size()-1]+0.1, ymin, ymax, "#eta", "SF_{nominal} - SF_{"+sysName+"} [\%]");
     TLegend *leg_sys = tdrLeg(0.64,0.67,0.79,0.92, 0.040, 42, kBlack);
     tdrHeader(leg_sys,"", 12);
+    tdrDraw(gr_comb, "", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
     tdrDraw(gr_SM, "", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
     tdrDraw(gr_FE, "", kFullDotLarge, kBlue-4, kSolid, kBlue-4, 3005, kBlue-4);
     leg_sys->AddEntry(gr_SM,  "SM","l");
     leg_sys->AddEntry(gr_FE,  "FE","l");
+    leg_sys->AddEntry(gr_comb,"comb","l");
     leg_sys->Draw("same");
     canv_sys->Print(path+"standard/"+QCD_DATA+"sys_"+sysName+".pdf","pdf");
 
@@ -637,6 +668,13 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
 
   for (unsigned int j = 0; j < systematics_SM_rest.size(); j++) systematics_SM_rest.at(j) = TMath::Sqrt(systematics_SM_rest.at(j));
   for (unsigned int j = 0; j < systematics_FE_rest.size(); j++) systematics_FE_rest.at(j) = TMath::Sqrt(systematics_FE_rest.at(j));
+
+  for (unsigned int i = 0; i < eta_bins_all.size()-1; i++) {
+    if (i < shift_FE) systematics_rest[i] = systematics_SM_rest.at(i);
+    else if (i < eta_bins_all.size() - 1 - shift_SM) systematics_rest[i] = TMath::Sqrt(TMath::Power(systematics_SM_rest.at(i),2)+TMath::Power(systematics_FE_rest.at(i-shift_FE+shift_barrel+1),2)+TMath::Power((SF_SM.at(i)-SF_FE.at(i-shift_FE+shift_barrel+1))/2, 2));
+    else systematics_rest[i] = systematics_FE_rest.at(i-shift_barrel);
+  }
+
 
   std::vector<double> dummy_SM(eta_bin_SM_center.size(),0.001); std::vector<double> dummy_FE(eta_bin_FE_center.size(),0.001); std::vector<double> dummy(eta_bin_all_center.size(),0.001);
   TGraphErrors* gr_SM_rest = new TGraphErrors(eta_bin_SM_center.size(), &(eta_bin_SM_center[0]), &(systematics_SM_rest[0]), &(eta_bin_SM_error[0]), &(dummy_SM[0]));
@@ -647,15 +685,15 @@ void plot_SF_systematics_(TString path = "/nfs/dust/cms/user/amalara/WorkingArea
   ymax = std::max(ymax+0.02,1.2*ymax);
   ymin = std::min(ymin-0.02,1.2*ymin);
   ymax = 0.2; ymin=-0.2;
-  TCanvas* canv_sys_rest = tdrCanvas("rest", eta_bins_all[0]-0.1, eta_bins_all[eta_bins_all.size()-1]+0.1, ymin, ymax, "#eta", "SF_{nominal} - SF_{rest}");
+  TCanvas* canv_sys_rest = tdrCanvas("rest", eta_bins_all[0]-0.1, eta_bins_all[eta_bins_all.size()-1]+0.1, ymin, ymax, "#eta", "SF_{nominal} - SF_{rest} [\%]");
   TLegend *leg_sys = tdrLeg(0.64,0.67,0.79,0.92, 0.040, 42, kBlack);
   tdrHeader(leg_sys,"", 12);
+  tdrDraw(gr_rest, "", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
   tdrDraw(gr_SM_rest, "", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
   tdrDraw(gr_FE_rest, "", kFullDotLarge, kBlue-4, kSolid, kBlue-4, 3005, kBlue-4);
-  tdrDraw(gr_rest, "", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
-  leg_sys->AddEntry(gr_SM_rest,  "SM","l");
-  leg_sys->AddEntry(gr_FE_rest,  "FE","l");
-  leg_sys->AddEntry(gr_rest,  "comb","l");
+  leg_sys->AddEntry(gr_SM_rest, "SM","l");
+  leg_sys->AddEntry(gr_FE_rest, "FE","l");
+  leg_sys->AddEntry(gr_rest,    "comb","l");
   leg_sys->Draw("same");
   canv_sys_rest->Print(path+"standard/"+QCD_DATA+"sys_rest.pdf","pdf");
 
@@ -674,8 +712,9 @@ void plot_SF_systematics() {
   studies.push_back("MergeL2Res");
 
   std::vector<TString> JECs;
-  JECs.push_back("Autumn18_V15");
-  // JECs.push_back("Autumn18_V13h");
+  // JECs.push_back("Autumn18_V15");
+  // JECs.push_back("Autumn18_V16");
+  JECs.push_back("Autumn18_V16h");
 
   std::vector<TString> JETs;
   JETs.push_back("AK4CHS");

@@ -154,8 +154,8 @@ original_file = "DiJetJERC_DiJetHLT.xml"
 outdir = "DiJetJERC_DiJetHLT"
 original_dir_ = os.getcwd()
 
-JECVersions_Data = ["Autumn18_V15"]
-JECVersions_MC = ["Autumn18_V15"]
+JECVersions_Data = ["Autumn18_V16", "Autumn18_V16h"]
+JECVersions_MC   = ["Autumn18_V16", "Autumn18_V16h"]
 JetLabels = ["AK4CHS"]
 systematics = ["", "PU", "JEC", "JER"]
 systematics = ["", "PU", "JEC"]
