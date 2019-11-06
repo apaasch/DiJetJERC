@@ -100,7 +100,8 @@ void addDijetSystemtics(TGraphErrors* gr, double eta_val){
   // //  cout<<"eta = "<<eta_val<<"  systm_err = "<<systm_err<<endl;
   if(fabs(eta_val)<1.3)  systm_err = 0.07;
   else if(fabs(eta_val)<2.5)  systm_err = 0.10;
-  else if(fabs(eta_val)<2.96 && fabs(eta_val)>2.5) systm_err = 0.30;
+  //  else if(fabs(eta_val)<2.96 && fabs(eta_val)>2.5) systm_err = 0.30;
+  else if(fabs(eta_val)<2.96 && fabs(eta_val)>2.5) systm_err = 0.20;
   //else if(fabs(eta_val)<2.96 && fabs(eta_val)>2.5) systm_err = 0.10; //TEST
   else if(fabs(eta_val)<5.2) systm_err = 0.15;
   for(int i;i<gr->GetN();i++)
@@ -164,13 +165,14 @@ void OutputSFs(TF1* fit_func_custom, TString name, double eta_val1, double eta_v
 
 
   std::ofstream outfile("JERSFs_Zjets_Dijets_Combined.txt", std::ios_base::app | std::ios_base::out);
-  int pt_min = 10; int pt_max = 500;
+  int pt_min = 0; int pt_max = 500;
   double pt_cur = pt_min;
   while(pt_cur<pt_max+10){
     int pt_1 = pt_cur;
-    int pt_2 = pt_cur+5;
+    int pt_2 = pt_cur+10;
     if(pt_1>100)
-      pt_2 = pt_cur+15;
+      pt_2 = pt_cur+25;
+    if(pt_2>pt_max) pt_2=7000;
     int pt_eval = pt_1+(pt_2-pt_1)*0.5;
     double SF_cnt = fit_func_custom->Eval(pt_eval);
     double SF_dn = SF_cnt-total_uncert;
@@ -187,6 +189,7 @@ void OutputSFs(TF1* fit_func_custom, TString name, double eta_val1, double eta_v
     int pt_2 = pt_cur+10;
     if(pt_1>100)
       pt_2 = pt_cur+25;
+    if(pt_2>pt_max) pt_2=7000;
     int pt_eval = pt_1+(pt_2-pt_1)*0.5;
     double SF_cnt = fit_func_custom->Eval(pt_eval);
     double SF_dn = SF_cnt-total_uncert;
@@ -428,10 +431,17 @@ void CombineDijetZjets(TString tag_name="Ngenjet"){
 
  //Files after dijet and Z+jets standalone analysis
  // TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V16h/AK4CHS/standard/QCDHT/RunABCD/output/"; //V16h
- TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V16/AK4CHS/standard/QCDHT/RunABCD/output/"; //V16
+
  // TString path_dijet = "/nfs/dust/cms/user/karavdia/CMSSW_10_2_10/src/UHH2/JERSF/Analysis/JER/wide_eta_bin_moreECbins_morePtbins_EnergyEtaCut_fixJetSorting/file/StandardPtBins/Autumn18_V15/AK4CHS/standard/QCDHT/RunABCD/output/"; //V15
  // TString path_dijet = "/nfs/dust/cms/user/karavdia/CMSSW_10_2_10/src/UHH2/JERSF/Analysis/JER/wide_eta_bin_moreECbins_morePtbins_EnergyEtaCut_fixJetSorting_positiveEta/file/StandardPtBins/Autumn18_V15/AK4CHS/standard/QCDHT/RunABCD/output/";
- TString name_dijet = "DijetJERSF2D.root";
+  //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V16/AK4CHS/standard/QCDHT/RunABCD/output/"; //V16
+  //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V16/AK4CHS/standard/QCDHT/RunABC/output/"; //V16
+  //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V16/AK4CHS/standard/QCDHT/RunD/output/"; //V16
+
+  //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunABC/output/"; //V17
+  //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunD/output/"; //V17
+  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunABCD/output/"; //V17
+  TString name_dijet = "DijetJERSF2D.root";
 
  // TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/RunABCD/";
  // TString name_zjet = "h2_jer_sf.root";
@@ -439,6 +449,8 @@ void CombineDijetZjets(TString tag_name="Ngenjet"){
  // TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/August19/";
  TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/August19/abs_eta/";
  TString name_zjet = "results.root";
+ // TString name_zjet = "2018ABC.root";
+ // TString name_zjet = "2018D.root";
 
  TString gl_label_dijet = "Dijet";
  TString gl_label_zjet = "Zjets";
@@ -482,7 +494,8 @@ void CombineDijetZjets(TString tag_name="Ngenjet"){
    bool fix_Par3_1 = true;//in ECALReduced fit, set par3 to lower value for eta<2.85 and to higher value otherwise
    //   cout<<"eta_val = "<<eta_val<<endl;
    if(eta_val>2.6) fix_Par3_1 = false;
-   int fitres = doFit(gr_zjets, gr_dijets, "Z+jets", "Dijets",legend_title,"JERSF_Eta_"+eta_bins_name[ieta],2.4, tag_name, skipZjets, fix_Par3_1, eta_bins[ieta], eta_bins[ieta+1]);
+   //   int fitres = doFit(gr_zjets, gr_dijets, "Z+jets", "Dijets",legend_title,"JERSF_Eta_"+eta_bins_name[ieta],2.4, tag_name, skipZjets, fix_Par3_1, eta_bins[ieta], eta_bins[ieta+1]);
+   int fitres = doFit(gr_zjets, gr_dijets, "Z+jets", "Dijets",legend_title,"JERSF_Eta_"+eta_bins_name[ieta],1.5, tag_name, skipZjets, fix_Par3_1, eta_bins[ieta], eta_bins[ieta+1]);
  }
  
 
