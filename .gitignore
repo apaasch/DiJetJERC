@@ -10,11 +10,11 @@ core/python/__init__.py
 **/*.png
 *~
 *.local
-**/file/**
-**/lists/**
 **/*.pyc
 
 **jobTempOutput_**/**
 
 ToDo.md
 conf/SubmittedJobs/
+**/file/
+**/lists/

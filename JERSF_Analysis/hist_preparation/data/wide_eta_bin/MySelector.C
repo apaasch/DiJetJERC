@@ -50,7 +50,6 @@ if ( m == AlphaBins-1 ) {                                                       
 
 #define SELECT_ETA_ALPHA_BIN(region,method,cond1,cond2)     \
 if (cond1 || cond2) {                                       \
-  std::cout<< "FILL" << std::endl;                          \
   h_alpha_sel->Fill(alpha, 1);                              \
   for ( int m = 0 ; m < AlphaBins ; m++ ) {                 \
     if ( alpha < Alpha_bins[m] ) {                          \
@@ -138,13 +137,18 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   for (size_t i = etaShift_FE_control;    i < etaShift_FE_control   + EtaBins_FE_control    + 1; i++)  Eta_bins_FE_control.push_back(eta_bins_JER[i]);
   for (size_t i = etaShift_FE;            i < etaShift_FE           + EtaBins_FE            + 1; i++)  Eta_bins_FE.push_back(eta_bins_JER[i]);
 
-  // PtBins_Central = n_pt_bins_Di;
-  PtBins_Central = n_pt_bins_Di_ext;
-  PtBins_HF = n_pt_bins_Di_HF;
-
-  // for (auto &pt: pt_bins_Di) Pt_bins_Central.push_back(pt);
-  for (auto &pt: pt_bins_Di_ext) Pt_bins_Central.push_back(pt);
-  for (auto &pt: pt_bins_Di_HF) Pt_bins_HF.push_back(pt);
+  std::string triggerName = "DiJet";
+  if (isAK8) triggerName = "SingleJet";
+  std::string name_pt_bin = triggerName+"_central_";
+  if (isAK8) name_pt_bin += "AK8_";
+  name_pt_bin += year+"_ptbins";
+  PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
+  for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
+  name_pt_bin = triggerName+"_forward_";
+  if (isAK8) name_pt_bin += "AK8_";
+  name_pt_bin += year+"_ptbins";
+  PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
+  for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
   Pt_bins_Central.push_back(1500);
   Pt_bins_HF.push_back(1500);
 
@@ -213,7 +217,6 @@ bool MySelector::Process(Long64_t entry) {
 
   ++TotalEvents;
   if ( TotalEvents%100000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
-
   GetEntry(entry);
   BuildEvent();
 
@@ -241,8 +244,6 @@ bool MySelector::Process(Long64_t entry) {
   bool isHF = probejet_eta>eta_cut? true : false;
   // bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
-  std::cout << "isHF " << isHF << std::endl;
-
   if (!isHF) {
     dofill=true;
     for ( int k = 0 ; k < PtBins_Central ; k++ ) {
@@ -251,7 +252,7 @@ bool MySelector::Process(Long64_t entry) {
           if (!is_JER_SM) continue;
           cond1 = (TMath::Abs(barreljet_eta) > Eta_bins_SM[r] && TMath::Abs(barreljet_eta) < Eta_bins_SM[r+1] && TMath::Abs(probejet_eta) > Eta_bins_SM[r] && TMath::Abs(probejet_eta) < Eta_bins_SM[r+1]);
           cond2 = false;
-          std::cout << "Eta_bins_SM " << Eta_bins_SM[r] << "-" << Eta_bins_SM[r+1] << " " << cond1 << " " << cond2 << std::endl;
+          // std::cout << "Eta_bins_SM " << Eta_bins_SM[r] << "-" << Eta_bins_SM[r+1] << " " << cond1 << " " << cond2 << std::endl;
           shift = 0;
           SELECT_ETA_ALPHA_BIN(SM,SM,cond1,cond2)
         }
@@ -260,7 +261,7 @@ bool MySelector::Process(Long64_t entry) {
           cond1 = (TMath::Abs(barreljet_eta)> 0. && TMath::Abs(barreljet_eta)< s_eta_barr && TMath::Abs(probejet_eta) > Eta_bins_FE_reference[r] && TMath::Abs(probejet_eta) < Eta_bins_FE_reference[r+1]);
           cond2 = (TMath::Abs(probejet_eta) > 0. && TMath::Abs(probejet_eta) < s_eta_barr && TMath::Abs(barreljet_eta)> Eta_bins_FE_reference[r] && TMath::Abs(barreljet_eta)< Eta_bins_FE_reference[r+1]);
           shift = 0;
-          std::cout << "EtaBins_FE_reference " << Eta_bins_FE_reference[r] << "-" << Eta_bins_FE_reference[r+1] << " " << cond1 << " " << cond2 << std::endl;
+          // std::cout << "EtaBins_FE_reference " << Eta_bins_FE_reference[r] << "-" << Eta_bins_FE_reference[r+1] << " " << cond1 << " " << cond2 << std::endl;
           SELECT_ETA_ALPHA_BIN(FE_reference,FE,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE_control ; r++ ) {
@@ -268,7 +269,7 @@ bool MySelector::Process(Long64_t entry) {
           cond1 = (TMath::Abs(barreljet_eta)> 0. && TMath::Abs(barreljet_eta)< s_eta_barr && TMath::Abs(probejet_eta) > Eta_bins_FE_control[r] && TMath::Abs(probejet_eta) < Eta_bins_FE_control[r+1]);
           cond2 = (TMath::Abs(probejet_eta) > 0. && TMath::Abs(probejet_eta) < s_eta_barr && TMath::Abs(barreljet_eta)> Eta_bins_FE_control[r] && TMath::Abs(barreljet_eta)< Eta_bins_FE_control[r+1]);
           shift = etaShift_FE_control;
-          std::cout << "EtaBins_FE_control " << Eta_bins_FE_control[r] << "-" << Eta_bins_FE_control[r+1] << " " << cond1 << " " << cond2 << std::endl;
+          // std::cout << "EtaBins_FE_control " << Eta_bins_FE_control[r] << "-" << Eta_bins_FE_control[r+1] << " " << cond1 << " " << cond2 << std::endl;
           SELECT_ETA_ALPHA_BIN(FE_control,FE,cond1,cond2)
         }
         break;
@@ -283,14 +284,14 @@ bool MySelector::Process(Long64_t entry) {
           cond1 = (TMath::Abs(barreljet_eta) > Eta_bins_SM_control[r] && TMath::Abs(barreljet_eta) < Eta_bins_SM_control[r+1] && TMath::Abs(probejet_eta) > Eta_bins_SM_control[r] && TMath::Abs(probejet_eta) < Eta_bins_SM_control[r+1]);
           cond2 = false;
           shift = etaShift_SM_control;
-          std::cout << "Eta_bins_SM_control " << Eta_bins_SM_control[r] << "-" << Eta_bins_SM_control[r+1] << " " << cond1 << " " << cond2 << std::endl;
+          // std::cout << "Eta_bins_SM_control " << Eta_bins_SM_control[r] << "-" << Eta_bins_SM_control[r+1] << " " << cond1 << " " << cond2 << std::endl;
           SELECT_ETA_ALPHA_BIN(SM_control,SM,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE ; r++ ) {
           if (is_JER_SM) continue;
           cond1 = (TMath::Abs(barreljet_eta)> 0. && TMath::Abs(barreljet_eta)< s_eta_barr && TMath::Abs(probejet_eta) > Eta_bins_FE[r] && TMath::Abs(probejet_eta) < Eta_bins_FE[r+1]);
           cond2 = (TMath::Abs(probejet_eta) > 0. && TMath::Abs(probejet_eta) < s_eta_barr && TMath::Abs(barreljet_eta)> Eta_bins_FE[r] && TMath::Abs(barreljet_eta)< Eta_bins_FE[r+1]);
-          std::cout << "Eta_bins_FE " << Eta_bins_FE[r] << "-" << Eta_bins_FE[r+1] << " " << cond1 << " " << cond2 << std::endl;
+          // std::cout << "Eta_bins_FE " << Eta_bins_FE[r] << "-" << Eta_bins_FE[r+1] << " " << cond1 << " " << cond2 << std::endl;
           shift = etaShift_FE;
           SELECT_ETA_ALPHA_BIN(FE,FE,cond1,cond2)
         }
@@ -349,30 +350,51 @@ void MySelector::SlaveTerminate() {
   f_alpha->Close();
 
 
+  std::vector<TH2F*> h_nevents_central, h_nevents_HF;
 
+  std::vector<double> Pt_bins_Central_D(Pt_bins_Central.begin(), Pt_bins_Central.end());
+  std::vector<double> Pt_bins_HF_D(Pt_bins_HF.begin(), Pt_bins_HF.end());
+
+  for (int m = 0; m < 6; m++){
+    h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
+    h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
+  }
   std::cout << "Pt_bins_Central: " << nevents_central.size() << std::endl;
-  for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << pt_bins_Di[i];
+  for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << Pt_bins_Central_D[i];
   std::cout << std::endl;
 
   for (int r = 0; r < 14; r++) {
     for (int m = 0; m < 6; m++){
       std::cout << r << " " << m << " ";
-      for ( int k = 0 ; k < nevents_central.size() ; k++ ) std::cout << "\t" << nevents_central[k][r][m];
+      for ( int k = 0 ; k < nevents_central.size() ; k++ ) {
+        std::cout << "\t" << nevents_central[k][r][m];
+        h_nevents_central[m]->SetBinContent(h_nevents_central[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_central[m]->GetYaxis()->FindBin(Pt_bins_Central_D.at(k)), nevents_central[k][r][m]);
+      }
       std::cout << std::endl;
     } std::cout << std::endl;
   }
 
   std::cout << "Pt_bins_HF: " << nevents_HF.size() << std::endl;
-  for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << "\t" << pt_bins_Di_HF[i];
+  for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << "\t" << Pt_bins_HF_D[i];
   std::cout << std::endl;
 
   for (int r = 0; r < 14; r++) {
     for (int m = 0; m < 6; m++){
       std::cout << r << " " << m << " ";
-      for ( int k = 0 ; k < nevents_HF.size() ; k++ ) std::cout << "\t" << nevents_HF[k][r][m];
+      for ( int k = 0 ; k < nevents_HF.size() ; k++ ) {
+        std::cout << "\t" << nevents_HF[k][r][m];
+        h_nevents_HF[m]->SetBinContent(h_nevents_HF[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_HF[m]->GetYaxis()->FindBin(Pt_bins_HF_D.at(k)), nevents_HF[k][r][m]);
+      }
       std::cout << std::endl;
     }std::cout << std::endl;
   }
+
+  TFile *f_nevents  = new TFile(outdir+"histograms_nevents.root","RECREATE");
+  for (int m = 0; m < 6; m++){
+    h_nevents_central[m]->Write();
+    h_nevents_HF[m]->Write();
+  }
+  f_nevents->Close();
 
 }
 

@@ -9,6 +9,7 @@
 <!-- Jet Variables -->
 <!ENTITY JEC_VERSION                "Autumn18_V4">
 <!ENTITY JETLABEL                   "AK4CHS">   <!-- AK4CHS - AK4PUPPI --> <!-- AK8CHS - AK8PUPPI -->
+<!ENTITY YEAR                       "2018">
 
 <!-- JERC -->
 <!ENTITY JECSMEAR_DIRECTION         "nominal">  <!--nominal/down/up -->
@@ -19,6 +20,7 @@
 <!-- Trigger -->
 <!ENTITY TRIGGER_CENTRAL            "true">     <!--Trigger Flag -->
 <!ENTITY TRIGGER_FWD                "true">    <!--Trigger Flag -->
+<!ENTITY PtBinsTrigger              "DiJet">    <!--Trigger SingleJet/DiJet -->
 
 
 
@@ -64,8 +66,8 @@
 
 
 <!--
-<ConfigParse NEventsBreak="0" FileSplit="100" AutoResubmit="5"/>
-<ConfigSGE RAM ="2" DISK ="2" Mail="andrea.malara@desy.de" Notification="as" Workdir="workdir_DiJetJERC_DiJetHLT"/>
+<ConfigParse NEventsBreak="0" FileSplit="500" AutoResubmit="5"/>
+<ConfigSGE RAM ="2" DISK ="2" TIME ="3" Mail="andrea.malara@desy.de" Notification="as" Workdir="workdir_DiJetJERC_DiJetHLT"/>
 -->
 
 <!-- OutputLevel controls which messages are printed; set to VERBOSE or DEBUG for more verbosity, to WARNING or ERROR for less -->
@@ -138,6 +140,7 @@
       <!-- Jet Variables -->
       <Item Name="JEC_Version"                Value="&JEC_VERSION;"/>
       <Item Name="JetLabel"                   Value="&JETLABEL;"/>
+      <Item Name="year"                       Value="&YEAR;"/>
 
       <!-- JERC -->
       <!--used only in UHH2/common/include/JetCorrections.cxx -->
@@ -149,22 +152,44 @@
       <!-- Triggers -->
       <Item Name="Trigger_Central"            Value="&TRIGGER_CENTRAL;"/>
       <Item Name="Trigger_FWD"                Value="&TRIGGER_FWD;"/>
-      <Item Name="trigger40"                  Value="HLT_DiPFJetAve40_v*"/>
-      <Item Name="trigger60"                  Value="HLT_DiPFJetAve60_v*"/>
-      <Item Name="trigger80"                  Value="HLT_DiPFJetAve80_v*"/>
-      <Item Name="trigger140"                 Value="HLT_DiPFJetAve140_v*"/>
-      <Item Name="trigger200"                 Value="HLT_DiPFJetAve200_v*"/>
-      <Item Name="trigger260"                 Value="HLT_DiPFJetAve260_v*"/>
-      <Item Name="trigger320"                 Value="HLT_DiPFJetAve320_v*"/>
-      <Item Name="trigger400"                 Value="HLT_DiPFJetAve400_v*"/>
-      <Item Name="trigger500"                 Value="HLT_DiPFJetAve500_v*"/>
+      <Item Name="PtBinsTrigger"              Value="&PtBinsTrigger;"/>
 
-      <Item Name="trigger60_HFJEC"            Value="HLT_DiPFJetAve60_HFJEC_v*"/>
-      <Item Name="trigger80_HFJEC"            Value="HLT_DiPFJetAve80_HFJEC_v*"/>
-      <Item Name="trigger100_HFJEC"           Value="HLT_DiPFJetAve100_HFJEC_v*"/>
-      <Item Name="trigger160_HFJEC"           Value="HLT_DiPFJetAve160_HFJEC_v*"/>
-      <Item Name="trigger220_HFJEC"           Value="HLT_DiPFJetAve220_HFJEC_v*"/>
-      <Item Name="trigger300_HFJEC"           Value="HLT_DiPFJetAve300_HFJEC_v*"/>
+      <Item Name="DiJet_trigger40"                Value="HLT_DiPFJetAve40_v*"/>
+      <Item Name="DiJet_trigger60"                Value="HLT_DiPFJetAve60_v*"/>
+      <Item Name="DiJet_trigger80"                Value="HLT_DiPFJetAve80_v*"/>
+      <Item Name="DiJet_trigger140"               Value="HLT_DiPFJetAve140_v*"/>
+      <Item Name="DiJet_trigger200"               Value="HLT_DiPFJetAve200_v*"/>
+      <Item Name="DiJet_trigger260"               Value="HLT_DiPFJetAve260_v*"/>
+      <Item Name="DiJet_trigger320"               Value="HLT_DiPFJetAve320_v*"/>
+      <Item Name="DiJet_trigger400"               Value="HLT_DiPFJetAve400_v*"/>
+      <Item Name="DiJet_trigger500"               Value="HLT_DiPFJetAve500_v*"/>
+
+      <Item Name="DiJet_trigger60_HFJEC"          Value="HLT_DiPFJetAve60_HFJEC_v*"/>
+      <Item Name="DiJet_trigger80_HFJEC"          Value="HLT_DiPFJetAve80_HFJEC_v*"/>
+      <Item Name="DiJet_trigger100_HFJEC"         Value="HLT_DiPFJetAve100_HFJEC_v*"/>
+      <Item Name="DiJet_trigger160_HFJEC"         Value="HLT_DiPFJetAve160_HFJEC_v*"/>
+      <Item Name="DiJet_trigger220_HFJEC"         Value="HLT_DiPFJetAve220_HFJEC_v*"/>
+      <Item Name="DiJet_trigger300_HFJEC"         Value="HLT_DiPFJetAve300_HFJEC_v*"/>
+
+      <Item Name="SingleJet_trigger40_AK8"        Value="HLT_AK8PFJet40_v*"/>
+      <Item Name="SingleJet_trigger60_AK8"        Value="HLT_AK8PFJet60_v*"/>
+      <Item Name="SingleJet_trigger80_AK8"        Value="HLT_AK8PFJet80_v*"/>
+      <Item Name="SingleJet_trigger140_AK8"       Value="HLT_AK8PFJet140_v*"/>
+      <Item Name="SingleJet_trigger200_AK8"       Value="HLT_AK8PFJet200_v*"/>
+      <Item Name="SingleJet_trigger260_AK8"       Value="HLT_AK8PFJet260_v*"/>
+      <Item Name="SingleJet_trigger320_AK8"       Value="HLT_AK8PFJet320_v*"/>
+      <Item Name="SingleJet_trigger400_AK8"       Value="HLT_AK8PFJet400_v*"/>
+      <Item Name="SingleJet_trigger450_AK8"       Value="HLT_AK8PFJet450_v*"/>
+      <Item Name="SingleJet_trigger500_AK8"       Value="HLT_AK8PFJet500_v*"/>
+
+      <Item Name="SingleJet_trigger40_HFJEC_AK8"  Value="HLT_AK8PFJetFwd60_v*"/>
+      <Item Name="SingleJet_trigger60_HFJEC_AK8"  Value="HLT_AK8PFJetFwd60_v*"/>
+      <Item Name="SingleJet_trigger80_HFJEC_AK8"  Value="HLT_AK8PFJetFwd80_v*"/>
+      <Item Name="SingleJet_trigger140_HFJEC_AK8" Value="HLT_AK8PFJetFwd140_v*"/>
+      <Item Name="SingleJet_trigger200_HFJEC_AK8" Value="HLT_AK8PFJetFwd200_v*"/>
+      <Item Name="SingleJet_trigger260_HFJEC_AK8" Value="HLT_AK8PFJetFwd260_v*"/>
+      <Item Name="SingleJet_trigger320_HFJEC_AK8" Value="HLT_AK8PFJetFwd320_v*"/>
+      <Item Name="SingleJet_trigger400_HFJEC_AK8" Value="HLT_AK8PFJetFwd400_v*"/>
 
       <!-- MC PuReweighting -->
       <Item Name="DO_Pu_ReWeighting"          Value="&DO_PU_REWEIGHTING;"/>

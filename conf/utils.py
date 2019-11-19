@@ -148,6 +148,8 @@ def change_lines(path, filename, controls, inputs, outputs):
                 isToChange = True
                 for ElToCheck in control:
                     isToChange = isToChange and ElToCheck in line
+                for index_1, el in enumerate(inputs[index]):
+                    isToChange = isToChange and inputs[index][index_1] in line
                 if isToChange:
                     isToSave = False
                     newLine = line

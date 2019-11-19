@@ -237,13 +237,18 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   for (size_t i = etaShift_FE_control;    i < etaShift_FE_control   + EtaBins_FE_control    + 1; i++)  Eta_bins_FE_control.push_back(eta_bins_JER[i]);
   for (size_t i = etaShift_FE;            i < etaShift_FE           + EtaBins_FE            + 1; i++)  Eta_bins_FE.push_back(eta_bins_JER[i]);
 
-  // PtBins_Central = n_pt_bins_Di;
-  PtBins_Central = n_pt_bins_Di_ext;
-  PtBins_HF = n_pt_bins_Di_HF;
-
-  // for (auto &pt: pt_bins_Di) Pt_bins_Central.push_back(pt);
-  for (auto &pt: pt_bins_Di_ext) Pt_bins_Central.push_back(pt);
-  for (auto &pt: pt_bins_Di_HF) Pt_bins_HF.push_back(pt);
+  std::string triggerName = "DiJet";
+  if (isAK8) triggerName = "SingleJet";
+  std::string name_pt_bin = triggerName+"_central_";
+  if (isAK8) name_pt_bin += "AK8_";
+  name_pt_bin += year+"_ptbins";
+  PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
+  for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
+  name_pt_bin = triggerName+"_forward_";
+  if (isAK8) name_pt_bin += "AK8_";
+  name_pt_bin += year+"_ptbins";
+  PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
+  for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
   Pt_bins_Central.push_back(1500);
   Pt_bins_HF.push_back(1500);
 
@@ -560,30 +565,51 @@ void MySelector::SlaveTerminate() {
   f_alpha->Close();
 
 
+  std::vector<TH2F*> h_nevents_central, h_nevents_HF;
 
+  std::vector<double> Pt_bins_Central_D(Pt_bins_Central.begin(), Pt_bins_Central.end());
+  std::vector<double> Pt_bins_HF_D(Pt_bins_HF.begin(), Pt_bins_HF.end());
+
+  for (int m = 0; m < 6; m++){
+    h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
+    h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
+  }
   std::cout << "Pt_bins_Central: " << nevents_central.size() << std::endl;
-  for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << pt_bins_Di[i];
+  for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << Pt_bins_Central_D[i];
   std::cout << std::endl;
 
   for (int r = 0; r < 14; r++) {
     for (int m = 0; m < 6; m++){
       std::cout << r << " " << m << " ";
-      for ( int k = 0 ; k < nevents_central.size() ; k++ ) std::cout << "\t" << nevents_central[k][r][m];
+      for ( int k = 0 ; k < nevents_central.size() ; k++ ) {
+        std::cout << "\t" << nevents_central[k][r][m];
+        h_nevents_central[m]->SetBinContent(h_nevents_central[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_central[m]->GetYaxis()->FindBin(Pt_bins_Central_D.at(k)), nevents_central[k][r][m]);
+      }
       std::cout << std::endl;
     } std::cout << std::endl;
   }
 
   std::cout << "Pt_bins_HF: " << nevents_HF.size() << std::endl;
-  for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << "\t" << pt_bins_Di_HF[i];
+  for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << "\t" << Pt_bins_HF_D[i];
   std::cout << std::endl;
 
   for (int r = 0; r < 14; r++) {
     for (int m = 0; m < 6; m++){
       std::cout << r << " " << m << " ";
-      for ( int k = 0 ; k < nevents_HF.size() ; k++ ) std::cout << "\t" << nevents_HF[k][r][m];
+      for ( int k = 0 ; k < nevents_HF.size() ; k++ ) {
+        std::cout << "\t" << nevents_HF[k][r][m];
+        h_nevents_HF[m]->SetBinContent(h_nevents_HF[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_HF[m]->GetYaxis()->FindBin(Pt_bins_HF_D.at(k)), nevents_HF[k][r][m]);
+      }
       std::cout << std::endl;
     }std::cout << std::endl;
   }
+
+  TFile *f_nevents  = new TFile(outdir+"histograms_nevents.root","RECREATE");
+  for (int m = 0; m < 6; m++){
+    h_nevents_central[m]->Write();
+    h_nevents_HF[m]->Write();
+  }
+  f_nevents->Close();
 
 }
 

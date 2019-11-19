@@ -1,0 +1,2322 @@
+Number of files:  0 / 18 (100) / 
+Number of files:  0 / 16 (100) / /
+Number of files:  0 / 15 (100) / /
+Number of files:  0 / 48 (100) / /
+Number of files:  0 / 2 (100) / /
+Number of files:  0 / 8 (100) / /
+Number of files:  0 / 1 (100) / /
+Number of files:  0 / 1 (100) / /
+Number of files:  0 / 5 (100) / /
+Number of files:  0 / 5 (100) / /
+Number of files:  0 / 5 (100) / /
+Number of files:  0 / 4 (100) / /
+Number of files:  0 / 4 (100) / /
+Number of files:  0 / 6 (100) / /
+Number of files:  0 / 6 (100) / /
+Number of files:  0 / 18 (100) / /
+Number of files:  0 / 16 (100) / /
+Number of files:  0 / 15 (100) / /
+Number of files:  0 / 48 (100) / /
+Number of files:  0 / 2 (100) / /
+Number of files:  0 / 8 (100) / /
+Number of files:  0 / 1 (100) / /
+Number of files:  0 / 1 (100) / /
+Number of files:  0 / 5 (100) / /
+Number of files:  0 / 5 (100) / /
+Number of files:  0 / 5 (100) / /
+Number of files:  0 / 4 (100) / /
+Number of files:  0 / 4 (100) / /
+Number of files:  0 / 6 (100) / /
+Number of files:  0 / 6 (100) / /
+Number of files:  0 / 18 (100) / /
+Number of files:  0 / 16 (100) / /
+Number of files:  0 / 15 (100) / /
+Number of files:  0 / 48 (100) / /
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.73 sec
+Already completed 36 out of 225 jobs --> 16.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_PUdown has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.75 sec
+Already completed 37 out of 225 jobs --> 16.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_PUdown has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.31 sec
+Already completed 38 out of 225 jobs --> 16.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_PUdown has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.28 sec
+Already completed 39 out of 225 jobs --> 17.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_PUdown has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.82 sec
+Already completed 40 out of 225 jobs --> 17.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_PUdown has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.78 sec
+Already completed 41 out of 225 jobs --> 18.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_PUdown has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.8 sec
+Already completed 42 out of 225 jobs --> 18.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_PUdown has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.47 sec
+Already completed 43 out of 225 jobs --> 19.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_PUdown has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.52 sec
+Already completed 44 out of 225 jobs --> 19.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_PUdown has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 3.25 sec
+Already completed 45 out of 225 jobs --> 20.0%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_PUdown has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 3.62 sec
+Already completed 46 out of 225 jobs --> 20.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 4.7 sec
+Already completed 47 out of 225 jobs --> 20.8888888889%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 4.17 sec
+Already completed 48 out of 225 jobs --> 21.3333333333%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.12 sec
+Already completed 49 out of 225 jobs --> 21.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.92 sec
+Already completed 50 out of 225 jobs --> 22.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_JECup has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.32 sec
+Already completed 51 out of 225 jobs --> 22.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_JECup has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.85 sec
+Already completed 52 out of 225 jobs --> 23.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_JECup has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.23 sec
+Already completed 53 out of 225 jobs --> 23.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_JECup has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.3 sec
+Already completed 54 out of 225 jobs --> 24.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_JECup has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.59 sec
+Already completed 55 out of 225 jobs --> 24.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_JECup has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.55 sec
+Already completed 56 out of 225 jobs --> 24.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_JECup has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.76 sec
+Already completed 57 out of 225 jobs --> 25.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_JECup has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.53 sec
+Already completed 58 out of 225 jobs --> 25.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_JECup has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.53 sec
+Already completed 59 out of 225 jobs --> 26.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_JECup has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.66 sec
+Already completed 60 out of 225 jobs --> 26.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_JECup has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.76 sec
+Already completed 61 out of 225 jobs --> 27.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.46 sec
+Already completed 62 out of 225 jobs --> 27.5555555556%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.23 sec
+Already completed 63 out of 225 jobs --> 28.0%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 5.31 sec
+Already completed 64 out of 225 jobs --> 28.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 7.29 sec
+Already completed 65 out of 225 jobs --> 28.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_JECdown has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 3.77 sec
+Already completed 66 out of 225 jobs --> 29.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_JECdown has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 3.21 sec
+Already completed 67 out of 225 jobs --> 29.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_JECdown has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 3.71 sec
+Already completed 68 out of 225 jobs --> 30.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_JECdown has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 4.2 sec
+Already completed 69 out of 225 jobs --> 30.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_JECdown has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.23 sec
+Already completed 70 out of 225 jobs --> 31.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_JECdown has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.36 sec
+Already completed 71 out of 225 jobs --> 31.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_JECdown has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.02 sec
+Already completed 72 out of 225 jobs --> 32.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_JECdown has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.39 sec
+Already completed 73 out of 225 jobs --> 32.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_JECdown has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 3.44 sec
+Already completed 74 out of 225 jobs --> 32.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_JECdown has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.5 sec
+Already completed 75 out of 225 jobs --> 33.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_JECdown has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.59 sec
+Already completed 76 out of 225 jobs --> 33.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018 has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.69 sec
+Already completed 77 out of 225 jobs --> 34.2222222222%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018 has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.3 sec
+Already completed 78 out of 225 jobs --> 34.6666666667%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018 has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.1 sec
+Already completed 79 out of 225 jobs --> 35.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018 has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.81 sec
+Already completed 80 out of 225 jobs --> 35.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500 has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.5 sec
+Already completed 81 out of 225 jobs --> 36.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200 has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.73 sec
+Already completed 82 out of 225 jobs --> 36.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000 has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.48 sec
+Already completed 83 out of 225 jobs --> 36.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.47 sec
+Already completed 84 out of 225 jobs --> 37.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300 has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.78 sec
+Already completed 85 out of 225 jobs --> 37.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500 has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.94 sec
+Already completed 86 out of 225 jobs --> 38.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700 has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.36 sec
+Already completed 87 out of 225 jobs --> 38.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100 has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 4.15 sec
+Already completed 88 out of 225 jobs --> 39.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000 has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 3.65 sec
+Already completed 89 out of 225 jobs --> 39.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 4.16 sec
+Already completed 90 out of 225 jobs --> 40.0%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018 has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.92 sec
+Already completed 91 out of 225 jobs --> 40.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.67 sec
+Already completed 92 out of 225 jobs --> 40.8888888889%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.92 sec
+Already completed 93 out of 225 jobs --> 41.3333333333%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.68 sec
+Already completed 94 out of 225 jobs --> 41.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.79 sec
+Already completed 95 out of 225 jobs --> 42.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_PUup has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.46 sec
+Already completed 96 out of 225 jobs --> 42.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_PUup has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 3.03 sec
+Already completed 97 out of 225 jobs --> 43.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_PUup has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.69 sec
+Already completed 98 out of 225 jobs --> 43.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_PUup has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.57 sec
+Already completed 99 out of 225 jobs --> 44.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_PUup has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.69 sec
+Already completed 100 out of 225 jobs --> 44.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_PUup has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.68 sec
+Already completed 101 out of 225 jobs --> 44.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_PUup has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.55 sec
+Already completed 102 out of 225 jobs --> 45.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_PUup has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.6 sec
+Already completed 103 out of 225 jobs --> 45.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_PUup has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.53 sec
+Already completed 104 out of 225 jobs --> 46.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_PUup has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.7 sec
+Already completed 105 out of 225 jobs --> 46.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_PUup has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 3.8 sec
+Already completed 106 out of 225 jobs --> 47.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 5.45 sec
+Already completed 107 out of 225 jobs --> 47.5555555556%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 4.53 sec
+Already completed 108 out of 225 jobs --> 48.0%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.37 sec
+Already completed 109 out of 225 jobs --> 48.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.55 sec
+Already completed 110 out of 225 jobs --> 48.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_PUdown has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.43 sec
+Already completed 111 out of 225 jobs --> 49.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_PUdown has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.8 sec
+Already completed 112 out of 225 jobs --> 49.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_PUdown has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.18 sec
+Already completed 113 out of 225 jobs --> 50.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_PUdown has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.22 sec
+Already completed 114 out of 225 jobs --> 50.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_PUdown has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.4 sec
+Already completed 115 out of 225 jobs --> 51.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_PUdown has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.47 sec
+Already completed 116 out of 225 jobs --> 51.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_PUdown has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.73 sec
+Already completed 117 out of 225 jobs --> 52.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_PUdown has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 3.02 sec
+Already completed 118 out of 225 jobs --> 52.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_PUdown has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 3.06 sec
+Already completed 119 out of 225 jobs --> 52.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_PUdown has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.48 sec
+Already completed 120 out of 225 jobs --> 53.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_PUdown has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.52 sec
+Already completed 121 out of 225 jobs --> 53.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.24 sec
+Already completed 122 out of 225 jobs --> 54.2222222222%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.07 sec
+Already completed 123 out of 225 jobs --> 54.6666666667%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.62 sec
+Already completed 124 out of 225 jobs --> 55.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 6.38 sec
+Already completed 125 out of 225 jobs --> 55.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_JECup has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 6.48 sec
+Already completed 126 out of 225 jobs --> 56.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_JECup has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 5.22 sec
+Already completed 127 out of 225 jobs --> 56.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_JECup has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.32 sec
+Already completed 128 out of 225 jobs --> 56.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_JECup has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.35 sec
+Already completed 129 out of 225 jobs --> 57.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_JECup has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.37 sec
+Already completed 130 out of 225 jobs --> 57.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_JECup has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.42 sec
+Already completed 131 out of 225 jobs --> 58.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_JECup has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.36 sec
+Already completed 132 out of 225 jobs --> 58.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_JECup has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.37 sec
+Already completed 133 out of 225 jobs --> 59.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_JECup has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.84 sec
+Already completed 134 out of 225 jobs --> 59.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_JECup has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.72 sec
+Already completed 135 out of 225 jobs --> 60.0%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_JECup has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.48 sec
+Already completed 136 out of 225 jobs --> 60.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.19 sec
+Already completed 137 out of 225 jobs --> 60.8888888889%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.63 sec
+Already completed 138 out of 225 jobs --> 61.3333333333%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 2.88 sec
+Already completed 139 out of 225 jobs --> 61.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.63 sec
+Already completed 140 out of 225 jobs --> 62.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_JECdown has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.14 sec
+Already completed 141 out of 225 jobs --> 62.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_JECdown has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.57 sec
+Already completed 142 out of 225 jobs --> 63.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_JECdown has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 3.31 sec
+Already completed 143 out of 225 jobs --> 63.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_JECdown has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 3.4 sec
+Already completed 144 out of 225 jobs --> 64.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_JECdown has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.24 sec
+Already completed 145 out of 225 jobs --> 64.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_JECdown has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.73 sec
+Already completed 146 out of 225 jobs --> 64.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_JECdown has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 4.29 sec
+Already completed 147 out of 225 jobs --> 65.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_JECdown has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.27 sec
+Already completed 148 out of 225 jobs --> 65.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_JECdown has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.3 sec
+Already completed 149 out of 225 jobs --> 66.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_JECdown has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.79 sec
+Already completed 150 out of 225 jobs --> 66.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_JECdown has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.39 sec
+Already completed 151 out of 225 jobs --> 67.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018 has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.15 sec
+Already completed 152 out of 225 jobs --> 67.5555555556%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018 has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.18 sec
+Already completed 153 out of 225 jobs --> 68.0%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018 has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 2.94 sec
+Already completed 154 out of 225 jobs --> 68.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018 has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.54 sec
+Already completed 155 out of 225 jobs --> 68.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500 has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.44 sec
+Already completed 156 out of 225 jobs --> 69.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200 has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.74 sec
+Already completed 157 out of 225 jobs --> 69.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000 has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.3 sec
+Already completed 158 out of 225 jobs --> 70.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.13 sec
+Already completed 159 out of 225 jobs --> 70.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300 has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.43 sec
+Already completed 160 out of 225 jobs --> 71.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500 has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.55 sec
+Already completed 161 out of 225 jobs --> 71.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700 has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.73 sec
+Already completed 162 out of 225 jobs --> 72.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100 has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 3.12 sec
+Already completed 163 out of 225 jobs --> 72.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000 has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 3.42 sec
+Already completed 164 out of 225 jobs --> 72.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 3.44 sec
+Already completed 165 out of 225 jobs --> 73.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018 has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 3.56 sec
+Already completed 166 out of 225 jobs --> 73.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.72 sec
+Already completed 167 out of 225 jobs --> 74.2222222222%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.64 sec
+Already completed 168 out of 225 jobs --> 74.6666666667%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.15 sec
+Already completed 169 out of 225 jobs --> 75.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_PUup has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.8 sec
+Already completed 170 out of 225 jobs --> 75.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_PUup has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.31 sec
+Already completed 171 out of 225 jobs --> 76.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_PUup has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 3.05 sec
+Already completed 172 out of 225 jobs --> 76.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_PUup has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.41 sec
+Already completed 173 out of 225 jobs --> 76.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_PUup has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.63 sec
+Already completed 174 out of 225 jobs --> 77.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_PUup has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.53 sec
+Already completed 175 out of 225 jobs --> 77.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_PUup has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.59 sec
+Already completed 176 out of 225 jobs --> 78.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_PUup has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.36 sec
+Already completed 177 out of 225 jobs --> 78.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_PUup has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.46 sec
+Already completed 178 out of 225 jobs --> 79.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_PUup has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.39 sec
+Already completed 179 out of 225 jobs --> 79.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_PUup has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.68 sec
+Already completed 180 out of 225 jobs --> 80.0%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_PUup has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.79 sec
+Already completed 181 out of 225 jobs --> 80.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 4.24 sec
+Already completed 182 out of 225 jobs --> 80.8888888889%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 4.13 sec
+Already completed 183 out of 225 jobs --> 81.3333333333%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 4.67 sec
+Already completed 184 out of 225 jobs --> 81.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_PUdown has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 6.41 sec
+Already completed 185 out of 225 jobs --> 82.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_PUdown has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.75 sec
+Already completed 186 out of 225 jobs --> 82.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_PUdown has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.8 sec
+Already completed 187 out of 225 jobs --> 83.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_PUdown has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.45 sec
+Already completed 188 out of 225 jobs --> 83.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_PUdown has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.35 sec
+Already completed 189 out of 225 jobs --> 84.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_PUdown has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.47 sec
+Already completed 190 out of 225 jobs --> 84.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_PUdown has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.74 sec
+Already completed 191 out of 225 jobs --> 84.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_PUdown has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.51 sec
+Already completed 192 out of 225 jobs --> 85.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_PUdown has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.4 sec
+Already completed 193 out of 225 jobs --> 85.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_PUdown has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.45 sec
+Already completed 194 out of 225 jobs --> 86.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_PUdown has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.81 sec
+Already completed 195 out of 225 jobs --> 86.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_PUdown has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.6 sec
+Already completed 196 out of 225 jobs --> 87.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.28 sec
+Already completed 197 out of 225 jobs --> 87.5555555556%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.53 sec
+Already completed 198 out of 225 jobs --> 88.0%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.13 sec
+Already completed 199 out of 225 jobs --> 88.4444444444%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_JECup has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 6.98 sec
+Already completed 200 out of 225 jobs --> 88.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_JECup has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 3.57 sec
+Already completed 201 out of 225 jobs --> 89.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_JECup has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 3.45 sec
+Already completed 202 out of 225 jobs --> 89.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_JECup has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 3.88 sec
+Already completed 203 out of 225 jobs --> 90.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_JECup has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.36 sec
+Already completed 204 out of 225 jobs --> 90.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_JECup has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.49 sec
+Already completed 205 out of 225 jobs --> 91.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_JECup has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.51 sec
+Already completed 206 out of 225 jobs --> 91.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_JECup has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 2.55 sec
+Already completed 207 out of 225 jobs --> 92.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_JECup has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.43 sec
+Already completed 208 out of 225 jobs --> 92.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_JECup has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.49 sec
+Already completed 209 out of 225 jobs --> 92.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_JECup has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.52 sec
+Already completed 210 out of 225 jobs --> 93.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_JECup has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.93 sec
+Already completed 211 out of 225 jobs --> 93.7777777778%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunA_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunA_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunA_2018:      0     18 000  Working 
+Number of files:  0 / 18 (100) / /
+
+SFrame Batch was running for 3.48 sec
+Already completed 212 out of 225 jobs --> 94.2222222222%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunB_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunB_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunB_2018:      0     16 000  Working 
+Number of files:  0 / 16 (100) / /
+
+SFrame Batch was running for 3.29 sec
+Already completed 213 out of 225 jobs --> 94.6666666667%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunC_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunC_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunC_2018:      0     15 000  Working 
+Number of files:  0 / 15 (100) / /
+
+SFrame Batch was running for 3.27 sec
+Already completed 214 out of 225 jobs --> 95.1111111111%.
+workdir_DiJetJERC_DiJetHLT_DATA_RunD_2018_JECdown has been created
+starting manager
+Splitting job by files DATA_RunD_2018
+ Result.xml created for further jobs
+
+
+                   
+                DATA_RunD_2018:      0     48 000  Working 
+Number of files:  0 / 48 (100) / /
+
+SFrame Batch was running for 5.87 sec
+Already completed 215 out of 225 jobs --> 95.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1000to1500_JECdown has been created
+starting manager
+Splitting job by files QCDHT1000to1500
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1000to1500:      0      2 000  Working 
+Number of files:  0 / 2 (100) / /
+
+SFrame Batch was running for 2.65 sec
+Already completed 216 out of 225 jobs --> 96.0%.
+workdir_DiJetJERC_DiJetHLT_QCDHT100to200_JECdown has been created
+starting manager
+Splitting job by files QCDHT100to200
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT100to200:      0      8 000  Working 
+Number of files:  0 / 8 (100) / /
+
+SFrame Batch was running for 2.71 sec
+Already completed 217 out of 225 jobs --> 96.4444444444%.
+workdir_DiJetJERC_DiJetHLT_QCDHT1500to2000_JECdown has been created
+starting manager
+Splitting job by files QCDHT1500to2000
+ Result.xml created for further jobs
+
+
+                   
+               QCDHT1500to2000:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.53 sec
+Already completed 218 out of 225 jobs --> 96.8888888889%.
+workdir_DiJetJERC_DiJetHLT_QCDHT2000toInf_JECdown has been created
+starting manager
+Splitting job by files QCDHT2000toInf
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT2000toInf:      0      1 000  Working 
+Number of files:  0 / 1 (100) / /
+
+SFrame Batch was running for 2.93 sec
+Already completed 219 out of 225 jobs --> 97.3333333333%.
+workdir_DiJetJERC_DiJetHLT_QCDHT200to300_JECdown has been created
+starting manager
+Splitting job by files QCDHT200to300
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT200to300:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.84 sec
+Already completed 220 out of 225 jobs --> 97.7777777778%.
+workdir_DiJetJERC_DiJetHLT_QCDHT300to500_JECdown has been created
+starting manager
+Splitting job by files QCDHT300to500
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT300to500:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.9 sec
+Already completed 221 out of 225 jobs --> 98.2222222222%.
+workdir_DiJetJERC_DiJetHLT_QCDHT500to700_JECdown has been created
+starting manager
+Splitting job by files QCDHT500to700
+ Result.xml created for further jobs
+
+
+                   
+                 QCDHT500to700:      0      5 000  Working 
+Number of files:  0 / 5 (100) / /
+
+SFrame Batch was running for 3.41 sec
+Already completed 222 out of 225 jobs --> 98.6666666667%.
+workdir_DiJetJERC_DiJetHLT_QCDHT50to100_JECdown has been created
+starting manager
+Splitting job by files QCDHT50to100
+ Result.xml created for further jobs
+
+
+                   
+                  QCDHT50to100:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.52 sec
+Already completed 223 out of 225 jobs --> 99.1111111111%.
+workdir_DiJetJERC_DiJetHLT_QCDHT700to1000_JECdown has been created
+starting manager
+Splitting job by files QCDHT700to1000
+ Result.xml created for further jobs
+
+
+                   
+                QCDHT700to1000:      0      4 000  Working 
+Number of files:  0 / 4 (100) / /
+
+SFrame Batch was running for 2.92 sec
+Already completed 224 out of 225 jobs --> 99.5555555556%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat2018_JECdown has been created
+starting manager
+Splitting job by files QCD_Flat2018
+ Result.xml created for further jobs
+
+
+                   
+                  QCD_Flat2018:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.85 sec
+Already completed 225 out of 225 jobs --> 100.0%.
+workdir_DiJetJERC_DiJetHLT_QCD_Flat_JECdown has been created
+starting manager
+Splitting job by files QCD_Flat
+ Result.xml created for further jobs
+
+
+                   
+                      QCD_Flat:      0      6 000  Working 
+Number of files:  0 / 6 (100) / /
+
+SFrame Batch was running for 2.63 sec
+'condor_control'  967.51 s
+[amalara@naf-cms11]/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/conf% ll SubmittedJobs/Autumn18_V19/AK*/**/*xml | wc -l
+2835
+[amalara@naf-cms11]/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/conf% 
+

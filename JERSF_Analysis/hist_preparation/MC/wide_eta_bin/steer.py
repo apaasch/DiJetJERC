@@ -112,20 +112,12 @@ for el in [""]:
   samples = ["_Flat2018"]
   samples = ["_Flat"]
   samples = ["HT"]
-  # samples = ["HT","_Flat"]
-  # samples = ["HT","_Flat"]
-  # samples = ["HT1000to1500", "HT100to200"]
-  # samples = ["HT1500to2000", "HT300to500"]
-  # samples = ["HT2000toInf", "HT200to300"]
-  # samples = ["HT500to700", "HT50to100"]
-  # samples = ["HT700to1000"]
 
-  JECVersions = ["Autumn18_V16", "Autumn18_V16h"]
-  # JetLabels = ["AK8PUPPI"]
-  JetLabels = ["AK4CHS"]
-  #systematics = ["", "alpha","PU", "JEC", "JER"]
+  JECVersions = ["Autumn18_V19"]
+  JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
+  # systematics = ["", "alpha","PU", "JEC", "JER"]
   systematics = ["", "alpha","PU", "JEC"]
-  #systematics = [""]
+  # systematics = [""]
   main_program(path, list_path, out_path, JECVersions, JetLabels, systematics, samples)
 
 print len(list_processes)
@@ -133,4 +125,4 @@ print len(list_processes)
 for i in list_processes:
   print i
 
-parallelise(list_processes, 3, list_logfiles)
+parallelise(list_processes, 2, list_logfiles)
