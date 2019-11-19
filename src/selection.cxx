@@ -63,7 +63,7 @@ namespace uhh2DiJetJERC {
     cut_map->Close();
 
     try{
-      diJetTrg  = (ctx.get("Trigger_Single") == "false");
+      // diJetTrg  = (ctx.get("Trigger_Single") == "false");
       central = (ctx.get("Trigger_Central") == "true");
       fwd     = (ctx.get("Trigger_FWD") == "true");
     }
@@ -71,7 +71,7 @@ namespace uhh2DiJetJERC {
       cout<<"Got runtime error while looking for setting Trigger_Single"<<endl;
       cout << error.what() << "\n";
       cout<<"continue with diJetTrg settings, only relevant if jet trgObj matching is used"<<endl;
-      diJetTrg = true;
+      // diJetTrg = true;
       central = true;
       fwd = true;
     }

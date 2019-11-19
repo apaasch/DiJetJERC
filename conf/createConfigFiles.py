@@ -66,16 +66,12 @@ def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], 
                 if "QCD" in process:
                     controls.append(["<!ENTITY", "JEC_VERSION", '"Autumn18_V4"', '"'+JECVersions_MC[index_JEC]+'"'])
                 controls.append(["<!ENTITY", "JETLABEL", '"AK4CHS"', '"'+newJetLabel+'"'])
+                if "AK4Puppi" in newJetLabel:
+                    controls.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
                 if "AK8" in newJetLabel:
-                    controls.append(["<Item", "JetCollection", '"jetAk4CHS"', '"jetsAk8Puppi"'])
+                    controls.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
+                    controls.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8Puppi"'])
                     controls.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"slimmedGenJetsAK8"'])
-                #     if isLowPt:
-                #         controls.append(["<Item", "JetCollection", '"jetAk4CHS"', '"jetsAk8Puppi"'])
-                #         controls.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"ak8GenJets"'])
-                # else:
-                #     if isLowPt:
-                #         controls.append(["<Item", "JetCollection", '"jetAk4CHS"', '"patJetsAK4PFCHS"'])
-                #         controls.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"ak4GenJets"'])
                 if "QCD" in process:
                     controls.append(["<!ENTITY", "PILEUP_DIRECTORY ", "MyMCPileupHistogram" , "MyMCPileupHistogram_"+process])
                 change_lines(path, filename, [el[0:2] for el in controls ], [el[2:3] for el in controls ], [el[3:4] for el in controls ])

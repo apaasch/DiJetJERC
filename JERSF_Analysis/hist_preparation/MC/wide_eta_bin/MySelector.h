@@ -32,6 +32,8 @@ class MySelector : public TSelector {
 public:
 
   TString outdir;
+  std::string year;
+  bool isAK8;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
   // Declaration of leaf types
@@ -110,7 +112,7 @@ public:
   TBranch *b_gen_asymmetry;
   TBranch *b_gen_alpha;
 
-  MySelector(TString name, TTree * /*tree*/ =0) : fChain(0), outdir(name) { }
+  MySelector(TString name, std::string year_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), isAK8(isAK8_) { }
   virtual ~MySelector() { }
   virtual int   Version() const { return 2; }
   virtual void    Begin(TTree *tree);
@@ -222,7 +224,6 @@ void MySelector::Init(TTree *tree){
   fChain->SetMakeClass(1);
 
   TFile* currentFile = ((TChain*)fChain)->GetFile();
-  std::cout << currentFile->GetName() << " " << ((TTree*)currentFile->Get("AnalysisTree"))->GetEntriesFast() << " " << tree->GetEntriesFast()  << '\n';
 
   fChain->SetBranchAddress("eventID", &event, &b_event);
   fChain->SetBranchAddress("run", &run, &b_run);

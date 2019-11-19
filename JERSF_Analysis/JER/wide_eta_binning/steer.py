@@ -46,7 +46,7 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     else:
         os.makedirs(outdir)
     programm ="mainRun"
-    if "AK8" in outdir: programm += "AK8"
+    # if "AK8" in outdir: programm += "AK8"
     cmd = "cp %s.cxx %s" % (programm, outdir)
     a = os.system(cmd)
     cmd = "cp functions.C %s" % (outdir)
@@ -87,21 +87,19 @@ common_path = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10
 
 samples = ["A", "B", "C", "D", "ABC", "ABCD"]
 samples = ["D", "ABC", "ABCD"]
-# samples = ["ABC"]
+samples = ["D"]
 #QCDSamples = ["QCD_Flat", "QCD_Flat2018"]
 QCDSamples = ["QCDHT"]
-JetLabels=["AK4CHS"]
-# JetLabels=["AK8PUPPI"]
-JECVersions=["Autumn18_V16", "Autumn18_V16h"]
+JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
+JetLabels=["AK8Puppi"]
+JECVersions=["Autumn18_V19"]
 dirs = ["", "up", "down"]
 studies = ["MergeL2Res/"]
 # systematics=["", "PU", "JEC", "alpha", "JER"]
 systematics=["", "PU", "JEC", "alpha"]
-# systematics=[""]
+systematics=[""]
 #systematics=["", "JEC"]
 
-list_processes = []
-list_logfiles = []
 
 for extraText in [""]:
     for study in studies:
@@ -127,8 +125,6 @@ for extraText in [""]:
                                 run = "Run"+sample
                                 LABEL_LUMI_INV_FB=getLabel(sample)
                                 LABEL_LUMI_INV_FB = '\\"'+LABEL_LUMI_INV_FB+'\\"'
-                                # MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/save_v1/"+study+pattern.replace("/standard","")+QCDsample+extraText+"/histograms_mc_incl_full.root"+'\\"'
-                                # Data_file = '\\"'+source_path+"data/wide_eta_bin/file/save_v1/"+study+pattern.replace("/standard","")+run+extraText+"/histograms_data_incl_full.root"+'\\"'
                                 MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+pattern.replace("/standard","")+QCDsample+extraText+"/histograms_mc_incl_full.root"+'\\"'
                                 Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+pattern.replace("/standard","")+run+extraText+"/histograms_data_incl_full.root"+'\\"'
                                 print MC_file, Data_file
@@ -136,18 +132,10 @@ for extraText in [""]:
                                     continue
                                 # print MC_file, Data_file
                                 main_function(gaustails=False)
-                                if syst == "":
-                                  main_function(gaustails=False, shiftForPLI="up")
-                                  main_function(gaustails=False, shiftForPLI="down")
-                                  main_function(gaustails=True, shiftForPLI="central")
-                                  main_function(gaustails=True, shiftForPLI="central", gaustail_num = 0.95)
+                                # if syst == "":
+                                  # main_function(gaustails=False, shiftForPLI="up")
+                                  # main_function(gaustails=False, shiftForPLI="down")
+                                  # main_function(gaustails=True, shiftForPLI="central")
+                                  # main_function(gaustails=True, shiftForPLI="central", gaustail_num = 0.95)
                                     ## for gaustail_num in np.arange(0.8,1.0,0.005):
                                     ##    main_function(gaustails=True, shiftForPLI="central", gaustail_num=gaustail_num)
-
-
-
-# for i in list_processes:
-#     print i
-#
-# print len(list_processes)
-#parallelise(list_processes, 10, list_logfiles)

@@ -57,7 +57,7 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
 
 from createConfigFiles import *
 @timeit
-def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn18_V4", "Autumn18_V4"], JetLabels=["AK4CHS", "AK8PUPPI"], systematics=["", "PU", "JEC", "JER"],extratext=""):
+def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn18_V4", "Autumn18_V4"], JetLabels=["AK4CHS", "AK8Puppi"], systematics=["", "PU", "JEC", "JER"],extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
     for sample in ["DATA", "QCD"]:
         for newJECVersion in JECVersions_Data:
@@ -75,12 +75,14 @@ def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                             for workdir in sorted(os.listdir(path)):
                                 if "workdir" in workdir:
                                     cmd = "rm -fr %s" % (path+workdir)
+				    print cmd
                                     a = os.system(cmd)
                         path = original_dir+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
                         if os.path.isdir(path):
                             for workdir in sorted(os.listdir(path)):
                                 if "workdir" in workdir:
                                     cmd = "rm -fr %s" % (path+workdir)
+				    print cmd
                                     a = os.system(cmd)
 
 
@@ -146,7 +148,7 @@ Data_process.append("DATA_RunD_2018")
 processes = QCD_process+Data_process
 
 # JECVersions_Data = ["Autumn18_V4"]
-# JetLabels = ["AK4CHS", "AK8PUPPI"]
+# JetLabels = ["AK4CHS", "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
 
 userPathSframeOutput="/nfs/dust/cms/user/amalara/sframe_all/"
@@ -154,12 +156,12 @@ original_file = "DiJetJERC_DiJetHLT.xml"
 outdir = "DiJetJERC_DiJetHLT"
 original_dir_ = os.getcwd()
 
-JECVersions_Data = ["Autumn18_V16", "Autumn18_V16h"]
-JECVersions_MC   = ["Autumn18_V16", "Autumn18_V16h"]
-JetLabels = ["AK4CHS"]
+JECVersions_Data = ["Autumn18_V19"]
+JECVersions_MC   = ["Autumn18_V19"]
+JetLabels = ["AK4CHS","AK8Puppi", "AK4Puppi"]
 systematics = ["", "PU", "JEC", "JER"]
 systematics = ["", "PU", "JEC"]
-#systematics = [""]
+# systematics = [""]
 
 isLowPt = False
 isMB = False

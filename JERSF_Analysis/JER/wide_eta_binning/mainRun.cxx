@@ -634,6 +634,10 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
   //           bin values
   // ------------------------------
 
+  bool isAK8 = outdir.Contains("AK8");
+  std::string year = outdir.Contains("Autumn18")? "2018": (outdir.Contains("Fall17")? "2017": (outdir.Contains("Summer16")? "2016": "" )) ;
+  std::cout << outdir << "\t" << isAK8 << "\t" << year << "\n";
+
   int EtaBins_SM            = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<eta_cut; });; // st method bins
   int EtaBins_SM_control    = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i>eta_cut; });; // st method bins control
   int EtaBins_FE_reference  = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<s_eta_barr;});; // fe method bins reference
@@ -659,20 +663,22 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
 
   std::vector<double> Pt_bins_Central, Pt_bins_HF;
 
-  if (Trigger.Contains("LowPt", TString::ECaseCompare::kIgnoreCase)) {
-    // PtBins_Central  = n_pt_bins_MB;
-    // PtBins_HF       = n_pt_bins_MB_HF;
-    // for (int i = 0; i < n_pt_bins_MB; i++) Pt_bins_Central.push_back(pt_bins_MB[i]);
-    // for (int i = 0; i < n_pt_bins_MB_HF; i++) Pt_bins_HF.push_back(pt_bins_MB_HF[i]);
-  } else {
-    PtBins_Central  = n_pt_bins_Di_ext;
-    PtBins_HF       = n_pt_bins_Di_HF;
-    for (int i = 0; i < n_pt_bins_Di_ext; i++) Pt_bins_Central.push_back(pt_bins_Di_ext[i]);
-    for (int i = 0; i < n_pt_bins_Di_HF; i++) Pt_bins_HF.push_back(pt_bins_Di_HF[i]);
-  }
-
+  std::string triggerName = "DiJet";
+  if (isAK8) triggerName = "SingleJet";
+  std::string name_pt_bin = triggerName+"_central_";
+  if (isAK8) name_pt_bin += "AK8_";
+  name_pt_bin += year+"_ptbins";
+  PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
+  for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
+  name_pt_bin = triggerName+"_forward_";
+  if (isAK8) name_pt_bin += "AK8_";
+  name_pt_bin += year+"_ptbins";
+  PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
+  for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
   Pt_bins_Central.push_back(1500);
   Pt_bins_HF.push_back(1500);
+
+
 
   std::cout << "Trigger " << Trigger << " " << Pt_bins_Central.size() << " " << Pt_bins_HF.size() << '\n';
   std::cout << "Pt_bins_Central\t"; for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << Pt_bins_Central[i] << '\t'; std::cout << '\n';
@@ -1247,8 +1253,8 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
   PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
   fMCTruth.Close();
 
-  // bool plot_all = true;
-  bool plot_all = false;
+  bool plot_all = true;
+  // bool plot_all = false;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
