@@ -15,7 +15,7 @@ using namespace std;
 
 int main ( int argc, char *argv[] ) {
   TString list_files;
-  if ( argc > 3 ) { // argc should be 3 for correct execution
+  if ( argc > 4 ) { // argc should be 3 for correct execution
     std::cout<<"usage: "<< argv[0] <<" <filename>\n";
   } else {
     list_files = argv[1];
@@ -26,13 +26,14 @@ int main ( int argc, char *argv[] ) {
   }
 
   bool isAK8 = list_files.Contains("AK8");
-  std::string year = list_files.Contains("Autumn18")? "2018": (list_files.Contains("Fall17")? "2017": (list_files.Contains("Summer16")? "2016": "" )) ;
-  std::cout << list_files << "\t" << isAK8 << "\t" << year << "\n";
+  std::string year;
   TString outdirname = "./";
-  if (argc >= 3) {
+  if (argc >= 4) {
     outdirname = argv[2];
+    year = argv[3];
   }
 
+  std::cout << list_files << "\t isAK8=" << isAK8 << "\t year=" << year << "\n";
   std::cout << "outdirname: " << outdirname <<std::endl;
 
   MySelector *A = new MySelector(outdirname, year, isAK8);

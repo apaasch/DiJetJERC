@@ -1,10 +1,11 @@
+#!/usr/bin/env python
 import sys
 import os
 import time
 import numpy as np
 
-sys.path.append("/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/PersonalCode/")
-from parallelise import *
+sys.path.append(os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/")
+from utils import *
 
 def getLabel(sample):
     if sample == "A":
@@ -31,12 +32,12 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     if "barrel_check" in extraText:
         ref_shift = int(extraText[-2])
     if gaustails:
-        outdir = out_path+newJECVersion+"/"+newJetLabel+"/gaustails_"+str(gaustail_num)+"/"+QCDsample+"/"+run+"/"
+        outdir = out_path+year+"/"+newJECVersion+"/"+newJetLabel+"/gaustails_"+str(gaustail_num)+"/"+QCDsample+"/"+run+"/"
     if shiftForPLI=="up":
-        outdir = out_path+newJECVersion+"/"+newJetLabel+"/PLI/up/"+QCDsample+"/"+run+"/"
+        outdir = out_path+year+"/"+newJECVersion+"/"+newJetLabel+"/PLI/up/"+QCDsample+"/"+run+"/"
         shiftForPLI_num = 0.25
     if shiftForPLI=="down":
-        outdir = out_path+newJECVersion+"/"+newJetLabel+"/PLI/down/"+QCDsample+"/"+run+"/"
+        outdir = out_path+year+"/"+newJECVersion+"/"+newJetLabel+"/PLI/down/"+QCDsample+"/"+run+"/"
         shiftForPLI_num = -0.25
     print "outdir ", outdir
     if os.path.isdir(outdir):
@@ -51,7 +52,9 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     a = os.system(cmd)
     cmd = "cp functions.C %s" % (outdir)
     a = os.system(cmd)
-    cmd = "cp /nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/PersonalCode/tdrstyle_all.C %s" % (outdir)
+    cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/include/tdrstyle_all.h %s" % (outdir)
+    a = os.system(cmd)
+    cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/include/constants.h %s" % (outdir)
     a = os.system(cmd)
     os.chdir(outdir)
     os.makedirs("pdfy")
@@ -69,42 +72,49 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     # f = open("log.txt",'w')
     MC_type = '\\"MC\\"'
     data_type = '\\"Data\\"'
-    trigger_type = '\\"'+study[:-1]+'\\"'
-    # cmd = 'root -l -b -q "%s%s.cxx(false, %s, %s, %s, %s , %s, %s, %s, %s, %s, %s)" >> log.txt &' % (outdir, programm, MC_file, Data_file, LABEL_LUMI_INV_FB, MC_type, data_type, trigger_type, '\\"'+outdir+'\\"', gaustail_num, shiftForPLI_num, ref_shift)
-    # cmd = 'root -l -b -q "%s%s.cxx(false, %s, %s, %s, %s , %s, %s, %s, %s, %s, %s)" >> log.txt  ' % (outdir, programm, MC_file, Data_file, LABEL_LUMI_INV_FB, MC_type, data_type, trigger_type, '\\"'+outdir+'\\"', gaustail_num, shiftForPLI_num, ref_shift)
-    cmd = 'root -l -b -q "%s%s.cxx(false, %s, %s, %s, %s , %s, %s, %s, %s, %s, %s)"' % (outdir, programm, MC_file, Data_file, LABEL_LUMI_INV_FB, MC_type, data_type, trigger_type, '\\"'+outdir+'\\"', gaustail_num, shiftForPLI_num, ref_shift)
+    trigger_type = '\\"'+study+'\\"'
+    # cmd = 'root -l -b -q "%s%s.cxx(%s, false, %s, %s, %s, %s , %s, %s, %s, %s, %s, %s)" >> log.txt &' % (outdir, programm, year, MC_file, Data_file, LABEL_LUMI_INV_FB, MC_type, data_type, trigger_type, '\\"'+outdir+'\\"', gaustail_num, shiftForPLI_num, ref_shift)
+    # cmd = 'root -l -b -q "%s%s.cxx(%s, false, %s, %s, %s, %s , %s, %s, %s, %s, %s, %s)" >> log.txt  ' % (outdir, programm, year, MC_file, Data_file, LABEL_LUMI_INV_FB, MC_type, data_type, trigger_type, '\\"'+outdir+'\\"', gaustail_num, shiftForPLI_num, ref_shift)
+    cmd = 'root -l -b -q "%s%s.cxx(\\"%s\\", false, %s, %s, %s, %s , %s, %s, %s, %s, %s, %s)"' % (outdir, programm, year, MC_file, Data_file, LABEL_LUMI_INV_FB, MC_type, data_type, trigger_type, '\\"'+outdir+'\\"', gaustail_num, shiftForPLI_num, ref_shift)
     print "cmd", cmd
     a = os.system(cmd)
     print ("time needed: "+str((time.time()-temp_time))+" s")
     os.chdir(common_path)
 
 
+source_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/"
+common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/"
 
 
-source_path = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/"
-common_path = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/"
+year = "UL17"
 
+samples = {}
+samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
+samples["2018"] = ["D", "ABC", "ABCD"]
+samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+samples["UL17"] = ["BCDEF"]
 
-samples = ["A", "B", "C", "D", "ABC", "ABCD"]
-samples = ["D", "ABC", "ABCD"]
-samples = ["D"]
-#QCDSamples = ["QCD_Flat", "QCD_Flat2018"]
-QCDSamples = ["QCDHT"]
-JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
-JetLabels=["AK8Puppi"]
-JECVersions=["Autumn18_V19"]
+QCDSamples = {}
+QCDSamples["2018"] = ["QCDHT"]
+QCDSamples["UL17"] = ["QCDPt"]
+
+JECVersions = {}
+JECVersions["2018"] = ["Autumn18_V19"]
+JECVersions["UL17"] = ["Fall17_17Nov2017_V32"]
+# JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
+JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
-studies = ["MergeL2Res/"]
+studies = ["Standard"]
 # systematics=["", "PU", "JEC", "alpha", "JER"]
 systematics=["", "PU", "JEC", "alpha"]
-systematics=[""]
+# systematics=[""]
 #systematics=["", "JEC"]
 
 
 for extraText in [""]:
     for study in studies:
-        out_path  = common_path+"file/"+study+extraText
-        for newJECVersion in JECVersions:
+        out_path  = common_path+"file/"+study+"/"+extraText
+        for newJECVersion in JECVersions[year]:
             for newJetLabel in JetLabels:
                 for syst in systematics:
                     for dir in dirs:
@@ -114,28 +124,30 @@ for extraText in [""]:
                           dir = "nominal"
                         if (syst == "" and dir != "") or (syst == "alpha" and dir != "") or ((syst != "" and syst != "alpha") and dir == ""):
                             continue
-                        pattern = newJECVersion+"/"+newJetLabel+"/"+syst+"/"+dir+"/"
+                        pattern = year+"/"+newJECVersion+"/"+newJetLabel
                         if syst == "":
-                            pattern = newJECVersion+"/"+newJetLabel+"/standard/"
-                        if syst == "alpha":
-                            pattern = newJECVersion+"/"+newJetLabel+"/"+syst+"/"
+                            pattern += "/standard/"
+                        elif syst == "alpha":
+                            pattern += "/"+syst+"/"
+                        else:
+                            pattern += "/"+syst+"/"+dir+"/"
                         print "pattern ", pattern
-                        for QCDsample in QCDSamples:
-                            for sample in samples:
+                        for QCDsample in QCDSamples[year]:
+                            for sample in samples[year]:
                                 run = "Run"+sample
                                 LABEL_LUMI_INV_FB=getLabel(sample)
                                 LABEL_LUMI_INV_FB = '\\"'+LABEL_LUMI_INV_FB+'\\"'
-                                MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+pattern.replace("/standard","")+QCDsample+extraText+"/histograms_mc_incl_full.root"+'\\"'
-                                Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+pattern.replace("/standard","")+run+extraText+"/histograms_data_incl_full.root"+'\\"'
+                                MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+QCDsample+"_"+year+extraText+"/histograms_mc_incl_full.root"+'\\"'
+                                Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+run+"_"+year+extraText+"/histograms_data_incl_full.root"+'\\"'
                                 print MC_file, Data_file
                                 if not os.path.isfile(str(MC_file.replace("\\","").strip("\""))) or not os.path.isfile(str(Data_file.replace("\\","").strip("\""))):
                                     continue
                                 # print MC_file, Data_file
                                 main_function(gaustails=False)
-                                # if syst == "":
-                                  # main_function(gaustails=False, shiftForPLI="up")
-                                  # main_function(gaustails=False, shiftForPLI="down")
-                                  # main_function(gaustails=True, shiftForPLI="central")
-                                  # main_function(gaustails=True, shiftForPLI="central", gaustail_num = 0.95)
+                                if syst == "":
+                                  main_function(gaustails=False, shiftForPLI="up")
+                                  main_function(gaustails=False, shiftForPLI="down")
+                                  main_function(gaustails=True, shiftForPLI="central")
+                                  main_function(gaustails=True, shiftForPLI="central", gaustail_num = 0.95)
                                     ## for gaustail_num in np.arange(0.8,1.0,0.005):
                                     ##    main_function(gaustails=True, shiftForPLI="central", gaustail_num=gaustail_num)

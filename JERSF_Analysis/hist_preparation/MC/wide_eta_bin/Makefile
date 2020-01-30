@@ -9,8 +9,11 @@ ROOTLIBS=$(shell root-config --libs)
 CFLAGS =
 LFLAGS =
 
-RCXX=$(CFLAGS) $(ROOTCFLAGS)
+INCLUDES := -I. -I$(CMSSW_BASE)/src/UHH2/DiJetJERC/include/
+
+RCXX=$(CFLAGS) $(ROOTCFLAGS) $(INCLUDES)
 RLXX=$(LFLAGS) $(ROOTLIBS)
+
 
 SRC1= MySelector.o
 

@@ -1,10 +1,42 @@
 from utils import *
 
+newNumber = {
+    "DATA_RunB_UL17":        100,
+    "DATA_RunC_UL17":        100,
+    "DATA_RunD_UL17":        100,
+    "DATA_RunE_UL17":        100,
+    "DATA_RunF_UL17":        100,
+    "QCDPt15to30_UL17":      50,
+    "QCDPt30to50_UL17":      60,
+    "QCDPt50to80_UL17":      40,
+    "QCDPt80to120_UL17":     30,
+    "QCDPt120to170_UL17":    40,
+    "QCDPt170to300_UL17":    40,
+    "QCDPt300to470_UL17":    40,
+    "QCDPt470to600_UL17":    50,
+    "QCDPt600to800_UL17":    50,
+    "QCDPt800to1000_UL17":   50,
+    "QCDPt1000to1400_UL17":  50,
+    "QCDPt1400to1800_UL17":  90,
+    "QCDPt1800to2400_UL17":  100,
+    "QCDPt2400to3200_UL17":  100,
+    "QCDPt3200toInf_UL17":   150,
+}
+
+
+
+lumi_file = {
+    "2017": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
+    "2018": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
+    "UL17": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
+}
+
 @timeit
-def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], JECVersions_Data=["Autumn18_V4"], JECVersions_MC=["Autumn18_V4"], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False,extratext=""):
+def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], others=[], JECVersions_Data=[""], JECVersions_MC=[""], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", year="2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False,extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
+    time = int(filter(lambda x: "TIME" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[5])
+    FileSplit = filter(lambda x: "FileSplit" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[3]
     print add_name
-    check_dir = add_name!="" or isMB or test_trigger or isThreshold or isLowPt or isL1Seed
     for index_JEC, newJECVersion in enumerate(JECVersions_Data):
         for newJetLabel in JetLabels:
             add_path = newJECVersion+"/"+newJetLabel+extratext+"/"
@@ -20,61 +52,47 @@ def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], 
                 a = os.system(cmd)
                 cmd = "cp %s %s" % ("JobConfig.dtd", path)
                 a = os.system(cmd)
-                controls = []
-                for el in list(set(processes) - set([process])):
+                comments = []
+                for el in list(set(others+processes) - set([process])):
                     if "QCD" in el:
-                        controls.append(["<InputData", "Type", "MC", '"'+el+'"'])
+                        comments.append(["<InputData", "Type", "MC", '"'+el+'"'])
                     elif "DATA" in el:
-                        controls.append(["<InputData", "Type", "DATA", '"'+el+'"'])
-                comment_lines(path, filename, controls, remove=True)
-                if isMB:
-                    controls = []
-                    controls.append(["<Item", "Name", "trigger", "HLT_PFJet"])
-                    comment_lines(path, filename, controls, remove=True)
-                    if test_trigger:
-                        controls = []
-                        controls.append(["<Item", "Name", "triggerMB", "HLT_ZeroBias_v"])
-                        comment_lines(path, filename, controls, remove=True)
-                    else:
-                        controls = []
-                        controls.append(["<Item", "Name", "triggerMB_part", "HLT_ZeroBias_part"])
-                        comment_lines(path, filename, controls, remove=True)
-                else:
-                    controls = []
-                    controls.append(["<Item", "Name", "triggerMB", "Value"])
-                    comment_lines(path, filename, controls, remove=True)
-                if "QCD" in process:
-                    sample = "QCD"
-                elif "DATA" in process:
-                    sample = "DATA"
-                controls = []
-                if check_dir:
-                    controls.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+add_name+"_"+process])
-                    controls.append(["<!ENTITY", "OUTDIR", outdir , outdir+add_name+"_"+sample+"/"+add_path])
-                else:
-                    controls.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+"_"+process])
-                    controls.append(["<!ENTITY", "OUTDIR", outdir , outdir+"_"+sample+"/"+add_path])
+                        comments.append(["<InputData", "Type", "DATA", '"'+el+'"'])
+                comment_lines(path, filename, comments, remove=True)
+                changes = []
+                changes.append(["user", "amalara", "amalara", os.environ["USER"]]) #TODO: check effectivity
+                change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
+                changes = []
+                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*time))+'"'])
+                changes.append(["<!ENTITY", 'LUMI_FILE', 'lumifile.root', lumi_file[year]])
+                changes.append(["<!ENTITY", "YEAR", "year", year])
+                if "17" in year:
+                    changes.append(["<Cycle", "TargetLumi", "158640", "41530"])
+                    changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
+                if "UL17" == year:
+                    changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
+                if "2018" == year:
+                    changes.append(["<Cycle", "TargetLumi", "158640", "59740"])
+                changes.append(["<!ENTITY", "OUTDIR", outdir , outdir+add_name+"/"+add_path])
+                changes.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+"_"+process])
                 if isThreshold:
-                    controls.append(["<!ENTITY", "isThreshold", "false" , "true"])
+                    changes.append(["<!ENTITY", "isThreshold", "false" , "true"])
                 if isL1Seed:
-                    controls.append(["<!ENTITY", "apply_L1seed_from_bx1_filter", "false" , "true"])
+                    changes.append(["<!ENTITY", "apply_L1seed_from_bx1_filter", "false" , "true"])
                 if "DATA" in process:
-                    if "ECAL" in process:
-                        controls.append(["<!ENTITY", "JEC_VERSION", '"Autumn18_V4"', '"Fall17_09May2018_V1"'])
-                    else:
-                        controls.append(["<!ENTITY", "JEC_VERSION", '"Autumn18_V4"', '"'+newJECVersion+'"'])
+                    changes.append(["<!ENTITY", "JEC_VERSION", '"defaultJEC"', '"'+newJECVersion+'"'])
                 if "QCD" in process:
-                    controls.append(["<!ENTITY", "JEC_VERSION", '"Autumn18_V4"', '"'+JECVersions_MC[index_JEC]+'"'])
-                controls.append(["<!ENTITY", "JETLABEL", '"AK4CHS"', '"'+newJetLabel+'"'])
+                    changes.append(["<!ENTITY", "JEC_VERSION", '"defaultJEC"', '"'+JECVersions_MC[index_JEC]+'"'])
+                changes.append(["<!ENTITY", "JETLABEL", '"AK4CHS"', '"'+newJetLabel+'"'])
                 if "AK4Puppi" in newJetLabel:
-                    controls.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
+                    changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
                 if "AK8" in newJetLabel:
-                    controls.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
-                    controls.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8Puppi"'])
-                    controls.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"slimmedGenJetsAK8"'])
-                if "QCD" in process:
-                    controls.append(["<!ENTITY", "PILEUP_DIRECTORY ", "MyMCPileupHistogram" , "MyMCPileupHistogram_"+process])
-                change_lines(path, filename, [el[0:2] for el in controls ], [el[2:3] for el in controls ], [el[3:4] for el in controls ])
+                    changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
+                    changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8Puppi"'])
+                    changes.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"slimmedGenJetsAK8"'])
+                # if "QCD" in process:
+                #     changes.append(["<!ENTITY", "PILEUP_DIRECTORY ", "MyMCPileupHistogram" , "MyMCPileupHistogram_"+process])
+                change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
 
                 for sys in systematics:
                     if sys == "":
@@ -90,17 +108,13 @@ def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], 
                         a = os.system(cmd)
                         cmd = "cp %s %s" % ("JobConfig.dtd", path+add_path_sys)
                         a = os.system(cmd)
-                        controls = []
-                        if check_dir:
-                            controls.append(["<ConfigSGE", "Workdir", "workdir_"+outdir+add_name+"_"+process, "workdir_"+outdir+add_name+"_"+process+"_"+sys+dir])
-                            controls.append(["<!ENTITY", "OUTDIR", outdir+add_name+"_"+sample+"/"+add_path , outdir+add_name+"_"+sample+"/"+add_path+add_path_sys])
-                        else:
-                            controls.append(["<ConfigSGE", "Workdir", "workdir_"+outdir+"_"+process, "workdir_"+outdir+"_"+process+"_"+sys+dir])
-                            controls.append(["<!ENTITY", "OUTDIR", outdir+"_"+sample+"/"+add_path , outdir+"_"+sample+"/"+add_path+add_path_sys])
+                        changes = []
+                        changes.append(["<!ENTITY", "OUTDIR", outdir+add_name+"/"+add_path , outdir+add_name+"/"+add_path+add_path_sys])
+                        changes.append(["<ConfigSGE", "Workdir", "workdir_"+outdir+"_"+process, "workdir_"+outdir+"_"+process+"_"+sys+dir])
                         if "JEC" in sys:
-                            controls.append(["<!ENTITY", "JECSMEAR_DIRECTION", '"nominal"', '"'+dir+'"'])
+                            changes.append(["<!ENTITY", "JECSMEAR_DIRECTION", '"nominal"', '"'+dir+'"'])
                         elif "JER" in sys:
-                            controls.append(["<!ENTITY", "DO_JERSMEAR", '"false"', '"true"'])
+                            changes.append(["<!ENTITY", "DO_JERSMEAR", '"false"', '"true"'])
                         elif "PU" in sys:
-                            controls.append(["<!ENTITY", "SYSTYPE_PU", '"central"', '"'+dir+'"'])
-                        change_lines(path+add_path_sys, newfilename, [el[0:2] for el in controls ], [el[2:3] for el in controls ], [el[3:4] for el in controls ])
+                            changes.append(["<!ENTITY", "SYSTYPE_PU", '"central"', '"'+dir+'"'])
+                        change_lines(path+add_path_sys, newfilename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])

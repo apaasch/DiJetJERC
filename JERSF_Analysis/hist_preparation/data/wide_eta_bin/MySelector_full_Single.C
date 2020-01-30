@@ -25,29 +25,31 @@
 
 #include <iostream>
 #include <algorithm>
+#include <vector>
 #include <TH2.h>
 #include <TH3.h>
 #include <TStyle.h>
 #include <TLorentzVector.h>
 #include <TRandom3.h>
 #include "MySelector.h"
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/include/constants.h"
+#include "constants.h"
 
-#define FILL_HISTOS(region,method)                                     \
-asymmetries_##region.at(r).at(k).at(m) -> Fill( asy , weight );        \
-asymmetries_pt_##region.at(r).at(k).at(m) -> Fill( pt_ave, weight );   \
-asymmetries_rho_##region.at(r).at(k).at(m) -> Fill( rho, weight );     \
-asymmetries_pt3_##region.at(r).at(k).at(m) -> Fill( jet3_pt, weight ); \
-if ( m == AlphaBins-1 ) {                                              \
-  h_JetAvePt_##method -> Fill( pt_ave, weight );                       \
-  h_Jet1Pt_##method -> Fill( jet1_pt, weight );                        \
-  h_Jet2Pt_##method -> Fill( jet2_pt, weight );                        \
-  h_Jet3Pt_##method -> Fill( jet3_pt, weight );                        \
-}                                                                      \
+#define FILL_HISTOS(region,method)                                                                      \
+if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
+asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                                            \
+asymmetries_pt_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                       \
+asymmetries_rho_##region.at(r).at(k).at(m)->Fill( rho, weight);                                         \
+asymmetries_pt3_##region.at(r).at(k).at(m)->Fill( jet3_pt, weight);                                     \
+if ( m == AlphaBins-1 ) {                                                                               \
+  h_JetAvePt_##method->Fill( pt_ave, weight);                                                           \
+  h_Jet1Pt_##method->Fill( jet1_pt, weight);                                                            \
+  h_Jet2Pt_##method->Fill( jet2_pt, weight);                                                            \
+  h_Jet3Pt_##method->Fill( jet3_pt, weight);                                                            \
+}                                                                                                       \
 
 #define SELECT_ETA_ALPHA_BIN(region,method,cond1,cond2,cond3) \
 if (cond1 || cond2) {                                         \
-  h_alpha_select -> Fill( alpha, 1 );                         \
+  h_alpha_select->Fill( alpha, 1);                         \
   for ( int m = 0 ; m < AlphaBins ; m++ ) {                   \
     if ( alpha < Alpha_bins[m] ) {                            \
       double asy = asymmetry;                                 \
@@ -58,19 +60,19 @@ if (cond1 || cond2) {                                         \
       if ( excl_bin ) break;                                  \
     }                                                         \
   }                                                           \
-  alpha_spectrum_##region.at(r).at(k) -> Fill(alpha, weight); \
+  alpha_spectrum_##region.at(r).at(k)->Fill(alpha, weight); \
 }                                                             \
 
 #define WRITE_HISTOS(region)                                  \
 for( int m = 0; m < EtaBins_##region; m++ ) {                 \
   f->cd();                                                    \
-  asymmetries_##region.at(m).at(p).at(r) -> Write();          \
-  asymmetries_pt_##region.at(m).at(p).at(r) -> Write();       \
+  asymmetries_##region.at(m).at(p).at(r)->Write();          \
+  asymmetries_pt_##region.at(m).at(p).at(r)->Write();       \
   f1->cd();                                                   \
-  asymmetries_rho_##region.at(m).at(p).at(r) -> Write();      \
-  asymmetries_pt3_##region.at(m).at(p).at(r) -> Write();      \
+  asymmetries_rho_##region.at(m).at(p).at(r)->Write();      \
+  asymmetries_pt3_##region.at(m).at(p).at(r)->Write();      \
   f_alpha->cd();                                              \
-  alpha_spectrum_##region.at(m).at(p) -> Write();             \
+  alpha_spectrum_##region.at(m).at(p)->Write();             \
 }                                                             \
 
 void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetries, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_pt, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_rho, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_pt3, std::vector< std::vector< TH1F* > > &alpha_spectrum, TString text, TString extraText, int etaBins, int ptBins, int AlphaBins, int etaShift, int ptShift, int alphaShift) {
@@ -80,26 +82,26 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
     for( int p = 0; p < ptBins; p++ ) {
       std::vector< TH1F* > temp1, temp1pt, temp1rho, temp1pt3;
       TString name_alpha = "alpha"; name_alpha += extraText; name_alpha += "_eta"; name_alpha += m+1; name_alpha += "_pt"; name_alpha += p+1;
-      TH1F *h1_alpha = new TH1F( name_alpha, name_alpha, 80, 0., 0.8 );
+      TH1F *h1_alpha = new TH1F( name_alpha, name_alpha, 80, 0., 0.8);
       h1_alpha ->GetYaxis()->SetTitle("a.u.");    h1_alpha ->GetXaxis()->SetTitle("Alpha");
-      h1_alpha -> Sumw2(); alpha_temp2.push_back(h1_alpha);
+      h1_alpha->Sumw2(); alpha_temp2.push_back(h1_alpha);
       for( int r = 0; r < AlphaBins; r++ ) {
         TString name     = text;        name      += extraText; name     += "_eta"; name     += m+1; name     += "_pt"; name     += p+1; name     += "_alpha"; name     += r+1;
         TString name_pt  = text+"pt";   name_pt  += extraText; name_pt  += "_eta"; name_pt  += m+1; name_pt  += "_pt"; name_pt  += p+1; name_pt  += "_alpha"; name_pt  += r+1;
         TString name_rho = text+"rho";  name_rho += extraText; name_rho += "_eta"; name_rho += m+1; name_rho += "_pt"; name_rho += p+1; name_rho += "_alpha"; name_rho += r+1;
         TString name_pt3 = text+"pt3";  name_pt3 += extraText; name_pt3 += "_eta"; name_pt3 += m+1; name_pt3 += "_pt"; name_pt3 += p+1; name_pt3 += "_alpha"; name_pt3 += r+1;
-        TH1F *h1 = new TH1F( name, name, 160, -0.8, 0.8 );
+        TH1F *h1 = new TH1F( name, name, 160, -0.8, 0.8);
         h1 ->GetYaxis()->SetTitle("a.u.");    h1 ->GetXaxis()->SetTitle("Asymmetry");
-        h1 -> Sumw2(); temp1.push_back(h1);
-        TH1F *h2 = new TH1F( name_pt, name_pt, 50, 0, 1500 );
+        h1->Sumw2(); temp1.push_back(h1);
+        TH1F *h2 = new TH1F( name_pt, name_pt, 50, 0, 1500);
         h2 ->GetYaxis()->SetTitle("a.u.");    h2 ->GetXaxis()->SetTitle("Pt[GeV]");
-        h2 -> Sumw2(); temp1pt.push_back(h2);
-        TH1F *h3 = new TH1F( name_rho, name_rho, 100, 0, 100 );
+        h2->Sumw2(); temp1pt.push_back(h2);
+        TH1F *h3 = new TH1F( name_rho, name_rho, 100, 0, 100);
         h3 ->GetYaxis()->SetTitle("a.u.");    h3 ->GetXaxis()->SetTitle("rho");
-        h3 -> Sumw2(); temp1rho.push_back(h3);
-        TH1F *h4 = new TH1F( name_pt3, name_pt3, 50, 0, 1500 );
+        h3->Sumw2(); temp1rho.push_back(h3);
+        TH1F *h4 = new TH1F( name_pt3, name_pt3, 50, 0, 1500);
         h4 ->GetYaxis()->SetTitle("a.u.");    h4 ->GetXaxis()->SetTitle("Pt[GeV]");
-        h4 -> Sumw2(); temp1pt3.push_back(h4);
+        h4->Sumw2(); temp1pt3.push_back(h4);
       }
       temp2.push_back(temp1); temp2pt.push_back(temp1pt); temp2rho.push_back(temp1rho);  temp2pt3.push_back(temp1pt3);
     }
@@ -128,58 +130,58 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   TString option = GetOption();
 
-  h_JetAvePt_SM = new TH1F( "JetAvePt" , "Inclusive Jet Ave Pt" , 50 , 0 , 2000 );
-  h_JetAvePt_SM -> SetXTitle( "Pt_{ave}[GeV]" );
-  h_JetAvePt_SM -> Sumw2();
+  h_JetAvePt_SM = new TH1F( "JetAvePt" , "Inclusive Jet Ave Pt" , 50 , 0 , 2000);
+  h_JetAvePt_SM->SetXTitle( "Pt_{ave}[GeV]");
+  h_JetAvePt_SM->Sumw2();
   // histograms.push_back(h_JetAvePt_SM);
 
-  h_Jet1Pt_SM = new TH1F( "Jet1Pt" , "Inclusive Jet 1 Pt" , 50 , 0 , 2000 );
-  h_Jet1Pt_SM -> SetXTitle( "Pt_1[GeV]" );
-  h_Jet1Pt_SM -> Sumw2();
+  h_Jet1Pt_SM = new TH1F( "Jet1Pt" , "Inclusive Jet 1 Pt" , 50 , 0 , 2000);
+  h_Jet1Pt_SM->SetXTitle( "Pt_1[GeV]");
+  h_Jet1Pt_SM->Sumw2();
   // histograms.push_back(h_Jet1Pt_SM);
 
-  h_Jet2Pt_SM = new TH1F( "Jet2Pt" , "Inclusive Jet 2 Pt" , 50 , 0 , 2000 );
-  h_Jet2Pt_SM -> SetXTitle( "Pt_2[GeV]" );
-  h_Jet2Pt_SM -> Sumw2();
+  h_Jet2Pt_SM = new TH1F( "Jet2Pt" , "Inclusive Jet 2 Pt" , 50 , 0 , 2000);
+  h_Jet2Pt_SM->SetXTitle( "Pt_2[GeV]");
+  h_Jet2Pt_SM->Sumw2();
   // histograms.push_back(h_Jet2Pt_SM);
 
-  h_Jet3Pt_SM = new TH1F( "Jet3Pt" , "Inclusive Jet 3 Pt" , 50 , 0 , 2000 );
-  h_Jet3Pt_SM -> SetXTitle( "Pt_3[GeV]" );
-  h_Jet3Pt_SM -> Sumw2();
+  h_Jet3Pt_SM = new TH1F( "Jet3Pt" , "Inclusive Jet 3 Pt" , 50 , 0 , 2000);
+  h_Jet3Pt_SM->SetXTitle( "Pt_3[GeV]");
+  h_Jet3Pt_SM->Sumw2();
   // histograms.push_back(h_Jet3Pt_SM);
 
-  h_JetAvePt_FE = new TH1F( "FEJetAvePt" , "Inclusive FEJet Ave Pt" , 50 , 0 , 2000 );
-  h_JetAvePt_FE -> SetXTitle( "Pt_{ave}[GeV]" );
-  h_JetAvePt_FE -> Sumw2();
+  h_JetAvePt_FE = new TH1F( "FEJetAvePt" , "Inclusive FEJet Ave Pt" , 50 , 0 , 2000);
+  h_JetAvePt_FE->SetXTitle( "Pt_{ave}[GeV]");
+  h_JetAvePt_FE->Sumw2();
   // histograms.push_back(h_JetAvePt_FE);
 
-  h_Jet1Pt_FE = new TH1F( "FEJet1Pt" , "Inclusive FEJet 1 Pt" , 50 , 0 , 2000 );
-  h_Jet1Pt_FE -> SetXTitle( "Pt_1[GeV]" );
-  h_Jet1Pt_FE -> Sumw2();
+  h_Jet1Pt_FE = new TH1F( "FEJet1Pt" , "Inclusive FEJet 1 Pt" , 50 , 0 , 2000);
+  h_Jet1Pt_FE->SetXTitle( "Pt_1[GeV]");
+  h_Jet1Pt_FE->Sumw2();
   histograms.push_back(h_Jet1Pt_FE);
 
-  h_Jet2Pt_FE = new TH1F( "FEJet2Pt" , "Inclusive FEJet 2 Pt" , 50 , 0 , 2000 );
-  h_Jet2Pt_FE -> SetXTitle( "Pt_2[GeV]" );
-  h_Jet2Pt_FE -> Sumw2();
+  h_Jet2Pt_FE = new TH1F( "FEJet2Pt" , "Inclusive FEJet 2 Pt" , 50 , 0 , 2000);
+  h_Jet2Pt_FE->SetXTitle( "Pt_2[GeV]");
+  h_Jet2Pt_FE->Sumw2();
   histograms.push_back(h_Jet2Pt_FE);
 
-  h_Jet3Pt_FE = new TH1F( "FEJet3Pt" , "Inclusive FEJet 3 Pt" , 50 , 0 , 2000 );
-  h_Jet3Pt_FE -> SetXTitle( "Pt_3[GeV]" );
-  h_Jet3Pt_FE -> Sumw2();
+  h_Jet3Pt_FE = new TH1F( "FEJet3Pt" , "Inclusive FEJet 3 Pt" , 50 , 0 , 2000);
+  h_Jet3Pt_FE->SetXTitle( "Pt_3[GeV]");
+  h_Jet3Pt_FE->Sumw2();
   // histograms.push_back(h_Jet3Pt_FE);
 
-  h_PU = new TH1F( "PileUp" , "PU distribution" , 60 , 0 , 60 );
-  h_PU -> SetXTitle( "PU" );
-  h_PU -> Sumw2();
+  h_PU = new TH1F( "PileUp" , "PU distribution" , 60 , 0 , 60);
+  h_PU->SetXTitle( "PU");
+  h_PU->Sumw2();
   // histograms.push_back(h_PU);
 
-  h_alpha_raw = new TH1F( "Alpha_raw" , "#alpha before selection" , 80, 0., 0.8 );
-  h_alpha_raw -> SetXTitle( "#alpha_raw" );
-  h_alpha_raw -> Sumw2();
+  h_alpha_raw = new TH1F( "Alpha_raw" , "#alpha before selection" , 80, 0., 0.8);
+  h_alpha_raw->SetXTitle( "#alpha_raw");
+  h_alpha_raw->Sumw2();
 
-  h_alpha_select = new TH1F( "Alpha" , "#alpha after selection" , 80, 0., 0.8 );
-  h_alpha_select -> SetXTitle( "#alpha" );
-  h_alpha_select -> Sumw2();
+  h_alpha_select = new TH1F( "Alpha" , "#alpha after selection" , 80, 0., 0.8);
+  h_alpha_select->SetXTitle( "#alpha");
+  h_alpha_select->Sumw2();
 
   EtaBins_SM            = 10; // st method bins
   EtaBins_SM_control    =  3; // st method bins control
@@ -227,7 +229,7 @@ Bool_t MySelector::Process(Long64_t entry) {
   ++TotalEvents;
   if ( TotalEvents%100000 == 0 ) {  std::cout << "            Analyzing event #" << TotalEvents << std::endl; }
 
-  GetEntry( entry );
+  GetEntry( entry);
   BuildEvent();
 
   //2017
@@ -268,28 +270,28 @@ Bool_t MySelector::Process(Long64_t entry) {
     }
   }
 
-  h_PU -> Fill( npuIT, 1 );
+  h_PU->Fill( npuIT, 1);
 
   double weight = 1.0;
   double jet_threshold = 15;
   double alpha_raw = alpha_;
 
-  h_alpha_raw -> Fill( alpha_raw, 1 );
+  h_alpha_raw->Fill( alpha_raw, 1);
   double parallel, perpendicular, complete, alpha;
 
   // Below I choose what kind of asymmetries I want to study!
   //    bool excl_bin = true;  // exclusive
   bool excl_bin = false; // inclusive
 
-  int flag1 = 0; // 0 -> complete_alpha
-  // 1 -> parallel
-  // 2 -> perpendicular
+  int flag1 = 0; // 0->complete_alpha
+  // 1->parallel
+  // 2->perpendicular
 
   if ( jet2_pt > jet_threshold &&  (njet > 1) ) {
     if ( jet3_pt > jet_threshold ) {
-      complete =  alpha_raw; //2 * jet3_pt/( jet1_pt + jet2_pt );
+      complete =  alpha_raw; //2 * jet3_pt/( jet1_pt + jet2_pt);
       parallel = alpha_raw; //(2*Jets[2]*(Jets[0]-Jets[1]))/((Jets[0]-Jets[1]).Pt()*( jet1_pt + jet2_pt ));
-      perpendicular = alpha_raw; //TMath::Sqrt( TMath::Power(complete, 2 ) - TMath::Power(parallel, 2) );
+      perpendicular = alpha_raw; //TMath::Sqrt( TMath::Power(complete, 2 ) - TMath::Power(parallel, 2));
     } else {
       if ((njet <3)) {
         complete = 0. ;
@@ -376,22 +378,22 @@ void MySelector::SlaveTerminate() {
 
   TFile *fpt = new TFile(outdir+"pt_data_incl_full.root","RECREATE"); ;
   fpt->cd();
-  h_alpha_raw -> Write();
-  h_alpha_select -> Write();
-  h_JetAvePt_FE -> Write();
-  h_Jet1Pt_FE -> Write();
-  h_Jet2Pt_FE -> Write();
-  h_Jet3Pt_FE -> Write();
-  h_JetAvePt_SM -> Write();
-  h_Jet1Pt_SM -> Write();
-  h_Jet2Pt_SM -> Write();
-  h_Jet3Pt_SM -> Write();
+  h_alpha_raw->Write();
+  h_alpha_select->Write();
+  h_JetAvePt_FE->Write();
+  h_Jet1Pt_FE->Write();
+  h_Jet2Pt_FE->Write();
+  h_Jet3Pt_FE->Write();
+  h_JetAvePt_SM->Write();
+  h_Jet1Pt_SM->Write();
+  h_Jet2Pt_SM->Write();
+  h_Jet3Pt_SM->Write();
   fpt->Close();
 
   TFile *fprim = new TFile(outdir+"PU_incl_full.root","RECREATE"); ;
   fprim->cd();
-  h_PU -> Write();
-  fprim -> Close();
+  h_PU->Write();
+  fprim->Close();
 
   TFile *f  = new TFile(outdir+"histograms_data_incl_full.root","RECREATE");
   TFile *f1 = new TFile(outdir+"histograms_data_incl_full_control.root","RECREATE");
@@ -409,9 +411,9 @@ void MySelector::SlaveTerminate() {
     }
   }
 
-  f -> Close();
+  f->Close();
   f1-> Close();
-  f_alpha -> Close();
+  f_alpha->Close();
 
 }
 

@@ -17,9 +17,9 @@
 #include <TFrame.h>
 #include <TString.h>
 
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/include/constants.h"
+#include "constants.h"
 #include "functions.C"
-#include "tdrstyle_all.C"
+#include "tdrstyle_all.h"
 
 double min_fit = 100.;
 double max_fit = 1200.;
@@ -603,7 +603,7 @@ void PLOT_NCS(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 // int ref_shift = 3
 // int shift = ref_shift
 
-int mainRun( bool data_, const char* filename, const char* filename_data, TString lumi, TString label_mc, TString label_data, TString Trigger, TString outdir, double gaustails = 0.985, float shiftForPLI = 0.0, int ref_shift = 3){
+int mainRun(std::string year, bool data_, const char* filename, const char* filename_data, TString lumi, TString label_mc, TString label_data, TString Trigger, TString outdir, double gaustails = 0.985, float shiftForPLI = 0.0, int ref_shift = 3){
 
   // bool debug = true;
   bool debug = false;
@@ -635,7 +635,6 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
   // ------------------------------
 
   bool isAK8 = outdir.Contains("AK8");
-  std::string year = outdir.Contains("Autumn18")? "2018": (outdir.Contains("Fall17")? "2017": (outdir.Contains("Summer16")? "2016": "" )) ;
   std::cout << outdir << "\t" << isAK8 << "\t" << year << "\n";
 
   int EtaBins_SM            = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<eta_cut; });; // st method bins
@@ -664,7 +663,7 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
   std::vector<double> Pt_bins_Central, Pt_bins_HF;
 
   std::string triggerName = "DiJet";
-  if (isAK8) triggerName = "SingleJet";
+  if (isAK8 || year=="UL17") triggerName = "SingleJet";
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
@@ -1253,8 +1252,8 @@ int mainRun( bool data_, const char* filename, const char* filename_data, TStrin
   PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
   fMCTruth.Close();
 
-  bool plot_all = true;
-  // bool plot_all = false;
+  // bool plot_all = true;
+  bool plot_all = false;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //

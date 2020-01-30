@@ -134,18 +134,32 @@ const double pt_bins_Si[n_pt_Si] = {
 
       const std::map<std::string, std::vector<std::string> > pt_indexes = {
         {"DiJet_central",     {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger500"}},
-        {"SingleJet_central", {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger450", "trigger500"}},
+        {"SingleJet_central", {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger450", "trigger500"}}, // TODO add trigger550 (may vary for each year)
         {"DiJet_forward",     {"trigger60_HFJEC", "trigger80_HFJEC",  "trigger100_HFJEC", "trigger160_HFJEC", "trigger220_HFJEC", "trigger300_HFJEC"}},
         {"SingleJet_forward", {"trigger40_HFJEC", "trigger60_HFJEC",  "trigger80_HFJEC",  "trigger140_HFJEC", "trigger200_HFJEC", "trigger260_HFJEC", "trigger320_HFJEC", "trigger400_HFJEC"}},
       };
 
       const std::map<std::string, std::vector<double> > pt_trigger_thr = {
-        {"DiJet_central_2017",        { 73, 85, 97, 179, 307, 370, 434, 520, 649 }}, //for Di triggers 94X 17Nov2017
-        {"DiJet_central_2018",        { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
-        {"DiJet_central_2018_ptbins", { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
-        {"DiJet_forward_2017",        { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
-        {"DiJet_forward_2018",        { 93, 116, 142, 210, 279, 379 }},
-        {"DiJet_forward_2018_ptbins", { 93, 116, 142, 210, 279, 379 }},
+        // 2017 AK4
+        {"DiJet_central_2017",                { 73, 85, 97, 179, 307, 370, 434, 520, 649 }}, //for Di triggers 94X 17Nov2017
+        {"DiJet_central_UL17",                { 73, 85, 97, 179, 307, 370, 434, 520, 649 }}, //for Di triggers 94X 17Nov2017
+        {"DiJet_forward_2017",                { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
+        {"DiJet_forward_UL17",                { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
+        {"SingleJet_central_2017",            { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
+        {"SingleJet_central_UL17",            { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
+        {"SingleJet_central_UL17_ptbins",     { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
+        {"SingleJet_forward_2017",            { 73, 93, 113, 176, 239, 318 }}, // for Singlejet_HFJEC 2017 94X 17Nov2017 //TODO not used
+        {"SingleJet_forward_UL17",            { 73, 93, 113, 176, 239, 318 }}, // for Singlejet_HFJEC 2017 94X 17Nov2017 //TODO not used
+        {"SingleJet_forward_UL17_ptbins",     { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
+        // 2017 AK8
+        {"SingleJet_central_AK8_2017",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017
+        {"SingleJet_central_AK8_UL17",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017
+        // 2018 AK4
+        {"DiJet_central_2018",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
+        {"DiJet_central_2018_ptbins",         { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
+        {"DiJet_forward_2018",                { 93, 116, 142, 210, 279, 379 }},
+        {"DiJet_forward_2018_ptbins",         { 93, 116, 142, 210, 279, 379 }},
+        // 2018 AK8
         {"SingleJet_central_AK8_2018",        { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }}, //HLT AK8PFJet* //https://indico.desy.de/indico/event/24350/contribution/0/material/slides/0.pdf
         {"SingleJet_central_AK8_2018_ptbins", { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
         {"SingleJet_forward_AK8_2018",        { 62, 95, 110, 182, 260, 339, 420, 508 }}, // HLT AK8PFJetFwd* //https://indico.desy.de/indico/event/24423/contribution/1/material/slides/1.pdf
@@ -198,30 +212,6 @@ const double pt_bins_Si[n_pt_Si] = {
           2000};
 
           const TString pt_range_HF[n_pt_HF]={"51","73","93","113","176","239","318","370","1000","2000"};
-
-
-
-          // Runnumbers for applying different corrections
-          // taken from PdmV, i.e
-          // https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2016Analysis
-          constexpr static int s_runnr_B_2016  = 275376; //up to this one, including this one
-          constexpr static int s_runnr_C_2016  = 276283; //up to this one, including this one
-          constexpr static int s_runnr_D_2016 =  276811; //up to this one, including this one
-          constexpr static int s_runnr_E_2016 =  277420; //up to this one, including this one
-          constexpr static int s_runnr_F_2016 =  278801; //up to this one, including this one = Fearly
-          constexpr static int s_runnr_G_2016 =  280385; //up to this one, including this one
-          constexpr static int s_runnr_H_2016 =  284044; //up to this one, including this one
-          // https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2017Analysis
-          constexpr static int s_runnr_B_2017  = 299329; //up to this one, including this one
-          constexpr static int s_runnr_C_2017  = 302029; //up to this one, including this one
-          constexpr static int s_runnr_D_2017 =  303434; //up to this one, including this one
-          constexpr static int s_runnr_E_2017 =  304826; //up to this one, including this one
-          constexpr static int s_runnr_F_2017  = 306462; //up to this one, including this one
-          // https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2018Analysis
-          constexpr static int s_runnr_A_2018  = 316995; //up to this one, including this one
-          constexpr static int s_runnr_B_2018  = 319310; //up to this one, including this one
-          constexpr static int s_runnr_C_2018  = 320065; //up to this one, including this one
-          constexpr static int s_runnr_D_2018 =  325175; //up to this one, including this one
 
           //LumiBins for the Runs
           const int lumibins_BC[3] = {0, 1, 2};

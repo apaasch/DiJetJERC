@@ -440,14 +440,16 @@ void CombineDijetZjets(TString tag_name="Ngenjet"){
 
   //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunABC/output/"; //V17
   //  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunD/output/"; //V17
-  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunABCD/output/"; //V17
+  // TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V17/AK4CHS/standard/QCDHT/RunABCD/output/"; //V17
+  TString path_dijet = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/MergeL2Res/Autumn18_V19/AK4CHS/standard/QCDHT/RunABCD/output/"; //V17
   TString name_dijet = "DijetJERSF2D.root";
 
  // TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/RunABCD/";
  // TString name_zjet = "h2_jer_sf.root";
 
  // TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/August19/";
- TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/August19/abs_eta/";
+ //TString path_zjet = "/afs/desy.de/user/k/karavdia/www/JEC_plots/ZJets_JER_combination/August19/abs_eta/";
+TString path_zjet = "ZJets_JER_combination/August19/abs_eta/";
  TString name_zjet = "results.root";
  // TString name_zjet = "2018ABC.root";
  // TString name_zjet = "2018D.root";
