@@ -32,7 +32,7 @@
 #include <TLorentzVector.h>
 #include <TRandom3.h>
 #include "MySelector.h"
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/include/constants.h"
+#include "constants.h"
 
 #define FILL_HISTOS(region,method)                                                                      \
 if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
@@ -138,7 +138,7 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   for (size_t i = etaShift_FE;            i < etaShift_FE           + EtaBins_FE            + 1; i++)  Eta_bins_FE.push_back(eta_bins_JER[i]);
 
   std::string triggerName = "DiJet";
-  if (isAK8) triggerName = "SingleJet";
+  if (isAK8 || year=="UL17") triggerName = "SingleJet";
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
@@ -164,7 +164,7 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   h_Jet2Pt_FE   = new TH1F("FEJet2Pt",    "Inclusive FEJet 2 Pt",   50, 0., 2000);  h_Jet2Pt_FE->SetXTitle("Pt_2[GeV]");        h_Jet2Pt_FE->SetYTitle("a.u.");   h_Jet2Pt_FE->Sumw2();
   h_Jet3Pt_FE   = new TH1F("FEJet3Pt",    "Inclusive FEJet 3 Pt",   50, 0., 2000);  h_Jet3Pt_FE->SetXTitle("Pt_3[GeV]");        h_Jet3Pt_FE->SetYTitle("a.u.");   h_Jet3Pt_FE->Sumw2();
   h_PU          = new TH1F("PileUp",      "PU distribution",        60, 0., 60);    h_PU->SetXTitle("PU");                      h_PU->SetYTitle("a.u.");          h_PU->Sumw2();
-  h_alpha_raw   = new TH1F("Alpha_raw",   "#alpha before selection",80, 0., 0.8 );  h_alpha_raw->SetXTitle("#alpha_raw");       h_alpha_raw->SetYTitle("a.u.");   h_alpha_raw->Sumw2();
+  h_alpha_raw   = new TH1F("Alpha_raw",   "#alpha before selection",80, 0., 0.8);  h_alpha_raw->SetXTitle("#alpha_raw");       h_alpha_raw->SetYTitle("a.u.");   h_alpha_raw->Sumw2();
   h_alpha_sel   = new TH1F("Alpha",       "#alpha after selection", 80, 0., 0.8);   h_alpha_sel->SetXTitle("#alpha");           h_alpha_sel->SetYTitle("a.u.");   h_alpha_sel->Sumw2();
 
   if (true) {
@@ -200,10 +200,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
     }
     nevents_HF.push_back(temp);
   }
-
-  // for ( int k = 0 ; k < PtBins_HF ; k++ ) nevents_HF.push_back(std::vector< std::vector< double > > (0));
-  // for (size_t i = 0; i < nevents_central.size(); i++) std::cout << " " << nevents_central[i];
-  // for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << " " << nevents_HF[i];
 
   MakeHistograms(asymmetries_SM,            asymmetries_pt_SM,            asymmetries_rho_SM,            asymmetries_pt3_SM,            alpha_spectrum_SM,            "asymm", "_SM",            EtaBins_SM,            PtBins_Central, AlphaBins, etaShift_SM,            0, 0);
   MakeHistograms(asymmetries_SM_control,    asymmetries_pt_SM_control,    asymmetries_rho_SM_control,    asymmetries_pt3_SM_control,    alpha_spectrum_SM_control,    "asymm", "_SM_control",    EtaBins_SM_control,    PtBins_HF,      AlphaBins, etaShift_SM_control,    0, 0);

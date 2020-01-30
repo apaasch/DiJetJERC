@@ -32,7 +32,7 @@
 #include <TLorentzVector.h>
 #include <TRandom3.h>
 #include "MySelector.h"
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/include/constants.h"
+#include "constants.h"
 
 #define FILL_HISTOS(region,method)                                                                      \
 if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
@@ -238,7 +238,7 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   for (size_t i = etaShift_FE;            i < etaShift_FE           + EtaBins_FE            + 1; i++)  Eta_bins_FE.push_back(eta_bins_JER[i]);
 
   std::string triggerName = "DiJet";
-  if (isAK8) triggerName = "SingleJet";
+  if (isAK8 || year=="UL17") triggerName = "SingleJet";
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";

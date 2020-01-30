@@ -42,7 +42,6 @@ class AnalysisModule_DiJetTrg: public uhh2::AnalysisModule {
 public:
   explicit AnalysisModule_DiJetTrg(uhh2::Context&);
   virtual bool process(uhh2::Event&) override;
-  void init_JEC(uhh2::Context& ctx);
   void declare_output(uhh2::Context& ctx);
   void init_hists(uhh2::Context& ctx);
   ~AnalysisModule_DiJetTrg();
@@ -50,8 +49,7 @@ public:
 protected:
 
   // correctors
-  std::unique_ptr<JetCorrector> jet_corrector_A, jet_corrector_B, jet_corrector_C, jet_corrector_D, jet_corrector_E, jet_corrector_F,
-  jet_corrector_G,jet_corrector_H, jet_corrector_MC;
+  std::unordered_map<std::string, std::unique_ptr<GenericJetCorrector> > JetCorr;
   std::unique_ptr<GenericJetResolutionSmearer> jet_resolution_smearer;
   // cleaners
   std::unique_ptr<JetCleaner> jetID;
@@ -213,13 +211,15 @@ protected:
   bool debug, no_genp;
   bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_L1seed_from_bx1_filter, apply_PUid;
   bool is2016v2, is2016v3, is2017, is2018;
+  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL17", runPeriods2017}, {"2018", runPeriods2018}};
   std::string year;
   bool isAK8, ispuppi;
   string PtBinsTrigger;
   bool ispythia8;
   bool ts;
   string SysType_PU;
-  TString dataset_version, JEC_Version, jetLabel;
+  TString dataset_version, jetLabel;
+  string JEC_Version, jecTag, jecVer, jet_coll;
   JetId Jet_PFID;
   int n_evt;
   bool isThreshold;
@@ -245,118 +245,6 @@ protected:
   uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
 
 };
-
-
-void AnalysisModule_DiJetTrg::init_JEC(uhh2::Context& ctx){
-  std::vector<std::string> JEC_corr,       JEC_corr_A,       JEC_corr_B,       JEC_corr_C,       JEC_corr_D;
-  std::vector<std::string> JEC_corr_L1RC,  JEC_corr_A_L1RC,  JEC_corr_B_L1RC,  JEC_corr_C_L1RC,  JEC_corr_D_L1RC;
-
-  #define MAKE_JEC(jecv,jetLabel)                                   \
-  if(JEC_Version == #jecv){                                         \
-    JEC_corr_A      = JERFiles::jecv##_A_L123_##jetLabel##_DATA;    \
-    JEC_corr_B      = JERFiles::jecv##_B_L123_##jetLabel##_DATA;    \
-    JEC_corr_C      = JERFiles::jecv##_C_L123_##jetLabel##_DATA;    \
-    JEC_corr_D      = JERFiles::jecv##_D_L123_##jetLabel##_DATA;    \
-    if (!ispuppi) {                                                 \
-      JEC_corr_A_L1RC = JERFiles::jecv##_A_L1RC_##jetLabel##_DATA;  \
-      JEC_corr_B_L1RC = JERFiles::jecv##_B_L1RC_##jetLabel##_DATA;  \
-      JEC_corr_C_L1RC = JERFiles::jecv##_C_L1RC_##jetLabel##_DATA;  \
-      JEC_corr_D_L1RC = JERFiles::jecv##_D_L1RC_##jetLabel##_DATA;  \
-    }                                                               \
-  }                                                                 \
-
-  #define MAKE_JEC_noRes(jecv,jetLabel)                                 \
-  if(JEC_Version == #jecv){                                             \
-    JEC_corr_A      = JERFiles::jecv##_A_L123_noRes_##jetLabel##_DATA;  \
-    JEC_corr_B      = JERFiles::jecv##_B_L123_noRes_##jetLabel##_DATA;  \
-    JEC_corr_C      = JERFiles::jecv##_C_L123_noRes_##jetLabel##_DATA;  \
-    JEC_corr_D      = JERFiles::jecv##_D_L123_noRes_##jetLabel##_DATA;  \
-    if (!ispuppi) {                                                     \
-      JEC_corr_A_L1RC = JERFiles::jecv##_A_L1RC_##jetLabel##_DATA;      \
-      JEC_corr_B_L1RC = JERFiles::jecv##_B_L1RC_##jetLabel##_DATA;      \
-      JEC_corr_C_L1RC = JERFiles::jecv##_C_L1RC_##jetLabel##_DATA;      \
-      JEC_corr_D_L1RC = JERFiles::jecv##_D_L1RC_##jetLabel##_DATA;      \
-    }                                                                   \
-  }
-
-  #define MAKE_JEC_MC(jecv,jetLabel)                          \
-  if(JEC_Version == #jecv){                                   \
-    JEC_corr      = JERFiles::jecv##_L123_##jetLabel##_MC;    \
-    if (!ispuppi) {                                           \
-      JEC_corr_L1RC = JERFiles::jecv##_L1RC_##jetLabel##_MC;  \
-    }                                                       \
-  }                                                           \
-
-
-  if(isMC){ //L123 for MC
-    if (jetLabel == "AK4CHS") {
-      MAKE_JEC_MC(Autumn18_V8, AK4PFchs)
-      else MAKE_JEC_MC(Autumn18_V17, AK4PFchs)
-      else MAKE_JEC_MC(Autumn18_V19, AK4PFchs)
-      else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK4CHS, MC specified ("+JEC_Version+") ");
-    } else if (jetLabel == "AK4Puppi") {
-      MAKE_JEC_MC(Autumn18_V17, AK4PFPuppi)
-      MAKE_JEC_MC(Autumn18_V19, AK4PFPuppi)
-      else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK4Puppi, MC specified ("+JEC_Version+") ");
-    } else if (jetLabel == "AK8Puppi") {
-      MAKE_JEC_MC(Autumn18_V17, AK8PFPuppi)
-      MAKE_JEC_MC(Autumn18_V19, AK8PFPuppi)
-      else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK8Puppi, MC specified ("+JEC_Version+") ");
-    } else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid jetLabel: "+jetLabel+" ");
-  } else { //L123 + L2L3Res for Data;
-    if (jetLabel == "AK4CHS") {
-      if(JECClosureTest){
-        std::cout << "JECClosureTest applied" << '\n';
-        MAKE_JEC(Autumn18_V8, AK4PFchs)
-        else MAKE_JEC(Autumn18_V17, AK4PFchs)
-        else MAKE_JEC(Autumn18_V19, AK4PFchs)
-        else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK4CHS "+JEC_Version+", DATA specified.");
-      } else {
-        std::cout << "MAKE_JEC_noRes applied" << '\n';
-        MAKE_JEC_noRes(Autumn18_V17, AK4PFchs)
-        else MAKE_JEC_noRes(Autumn18_V19, AK4PFchs)
-        else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK4CHS "+JEC_Version+", DATA specified.");
-      }
-    } else if (jetLabel == "AK4Puppi") {
-      if(JECClosureTest){
-        std::cout << "JECClosureTest applied" << '\n';
-        MAKE_JEC(Autumn18_V17, AK4PFPuppi)
-        else MAKE_JEC(Autumn18_V19, AK4PFPuppi)
-        else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK4Puppi "+JEC_Version+", DATA specified.");
-      } else {
-        std::cout << "MAKE_JEC_noRes applied" << '\n';
-        MAKE_JEC_noRes(Autumn18_V17, AK4PFPuppi)
-        else MAKE_JEC_noRes(Autumn18_V19, AK4PFPuppi)
-        else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK4Puppi "+JEC_Version+", DATA specified.");
-      }
-    } else if (jetLabel == "AK8Puppi") {
-      if(JECClosureTest){
-        std::cout << "JECClosureTest applied" << '\n';
-        MAKE_JEC(Autumn18_V17, AK8PFPuppi)
-        else MAKE_JEC(Autumn18_V19, AK8PFPuppi)
-        else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK8Puppi "+JEC_Version+", DATA specified.");
-      } else {
-        std::cout << "MAKE_JEC_noRes applied" << '\n';
-        MAKE_JEC_noRes(Autumn18_V17, AK8PFPuppi)
-        else MAKE_JEC_noRes(Autumn18_V19, AK8PFPuppi)
-        else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid JEC_Version for deriving residuals on AK8Puppi "+JEC_Version+", DATA specified.");
-      }
-    } else throw runtime_error("In AnalysisModule_DiJetTrg.cxx: Invalid jetLabel: "+jetLabel+" ");
-  }
-
-
-  //DATA
-  if(!isMC){
-    jet_corrector_A.reset(new JetCorrector(ctx, JEC_corr_A, JEC_corr_A_L1RC));
-    jet_corrector_B.reset(new JetCorrector(ctx, JEC_corr_B, JEC_corr_B_L1RC));
-    jet_corrector_C.reset(new JetCorrector(ctx, JEC_corr_C, JEC_corr_C_L1RC));
-    jet_corrector_D.reset(new JetCorrector(ctx, JEC_corr_D, JEC_corr_D_L1RC));
-  }
-  else if(isMC){//MC : only one version of JECs exists
-    jet_corrector_MC.reset(new JetCorrector(ctx, JEC_corr, JEC_corr_L1RC));
-  }
-
-}
 
 void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   //Store only vars needed for the dijet analysis
@@ -669,7 +557,11 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   jetLabel = ctx.get("JetLabel");
   isAK8 = (jetLabel == "AK8CHS" || jetLabel == "AK8Puppi");
   ispuppi = (jetLabel == "AK4Puppi" || jetLabel == "AK8Puppi");
+  jet_coll = isAK8? "AK8" : "AK4"; jet_coll += ispuppi? "PFPuppi" : "PFchs";
   JEC_Version = ctx.get("JEC_Version");
+  jecTag = JEC_Version.substr(0,JEC_Version.find("_V"));
+  jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
+
   JECClosureTest = string2bool(ctx.get("JECClosureTest"));
   JERClosureTest = string2bool(ctx.get("JERClosureTest","false"));
   apply_EtaPhi_cut = string2bool(ctx.get("EtaPhi_cut", "true"));
@@ -684,6 +576,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   is2017 = (ctx.get("dataset_version").find("2017") != std::string::npos);
   is2018 = (ctx.get("dataset_version").find("2018") != std::string::npos);
   year = ctx.get("year");
+  std::cout << "year " << year << '\n';
+  runs[year].push_back("MC");
   PtBinsTrigger = ctx.get("PtBinsTrigger");
 
   debug = string2bool(ctx.get("Debug","false"));
@@ -728,23 +622,24 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   if(!isMC) lumi_sel.reset(new LumiSelection(ctx));
   PVCleaner.reset(new PrimaryVertexCleaner());
   /* MET filters */
-  if(!isMC) {
-    PrimaryVertexId pvid=StandardPrimaryVertexId();
-    metfilters_sel.reset(new uhh2::AndSelection(ctx, "metfilters"));
-    metfilters_sel->add<TriggerSelection>("goodVertices", "Flag_goodVertices");
-    metfilters_sel->add<TriggerSelection>("globalSuperTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter");
-    metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");
-    metfilters_sel->add<TriggerSelection>("HBHENoiseIsoFilter", "Flag_HBHENoiseIsoFilter");
-    metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter");
-    metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter");
-    metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter");
-    metfilters_sel->add<TriggerSelection>("eeBadScFilter", "Flag_eeBadScFilter"); // Not recommended for MC, but do check
-    metfilters_sel->add<TriggerSelection>("ecalBadCalibFilter", "Flag_ecalBadCalibFilter"); // for 2017 and 2018 is always 1. need a EcalBadCalibSelection for the recalculated value.
-    metfilters_sel->add<EcalBadCalibSelection>("EcalBadCalibSelection");
-    metfilters_sel->add<NPVSelection>("1 good PV",1,-1,pvid);
-  }
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+  PrimaryVertexId pvid = StandardPrimaryVertexId();
+  metfilters_sel.reset(new AndSelection(ctx, "metfilters"));
+  metfilters_sel->add<TriggerSelection>("goodVertices", "Flag_goodVertices");
+  metfilters_sel->add<NPVSelection>("1 good PV",1,-1,pvid); /* Not a metfilter. Used to select 1 good PV */
+  metfilters_sel->add<TriggerSelection>("globalSuperTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter");
+  metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");
+  metfilters_sel->add<TriggerSelection>("HBHENoiseIsoFilter", "Flag_HBHENoiseIsoFilter");
+  metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter");
+  if (year != "2016") metfilters_sel->add<EcalBadCalibSelection>("EcalBadCalibSelection"); /*TODO check 2016*/ // Use this instead of Flag_ecalBadCalibFilter, uses ecalBadCalibReducedMINIAODFilter in ntuple_generator
+  if (year != "2016") metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter"); /*TODO check 2016, maybe Extra_BadPFMuonFilter */
+  if (!isMC) metfilters_sel->add<TriggerSelection>("eeBadScFilter", "Flag_eeBadScFilter"); /* TODO Not recommended for MC, but do check */
+  /* metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter"); TODO Not recommended, under review.Separate module in ntuple_generator for 2016v2*/
 
-  init_JEC(ctx);//set up JECs
+  for (const std::string & run : runs[year]) {
+    std::vector<std::string> JEC_corr = (run=="MC")? JERFiles::JECFilesMC(jecTag, jecVer, jet_coll) : JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run,JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3);
+    JetCorr[run].reset(new GenericJetCorrector(ctx, JEC_corr,"jets"));
+  }
 
   if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
   else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
@@ -932,7 +827,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   }
 
   // MET filters
-  if(!isMC && !metfilters_sel->passes(event)) return false;
+  if(!metfilters_sel->passes(event)) return false;
 
   int event_in_lumibin = -1;
   double fill_event_integrated_lumi = 0;
@@ -995,50 +890,33 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   //    const int jet_n = ak4jets->size();
   h_2jets->fill(event);
 
-  bool apply_MC = false;
-  bool apply_A = false;
-  bool apply_B = false;
-  bool apply_C = false;
-  bool apply_D = false;
-  bool apply_E = false;
-  bool apply_F = false;
-  bool apply_G = false;
-  bool apply_H = false;
+  std::unordered_map<std::string, bool > apply_run;
+  for (const std::string & run : runs[year]) apply_run[run] = false;
 
-  if(!isMC){
-    if(is2018){
-      if(event.run <= s_runnr_A_2018)       apply_A = true;
-      else if(event.run <= s_runnr_B_2018)  apply_B = true;
-      else if(event.run <= s_runnr_C_2018)  apply_C = true;
-      else if(event.run <= s_runnr_D_2018)  apply_D = true;
-      else throw runtime_error("AnalysisModule: run number not covered by if-statements in 2018 process-routine.");
+  bool apply_all = false;
+  if (!isMC) {
+    for (const std::string & run : runs[year]) {
+      if (run=="MC") continue;
+      if (year=="UL17") {
+        if (run_number_map.at("2017").at(run).first <= event.run && event.run <= run_number_map.at("2017").at(run).second) apply_run[run] = true;
+      } else {
+        if (run_number_map.at(year).at(run).first <= event.run && event.run <= run_number_map.at(year).at(run).second) apply_run[run] = true;
+      }
+      apply_all+=apply_run[run];
     }
-    if(is2017){
-      if(event.run <= s_runnr_B_2017)       apply_B = true;
-      else if(event.run <= s_runnr_C_2017)  apply_C = true;
-      else if(event.run <= s_runnr_D_2017)  apply_D = true;
-      else if(event.run <= s_runnr_E_2017)  apply_E = true;
-      else if(event.run <= s_runnr_F_2017)  apply_F = true;
-      else throw runtime_error("AnalysisModule: run number not covered by if-statements in 2017 process-routine.");
-    }
-  }
-  else if(isMC){
-    apply_MC = true;
-  }
+  } else {apply_run["MC"] = true; apply_all+=apply_run["MC"];}
+  if (apply_all != 1) throw std::runtime_error("In AnalysisModule_DiJetTrg.cxx: Sum of apply_all when applying JECs is not == 1. Fix this.");
 
-  if((apply_A+apply_B+apply_C+apply_D+apply_E+apply_F+apply_G+apply_H+apply_MC) != 1) throw runtime_error("In JERSFModule.cxx: Sum of apply_* when applying JECs is not == 1. Fix this.");
+
+
 
   h_beforeJEC->fill(event);
 
-  if(apply_A) jet_corrector_A->process(event);
-  if(apply_B) jet_corrector_B->process(event);
-  if(apply_C) jet_corrector_C->process(event);
-  if(apply_D) jet_corrector_D->process(event);
-  if(apply_E) jet_corrector_E->process(event);
-  if(apply_F) jet_corrector_F->process(event);
-  if(apply_G) jet_corrector_G->process(event);
-  if(apply_H) jet_corrector_H->process(event);
-  if(apply_MC)jet_corrector_MC->process(event);
+  for (const std::string run : runs[year]) {
+    if (apply_run[run]){
+      JetCorr[run]->process(event);
+    }
+  }
 
   h_afterJEC->fill(event);
 
@@ -1094,19 +972,20 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   }
   //correct MET only AFTER smearing the jets
   bool ischsMET = true;
+  // TODO apply met (not needed for JER)
   if(is2017){//modified MET for 2017 data
-    if(apply_B)   jet_corrector_B->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
-    if(apply_C)   jet_corrector_C->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
-    if(apply_D)   jet_corrector_D->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
-    if(apply_E)   jet_corrector_E->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
-    if(apply_F)   jet_corrector_F->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
-    if(apply_MC)  jet_corrector_MC->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
+    // if(apply_B)   jet_corrector_B->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
+    // if(apply_C)   jet_corrector_C->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
+    // if(apply_D)   jet_corrector_D->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
+    // if(apply_E)   jet_corrector_E->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
+    // if(apply_F)   jet_corrector_F->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
+    // if(apply_MC)  jet_corrector_MC->correct_met(event,ischsMET,L1METptThresh,  eta_thresh_low, eta_thresh_high);
   } else if (is2018) { //FixME: extend to 2016 case
-    if(apply_A)   jet_corrector_A->correct_met(event,ischsMET);
-    if(apply_B)   jet_corrector_B->correct_met(event,ischsMET);
-    if(apply_C)   jet_corrector_C->correct_met(event,ischsMET);
-    if(apply_D)   jet_corrector_D->correct_met(event,ischsMET);
-    if(apply_MC)  jet_corrector_MC->correct_met(event,ischsMET);
+    // if(apply_A)   jet_corrector_A->correct_met(event,ischsMET);
+    // if(apply_B)   jet_corrector_B->correct_met(event,ischsMET);
+    // if(apply_C)   jet_corrector_C->correct_met(event,ischsMET);
+    // if(apply_D)   jet_corrector_D->correct_met(event,ischsMET);
+    // if(apply_MC)  jet_corrector_MC->correct_met(event,ischsMET);
   }
 
   h_afterMET->fill(event);
@@ -1259,7 +1138,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
         if (debug) { std::cout << "pass_trigger: " << trg_xml << " index: " << i << " pt_min: " << pt_min << " pt_max: " << pt_max << " passed: " << pass_trigger[trg_xml] << '\n'; }
       }
     }
-    //ToDo: remove requirement on eta_bool, add one more bin in forward region in
+    //TODO: remove requirement on eta_bool, add one more bin in forward region in
 
     //FWD Trigger
     if (eta_cut_bool_HF && trigger_fwd ) {

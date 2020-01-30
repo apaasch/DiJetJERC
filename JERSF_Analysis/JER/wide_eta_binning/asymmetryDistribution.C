@@ -17,8 +17,8 @@
 #include <TFrame.h>
 #include <TString.h>
 
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_94/CMSSW_9_4_1/src/UHH2/DiJetJERC/include/constants.h"
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_94/CMSSW_9_4_1/src/UHH2/PersonalCode/tdrstyle_all.C"
+#include "../../../../DiJetJERC/include/constants.h"
+#include "../../../../DiJetJERC/include/tdrstyle_all.h"
 
 
 // void additionalplots() {

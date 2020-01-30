@@ -4,9 +4,10 @@
 #include <fstream>
 #include <unistd.h>
 #include "TROOT.h"
+#include "TString.h"
 #include "TMath.h"
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/include/constants.h"
-#include "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/PersonalCode/tdrstyle_all.C"
+#include "../../../../DiJetJERC/include/constants.h"
+#include "../../../../DiJetJERC/include/tdrstyle_all.h"
 
 typedef std::vector<TString> VecTS;
 typedef std::vector<string> VecS;
@@ -17,8 +18,8 @@ typedef std::map<TString, VecD> MapD;
 typedef std::map<TString, VecDD> MapDD;
 
 VecTS systematics_name_all({"gaustails_0.95","JEC_up","JEC_down","PU_up","PU_down","PLI_up","PLI_down","alpha","pTdep"});
-VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha","pTdep", "rest"});
-VecTS systematics_name_minimal({"gaustails_0.95","JEC", "rest"});
+VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha","pTdep", "others"});
+VecTS systematics_name_minimal({"gaustails_0.95","JEC", "others"});
 
 bool dosplit = true; // split source of Uncertainties
 int method = 4; //2-uncorr 4-corr
@@ -30,8 +31,9 @@ int shift_FE = 3; // How many point to skip from the beginning
 int shift_barrel = 1; // How many point used to calculate SF in the previous step
 
 bool isOverlap = false; // just define the global variable. The value should be adjusted afterwards in the code; //TODO
+//TODO recheck SMvsFE in case of overlap
 
-TString path_ = "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/";
+double plotshift = 0.5;
 
 TGraphErrors* CreateTGraphSF(TString filename = "SF_final_tex.txt") {
 
@@ -225,13 +227,13 @@ void GetValuesAndUncertainties2(VecD &SF, VecD &stat, VecD &eta_bin_center, VecD
 
 void GetValuesAndUncertainties(VecD &SF, VecD &stat, VecD &eta_bin_center, VecD &eta_bin_error, MapD &systematics, MapDD & SFs, double etabins) {
 
-  VecD rest;
+  VecD others;
   for (unsigned int i = 0; i < etabins; i++){
     eta_bin_center.push_back(SFs["nominal"].at(0).at(i));
     eta_bin_error.push_back(SFs["nominal"].at(1).at(i));
     SF.push_back(SFs["nominal"].at(method).at(i));
     stat.push_back(SFs["nominal"].at(method+1).at(i));
-    rest.push_back(0);
+    others.push_back(0);
   }
 
   for (TString sys: systematics_name_all) {
@@ -257,10 +259,10 @@ void GetValuesAndUncertainties(VecD &SF, VecD &stat, VecD &eta_bin_center, VecD 
 
   for (TString sys: systematics_name_split) {
     if(std::find(systematics_name_minimal.begin(), systematics_name_minimal.end(), sys) != systematics_name_minimal.end()) continue;
-    for (unsigned int i = 0; i < etabins; i++) rest.at(i) += TMath::Power(systematics[sys].at(i),2);
+    for (unsigned int i = 0; i < etabins; i++) others.at(i) += TMath::Power(systematics[sys].at(i),2);
   }
-  for (unsigned int i = 0; i < etabins; i++) rest.at(i) += TMath::Sqrt(rest.at(i));
-  systematics["rest"] = rest;
+  for (unsigned int i = 0; i < etabins; i++) others.at(i) += TMath::Sqrt(others.at(i));
+  systematics["others"] = others;
 
 }
 
@@ -304,9 +306,7 @@ void Plot_Uncertainties2(TString name_method, VecD eta_bins, VecD eta_bin_center
   colors.push_back(kAzure+7); colors.push_back(kSpring); colors.push_back(kBlack); colors.push_back(kCyan+2);
 
 
-  TCanvas* canv_SF = tdrCanvas("Statistics_"+name_method, eta_bins[0]-0.1, eta_bins[eta_bins.size()-1]+0.1, 0.5, 3.0, "#eta", "JER SF");
-  canv_SF->SetTickx(0);
-  canv_SF->SetTicky(0);
+  TCanvas* canv_SF = tdrCanvas("Statistics_"+name_method, eta_bins[0]-plotshift, eta_bins[eta_bins.size()-1]+plotshift, 0.5, 3.0, "#eta", "JER SF");
   TLegend *leg = tdrLeg(0.60,0.67,0.80,0.92, 0.025, 42, kBlack);
   tdrHeader(leg,"Uncertainties", 12);
   TGraphErrors* gr_stat = new TGraphErrors(eta_bins.size()-1, &(eta_bin_center[0]), &SF[0], &(eta_bin_error[0]), &stat[0]);
@@ -322,9 +322,7 @@ void Plot_Uncertainties2(TString name_method, VecD eta_bins, VecD eta_bin_center
 
   canv_SF->Print(path+"SF_"+name_method+".pdf","pdf");
 
-  TCanvas* canv_stat = tdrCanvas("Uncertainties_"+name_method,eta_bins[0]-0.1, eta_bins[eta_bins.size()-1]+0.1, 0.0001, 100.0, "#eta", "Uncertainties");
-  canv_stat->SetTickx(0);
-  canv_stat->SetTicky(0);
+  TCanvas* canv_stat = tdrCanvas("Uncertainties_"+name_method,eta_bins[0]-plotshift, eta_bins[eta_bins.size()-1]+plotshift, 0.0001, 100.0, "#eta", "Uncertainties");
   canv_stat->SetLogy();
   leg = tdrLeg(0.55,0.67,0.80,0.92, 0.025, 42, kBlack);
   leg->SetNColumns(2);
@@ -360,15 +358,13 @@ void Plot_Uncertainties2(TString name_method, VecD eta_bins, VecD eta_bin_center
 
 void Plot_Uncertainties(TString name_method, VecD eta_bins, VecD eta_bin_center, VecD SF, VecD eta_bin_error, VecD stat, VecD systematics_all, MapD systematics, VecD total_error, TString path, VecD SF_2) {
   std::map<TString, int> colors;
-  colors["gaustails_0.95"] = kBlue-4;  colors["SMvsFE"] = kCyan+2; colors["rest"] = kOrange;
+  colors["gaustails_0.95"] = kBlue-4;  colors["SMvsFE"] = kCyan+2; colors["others"] = kOrange;
   colors["JEC_up"] = kGreen-2; colors["JEC_down"] = kGreen+1; colors["JEC"] = kGreen-2;
   colors["PU_up"] = kAzure+7; colors["PU_down"] = kAzure+10;
   colors["PLI_up"] = kViolet+1; colors["PLI_down"] = kViolet-2;
   colors["alpha"] = kOrange; colors["pTdep"] = kBlack;
 
-  TCanvas* canv_SF = tdrCanvas("Statistics_"+name_method, eta_bins[0]-0.1, eta_bins[eta_bins.size()-1]+0.1, 0.5, 3.0, "#eta", "JER SF");
-  canv_SF->SetTickx(0);
-  canv_SF->SetTicky(0);
+  TCanvas* canv_SF = tdrCanvas("Statistics_"+name_method, eta_bins[0]-plotshift, eta_bins[eta_bins.size()-1]+plotshift, 0.5, 3.0, "#eta", "JER SF");
   TLegend *leg = tdrLeg(0.60,0.67,0.80,0.92, 0.025, 42, kBlack);
   tdrHeader(leg,"Uncertainties", 12);
   TGraphErrors* gr_stat = new TGraphErrors(eta_bins.size()-1, &(eta_bin_center[0]), &SF[0], &(eta_bin_error[0]), &stat[0]);
@@ -385,9 +381,7 @@ void Plot_Uncertainties(TString name_method, VecD eta_bins, VecD eta_bin_center,
   canv_SF->Print(path+"SF_"+name_method+".pdf","pdf");
 
   for (TString split: {"split","all"}) {
-    TCanvas* canv_stat = tdrCanvas("Uncertainties_"+name_method+split,eta_bins[0]-0.1, eta_bins[eta_bins.size()-1]+0.1, 0.0001, 100.0, "#eta", "Uncertainties");
-    canv_stat->SetTickx(0);
-    canv_stat->SetTicky(0);
+    TCanvas* canv_stat = tdrCanvas("Uncertainties_"+name_method+split,eta_bins[0]-plotshift, eta_bins[eta_bins.size()-1]+plotshift, 0.0001, 100.0, "#eta", "Uncertainties");
     canv_stat->SetLogy();
     leg = tdrLeg(0.55,0.67,0.80,0.92, 0.025, 42, kBlack);
     leg->SetNColumns(2);
@@ -402,7 +396,7 @@ void Plot_Uncertainties(TString name_method, VecD eta_bins, VecD eta_bin_center,
       tdrDraw(h, "hist", kFullDotLarge, colors[sys], kSolid, colors[sys], 0, colors[sys]);
       leg->AddEntry(h, sys,"l");
     }
-    if (isOverlap) {
+    if (isOverlap && !(name_method=="all")) {
       TH1* h = new TH1F("", "", eta_bins.size()-1, &eta_bins[0] );
       h->SetLineWidth(5);
       for (unsigned int i = 0; i < eta_bins.size()-1; i++) {
@@ -430,23 +424,41 @@ void Plot_Uncertainties(TString name_method, VecD eta_bins, VecD eta_bin_center,
 
 
 // SFs == (n_systematics, columns in files, eta_bins)
-void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/",TString DATA = "RunBCDEF", TString TITLE_NAME = "") {
+void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="2018", TString QCD_DATA = "QCDPt/RunBCDEF/",TString DATA = "RunBCDEF", TString TITLE_NAME = "") {
   gPrintViaErrorHandler = kTRUE;
   gErrorIgnoreLevel = kFatal;
 
   extraText  = "Preliminary";  // default extra text is "Preliminary"
-  lumi_13TeV = "[MC 102X] Run2018 41.53 fb^{-1}";
+  lumi_13TeV = "[MC 102X] Run2017 41.53 fb^{-1}";
   lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
-  if (QCD_DATA.Contains("RunA"))     lumi_13TeV = "[MC 102X] Run2018A     14.00 fb^{-1}";
-  if (QCD_DATA.Contains("RunB"))     lumi_13TeV = "[MC 102X] Run2018B      7.10 fb^{-1}";
-  if (QCD_DATA.Contains("RunC"))     lumi_13TeV = "[MC 102X] Run2018C      6.94 fb^{-1}";
-  if (QCD_DATA.Contains("RunD"))     lumi_13TeV = "[MC 102X] Run2018D     31.93 fb^{-1}";
-  if (QCD_DATA.Contains("RunAB"))    lumi_13TeV = "[MC 102X] Run2018AB    14.10 fb^{-1}";
-  if (QCD_DATA.Contains("RunABC"))   lumi_13TeV = "[MC 102X] Run2018ABC   28.04 fb^{-1}";
-  if (QCD_DATA.Contains("RunABCD"))  lumi_13TeV = "[MC 102X] Run2018ABCD  59.97 fb^{-1}";
+  TString MCversion = (year.Contains("UL")) ? "[MC 106X]": "[MC 102X]";
 
+  TString lumi;
+
+  if (year=="2018") {
+    if (DATA.Contains("RunA"))    lumi = "14.00";
+    if (DATA.Contains("RunB"))    lumi = "7.10";
+    if (DATA.Contains("RunC"))    lumi = "6.94";
+    if (DATA.Contains("RunD"))    lumi = "31.93";
+    if (DATA.Contains("RunAB"))   lumi = "14.10";
+    if (DATA.Contains("RunABC"))  lumi = "28.04";
+    if (DATA.Contains("RunABCD")) lumi = "59.74";
+  }
+  if (year=="UL17") {
+    if (DATA.Contains("RunB"))      lumi = "4.82";
+    if (DATA.Contains("RunC"))      lumi = "9.66";
+    if (DATA.Contains("RunD"))      lumi = "4.25";
+    if (DATA.Contains("RunE"))      lumi = "9.28";
+    if (DATA.Contains("RunF"))      lumi = "13.54";
+    if (DATA.Contains("RunBCDEF"))  lumi = "41.53";
+  }
+
+  // lumi_13TeV = "RunII";
+  // lumi_13TeV = "35.92 fb^{-1}(2016)+41.53 fb^{-1}(2017)+59.74 fb^{-1}(2018)";
   //lumi_13TeV = "[MC Pythia8] RunII";
+
+  lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
 
   VecD eta_bins_all(eta_bins_JER,                eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
   VecD eta_bins_SM(eta_bins_JER,                 eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double) - shift_SM);
@@ -626,7 +638,7 @@ void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/
 
   // Needed for future plots
   ofstream SF_file_final;
-  std::cout << path+"standard/"+QCD_DATA+"SF_final_tex.txt" << '\n';
+  // std::cout << path+"standard/"+QCD_DATA+"SF_final_tex.txt" << '\n';
   SF_file_final.open (path+"standard/"+QCD_DATA+"SF_final_tex.txt");
   for (unsigned int i = 0; i < SF_final.size(); i++) {
     SF_file_final << "{{" << eta_bin_all_center[i]+eta_bin_all_error[i] << ", " << SF_final[i] << ", " << SF_final[i]+SF_final_error[i] << ", " << SF_final[i]-SF_final_error[i] << "}},\n";
@@ -678,8 +690,8 @@ void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/
     std::string text2 = Form("%.3f %.3f %d %d 11 %.4f %.4f %.4f", -(eta+eta_err), -(eta-eta_err), 0, int(PT_trigger_max), SF, SF-SF_err, SF+SF_err);
     text1 += Form(" %.4f %.4f", SF-SF_final_error_stat[i], SF+SF_final_error_stat[i]);
     text2 += Form(" %.4f %.4f", SF-SF_final_error_stat[i], SF+SF_final_error_stat[i]);
-    text1 += Form(" %.4f %.4f %.4f %.4f %.4f %.4f", SF+SF_sys["JEC_down"].at(i), SF+SF_sys["JEC_up"].at(i), SF-SF_sys["gaustails_0.95"].at(i), SF+SF_sys["gaustails_0.95"].at(i), SF-SF_sys["rest"].at(i), SF+SF_sys["rest"].at(i));
-    text2 += Form(" %.4f %.4f %.4f %.4f %.4f %.4f", SF+SF_sys["JEC_down"].at(i), SF+SF_sys["JEC_up"].at(i), SF-SF_sys["gaustails_0.95"].at(i), SF+SF_sys["gaustails_0.95"].at(i), SF-SF_sys["rest"].at(i), SF+SF_sys["rest"].at(i));
+    text1 += Form(" %.4f %.4f %.4f %.4f %.4f %.4f", SF+SF_sys["JEC_down"].at(i), SF+SF_sys["JEC_up"].at(i), SF-SF_sys["gaustails_0.95"].at(i), SF+SF_sys["gaustails_0.95"].at(i), SF-SF_sys["others"].at(i), SF+SF_sys["others"].at(i));
+    text2 += Form(" %.4f %.4f %.4f %.4f %.4f %.4f", SF+SF_sys["JEC_down"].at(i), SF+SF_sys["JEC_up"].at(i), SF-SF_sys["gaustails_0.95"].at(i), SF+SF_sys["gaustails_0.95"].at(i), SF-SF_sys["others"].at(i), SF+SF_sys["others"].at(i));
     systematics_text_DB.push_back(text1);
     systematics_text_DB.insert(systematics_text_DB.begin()+1,text2);
   }
@@ -704,7 +716,7 @@ void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/
       TGraphErrors* gr_SM = new TGraphErrors(eta_bin_SM_center.size(), &(eta_bin_SM_center[0]), &(sys_SM[0]), &(eta_bin_SM_error[0]), &(dummy_SM[0]));
       TGraphErrors* gr_FE = new TGraphErrors(eta_bin_FE_center.size(), &(eta_bin_FE_center[0]), &(sys_FE[0]), &(eta_bin_FE_error[0]), &(dummy_FE[0]));
       double ymax = 0.2, ymin=-0.2;
-      TCanvas* canv_sys = tdrCanvas(sysName, eta_bins_all[0]-0.1, eta_bins_all[eta_bins_all.size()-1]+0.1, ymin, ymax, "#eta", "SF_{nominal} - SF_{"+sysName+"} [\%]");
+      TCanvas* canv_sys = tdrCanvas(sysName, eta_bins_all[0]-plotshift, eta_bins_all[eta_bins_all.size()-1]+plotshift, ymin, ymax, "#eta", "SF_{nominal} - SF_{"+sysName+"} [\%]");
       TLegend *leg_sys = tdrLeg(0.64,0.67,0.79,0.92, 0.040, 42, kBlack);
       tdrHeader(leg_sys,"", 12);
       tdrDraw(gr_SM, "", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
@@ -719,12 +731,11 @@ void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/
 
   Plot_Uncertainties("SM", eta_bins_SM, eta_bin_SM_center, SF_SM, eta_bin_SM_error, stat_SM, total_sys_SM, systematics_SM, total_error_SM, path+"standard/"+QCD_DATA, SF_FE);
   Plot_Uncertainties("FE", eta_bins_FE, eta_bin_FE_center, SF_FE, eta_bin_FE_error, stat_FE, total_sys_FE, systematics_FE, total_error_FE, path+"standard/"+QCD_DATA, SF_SM);
+  Plot_Uncertainties("all", eta_bins_all, eta_bin_all_center, SF_final, eta_bin_all_error, SF_final_error_stat, SF_final_error_syst, SF_sys, SF_final_error, path+"standard/"+QCD_DATA, SF_SM);
 
 
-  TCanvas* canv_SF_final = tdrCanvas("SF_final", eta_bins_all.at(0)-0.1, eta_bins_all.at(eta_bins_all.size()-1)+0.5, 0., 3.0, "#eta", "JER SF");
-  canv_SF_final->SetTickx(0);
-  canv_SF_final->SetTicky(0);
-  TLegend *leg_final = tdrLeg(0.57,0.67,0.79,0.92, 0.035, 42, kBlack);
+  TCanvas* canv_SF_final = tdrCanvas("SF_final", eta_bins_all.at(0)-plotshift, eta_bins_all.at(eta_bins_all.size()-1)+plotshift, 0., 3.0, "#eta", "JER SF");
+  TLegend *leg_final = tdrLeg(0.65,0.67,0.79,0.92, 0.035, 42, kBlack);
   tdrHeader(leg_final,"", 12);
 
   VecD etaSummer16_25nsV1 = {0, 0.522, 0.783, 1.131, 1.305, 1.740, 1.930, 2.043, 2.322, 2.5, 2.853, 2.964, 3.139, 5.191};
@@ -746,24 +757,26 @@ void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/
   map_gr["Autumn18_V4_RunD"]    = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunD);
   map_gr["Autumn18_V4_RunABC"]  = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunABC);
   map_gr["Autumn18_V4_RunABCD"] = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunABCD);
-  map_gr["SFAutumn18_V7"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/"+DATA+"/");
-  map_gr["SFAutumn18_V8"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4CHS/standard/QCDHT/"+DATA+"/");
-  map_gr["SFAutumn18_V8_AK4Puppi"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4Puppi/standard/QCDHT/"+DATA+"/");
+  map_gr["SFAutumn18_V7_RunABCD"] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/RunABCD/");
+  // map_gr["SFAutumn18_V7"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/"+DATA+"/");
+  // map_gr["SFAutumn18_V8"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4CHS/standard/QCDHT/"+DATA+"/");
+  // map_gr["SFAutumn18_V8_AK4Puppi"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4Puppi/standard/QCDHT/"+DATA+"/");
   // map_gr["SFAutumn18_V8_AK8Puppi"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK8Puppi/standard/QCDHT/"+DATA+"/");
 
   TGraphErrors* gr_final = new TGraphErrors(SF_final.size(), &(eta_bin_all_center[0]), &SF_final[0], &(eta_bin_all_error[0]), &SF_final_error[0]); //tot
 
-  // tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3004, kRed+1);
-  // tdrDraw(map_gr["Fall17_V3"], "P5", kFullDotLarge, kOrange-1, kSolid, kOrange-1, 3004, kOrange-1);
-  // tdrDraw(map_gr["SFAutumn18_V7"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
-  tdrDraw(map_gr["SFAutumn18_V8"+DATA], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
-  tdrDraw(map_gr["SFAutumn18_V8_AK4Puppi"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
   tdrDraw(gr_final, "P5", kFullDotLarge, kBlue-4, kSolid, kBlue-4, 3005, kBlue-4);
-  // leg_final->AddEntry(map_gr["Summer16_25nsV1"], "Summer16_25nsV1","f");
-  // leg_final->AddEntry(map_gr["Fall17_V3"], "Fall17_V3","f");
+  tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3004, kRed+1);
+  tdrDraw(map_gr["Fall17_V3"], "P5", kFullDotLarge, kOrange-1, kSolid, kOrange-1, 3004, kOrange-1);
+  tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
+  // tdrDraw(map_gr["SFAutumn18_V8"+DATA], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
+  // tdrDraw(map_gr["SFAutumn18_V8_AK4Puppi"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
+  leg_final->AddEntry(map_gr["Summer16_25nsV1"], "Summer16_25nsV1","f");
+  leg_final->AddEntry(map_gr["Fall17_V3"], "Fall17_V3","f");
+  leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"Autumn18_V7","f");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7"+DATA],"JEC_V17_"+DATA,"f");
-  leg_final->AddEntry(map_gr["SFAutumn18_V8"+DATA],"JEC_V19_AK4CHS_"+DATA,"f");
-  leg_final->AddEntry(map_gr["SFAutumn18_V8_AK4Puppi"+DATA],"JEC_V19_AK4Puppi_"+DATA,"f");
+  //leg_final->AddEntry(map_gr["SFAutumn18_V8"+DATA],"JEC_V19_AK4CHS_"+DATA,"f");
+  //leg_final->AddEntry(map_gr["SFAutumn18_V8_AK4Puppi"+DATA],"JEC_V19_AK4Puppi_"+DATA,"f");
   leg_final->AddEntry(gr_final, TITLE_NAME,"f");
   leg_final->Draw("same");
 
@@ -777,34 +790,42 @@ void plot_SF_systematics_(TString path = "", TString QCD_DATA = "QCDPt/RunBCDEF/
 
 void plot_SF_systematics() {
 
+  TString path_ = std::getenv("CMSSW_BASE"); path_ += "/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/";
+
   TString path ;
 
+  TString year = "UL17";
+
   VecTS studies;
-  studies.push_back("MergeL2Res");
+  // studies.push_back("MergeL2Res");
+  studies.push_back("Standard");
 
   VecTS JECs;
   // JECs.push_back("Autumn18_V17");
-  JECs.push_back("Autumn18_V19");
+  // JECs.push_back("Autumn18_V19");
+  JECs.push_back("Fall17_17Nov2017_V32");
 
   VecTS JETs;
   JETs.push_back("AK4CHS");
-  JETs.push_back("AK4Puppi");
-  JETs.push_back("AK8Puppi");
+  // JETs.push_back("AK4Puppi");
+  // JETs.push_back("AK8Puppi");
 
   VecTS QCDS;
-  QCDS.push_back("QCDHT");
+  // QCDS.push_back("QCDHT");
+  QCDS.push_back("QCDPt");
 
   VecTS DATAS;
-  DATAS.push_back("RunABC");
-  DATAS.push_back("RunD");
-  DATAS.push_back("RunABCD");
+  // DATAS.push_back("RunABC");
+  // DATAS.push_back("RunD");
+  // DATAS.push_back("RunABCD");
+  DATAS.push_back("RunBCDEF");
 
 
 
   for(TString study : studies){
     for(TString JEC : JECs){
       for(TString JET : JETs){
-        path = path_+study+"/"+JEC+"/"+JET+"/";
+        path = path_+study+"/"+year+"/"+JEC+"/"+JET+"/";
         if (!gSystem->AccessPathName(path)) {
           std::cout << path << '\n';
           for(TString QCD : QCDS){
@@ -812,7 +833,7 @@ void plot_SF_systematics() {
               TString QCD_DATA = QCD+"/"+DATA+"/";
               TString TITLE_NAME = "JEC"; TITLE_NAME+= JEC(JEC.Index("_"),JEC.Length())+"_"+JET+"_"+DATA;
               std::cout << "start: " << QCD_DATA << " " << TITLE_NAME << '\n';
-              plot_SF_systematics_(path, QCD_DATA,DATA,TITLE_NAME);
+              plot_SF_systematics_(path_, path, year, QCD_DATA,DATA,TITLE_NAME);
               std::cout << "end: " << QCD_DATA << '\n';
               sleep(5);
             }
