@@ -188,8 +188,8 @@ Data_process.append("DATA_RunF_UL17")
 # JetLabels = ["AK4CHS", "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
 
-#year = "UL17"
-year = "2018"
+year = "UL17"
+# year = "2018"
 outdir = "DiJetJERC_DiJetHLT"
 
 userPathSframeOutput="/nfs/dust/cms/user/"+USER+"/sframe_all/"+outdir+"/"+year+"/"
