@@ -49,7 +49,6 @@ def main_program(path="", list_path="", out_path="", year="", JECVersions=[], Je
               os.makedirs(outdir)
             print "RUNNING ON ", run_list
             temp_time=time.time()
-            # cmd = "cp MySelector_full_Single.C MySelector.C"
             cmd = "cp MySelector_full_DiJet.C MySelector.C"
             a = os.system(cmd)
             cmd = 'sed -i -e """s/jet_thr=15/jet_thr=%s/g" MySelector.C' % (alpha_cut)
@@ -85,7 +84,7 @@ def main_program(path="", list_path="", out_path="", year="", JECVersions=[], Je
 USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
-year = "UL17"
+year = "2018"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/MC/"
 # study = "Simplified"
@@ -104,6 +103,7 @@ samples["UL17"] = ["Pt"]
 
 JECVersions = {}
 JECVersions["UL17"] = ["Fall17_17Nov2017_V32"]
+JECVersions["2018"] = ["Autumn18_V19"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 # systematics = ["", "alpha","PU", "JEC", "JER"]
@@ -116,4 +116,4 @@ print len(list_processes)
 for i in list_processes:
   print i
 
-parallelise(list_processes, 2, list_logfiles)
+parallelise(list_processes, 3, list_logfiles)

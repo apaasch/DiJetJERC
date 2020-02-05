@@ -4,7 +4,8 @@ import glob, numpy as np
 check = "*.o*"
 rt = "Real time"
 year = "UL17"
-version = "Fall17_17Nov2017_V32"
+year = "2018"
+version = "Autumn18_V19"
 JetLabels = "AK4CHS"
 
 for Sample in newNumber:
