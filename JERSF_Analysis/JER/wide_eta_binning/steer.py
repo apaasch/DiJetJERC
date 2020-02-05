@@ -86,7 +86,7 @@ source_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/"
 
 
-year = "UL17"
+year = "2018"
 
 samples = {}
 samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]

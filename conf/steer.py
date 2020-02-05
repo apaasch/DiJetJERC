@@ -188,7 +188,8 @@ Data_process.append("DATA_RunF_UL17")
 # JetLabels = ["AK4CHS", "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
 
-year = "UL17"
+#year = "UL17"
+year = "2018"
 outdir = "DiJetJERC_DiJetHLT"
 
 userPathSframeOutput="/nfs/dust/cms/user/"+USER+"/sframe_all/"+outdir+"/"+year+"/"
@@ -198,12 +199,14 @@ original_dir_ = os.getcwd()
 original_dir = original_dir_
 original_dir += "/SubmittedJobs/"+year+"/"
 
-QCDSamples = ["QCDPt","DATA"]
+QCDSamples = ["QCDHT","DATA"]
 processes = filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process)
 others = list(set(QCD_process+Data_process)-set(processes))
 
 JECVersions_Data = ["Fall17_17Nov2017_V32"]
 JECVersions_MC   = ["Fall17_17Nov2017_V32"]
+JECVersions_Data = ["Autumn18_V19"]
+JECVersions_MC   = ["Autumn18_V19"]
 # JetLabels = ["AK4CHS","AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 systematics = ["", "PU", "JEC"]
