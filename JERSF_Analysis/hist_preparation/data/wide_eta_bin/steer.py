@@ -86,7 +86,7 @@ def main_program(path="", list_path="", out_path="", year="", JECVersions=[], Je
 USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
-year = "UL17"
+year = "2018"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
 # study = "Simplified"
@@ -105,6 +105,7 @@ samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
 JECVersions = {}
 JECVersions["UL17"] = ["Fall17_17Nov2017_V32"]
+JECVersions["2018"] = ["Autumn18_V19"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 # systematics = ["", "alpha","PU", "JEC", "JER"]

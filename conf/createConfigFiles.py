@@ -21,6 +21,21 @@ newNumber = {
     "QCDPt1800to2400_UL17":  100,
     "QCDPt2400to3200_UL17":  100,
     "QCDPt3200toInf_UL17":   150,
+
+    "QCDHT50to100_2018":     125,
+    "QCDHT100to200_2018":    105,
+    "QCDHT200to300_2018":    90,
+    "QCDHT300to500_2018":    90,
+    "QCDHT500to700_2018":    80,
+    "QCDHT700to1000_2018":   85,
+    "QCDHT1000to1500_2018":  85,
+    "QCDHT1500to2000_2018":  80,
+    "QCDHT2000toInf_2018":   75,
+    "DATA_RunA_2018":        155,
+    "DATA_RunB_2018":        300,
+    "DATA_RunC_2018":        270,
+    "DATA_RunD_2018":        180,
+
 }
 
 
@@ -63,7 +78,10 @@ def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], 
                         comments.append(["<InputData", "Type", "DATA", '"'+el+'"'])
                 comment_lines(path, filename, comments, remove=True)
                 changes = []
-                changes.append(["user", "amalara", "amalara", os.environ["USER"]]) #TODO: check effectivity
+                changes.append(["user", "amalara/WorkingArea", "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/", os.environ["CMSSW_BASE"]+"/"])
+                change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
+                changes = []
+                changes.append(["user", "amalara", "amalara", os.environ["USER"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
                 changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*time))+'"'])

@@ -757,7 +757,7 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   map_gr["Autumn18_V4_RunD"]    = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunD);
   map_gr["Autumn18_V4_RunABC"]  = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunABC);
   map_gr["Autumn18_V4_RunABCD"] = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunABCD);
-  map_gr["SFAutumn18_V7_RunABCD"] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/RunABCD/");
+  // map_gr["SFAutumn18_V7_RunABCD"] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/RunABCD/");
   // map_gr["SFAutumn18_V7"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/"+DATA+"/");
   // map_gr["SFAutumn18_V8"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4CHS/standard/QCDHT/"+DATA+"/");
   // map_gr["SFAutumn18_V8_AK4Puppi"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4Puppi/standard/QCDHT/"+DATA+"/");
@@ -768,12 +768,12 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   tdrDraw(gr_final, "P5", kFullDotLarge, kBlue-4, kSolid, kBlue-4, 3005, kBlue-4);
   tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3004, kRed+1);
   tdrDraw(map_gr["Fall17_V3"], "P5", kFullDotLarge, kOrange-1, kSolid, kOrange-1, 3004, kOrange-1);
-  tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
+  // tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
   // tdrDraw(map_gr["SFAutumn18_V8"+DATA], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 3005, kGreen-1);
   // tdrDraw(map_gr["SFAutumn18_V8_AK4Puppi"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3005, kRed+1);
   leg_final->AddEntry(map_gr["Summer16_25nsV1"], "Summer16_25nsV1","f");
   leg_final->AddEntry(map_gr["Fall17_V3"], "Fall17_V3","f");
-  leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"Autumn18_V7","f");
+  // leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"Autumn18_V7","f");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7"+DATA],"JEC_V17_"+DATA,"f");
   //leg_final->AddEntry(map_gr["SFAutumn18_V8"+DATA],"JEC_V19_AK4CHS_"+DATA,"f");
   //leg_final->AddEntry(map_gr["SFAutumn18_V8_AK4Puppi"+DATA],"JEC_V19_AK4Puppi_"+DATA,"f");
@@ -794,7 +794,7 @@ void plot_SF_systematics() {
 
   TString path ;
 
-  TString year = "UL17";
+  TString year = "2018";
 
   VecTS studies;
   // studies.push_back("MergeL2Res");
@@ -802,8 +802,8 @@ void plot_SF_systematics() {
 
   VecTS JECs;
   // JECs.push_back("Autumn18_V17");
-  // JECs.push_back("Autumn18_V19");
-  JECs.push_back("Fall17_17Nov2017_V32");
+  JECs.push_back("Autumn18_V19");
+  // JECs.push_back("Fall17_17Nov2017_V32");
 
   VecTS JETs;
   JETs.push_back("AK4CHS");
@@ -811,14 +811,14 @@ void plot_SF_systematics() {
   // JETs.push_back("AK8Puppi");
 
   VecTS QCDS;
-  // QCDS.push_back("QCDHT");
-  QCDS.push_back("QCDPt");
+  QCDS.push_back("QCDHT");
+  // QCDS.push_back("QCDPt");
 
   VecTS DATAS;
-  // DATAS.push_back("RunABC");
-  // DATAS.push_back("RunD");
-  // DATAS.push_back("RunABCD");
-  DATAS.push_back("RunBCDEF");
+  DATAS.push_back("RunABC");
+  DATAS.push_back("RunD");
+  DATAS.push_back("RunABCD");
+  // DATAS.push_back("RunBCDEF");
 
 
 
