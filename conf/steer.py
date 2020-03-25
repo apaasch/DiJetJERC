@@ -1,29 +1,14 @@
 #!/usr/bin/env python
 
+import argparse
 from createConfigFiles import *
-
-def cont_event(paths ="./submittedJobs/" , JECVersions_Data=["Autumn18_V4"], JetLabels=["AK4CHS"], systematics=["", "PU", "JEC", "JER"],extratext=""):
-    count = 0
-    for newJECVersion in JECVersions_Data:
-        for newJetLabel in JetLabels:
-            for sys in systematics:
-                for dir in ["", "up", "down"]:
-                    if sys == "" and dir != "":
-                        continue
-                    if sys == "JER" and dir != "":
-                        continue
-                    if sys == "JER" and dir == "":
-                        dir = "nominal"
-                    path = paths+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
-                    for sample in sorted(os.listdir(path)):
-                        if not ".xml" in sample:
-                            continue
-                        count += 1
-    return count
 
 @timeit
 def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn18_V4"], JetLabels=["AK4CHS"], systematics=["", "PU", "JEC", "JER"], internal_option="-l", processes=[], extratext=""):
     count = 0
+    list_processes = []
+    nProcess = 48
+    time_ = 1
     for newJECVersion in JECVersions_Data:
         for newJetLabel in JetLabels:
             for sys in systematics:
@@ -38,24 +23,21 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                     for sample in sorted(os.listdir(path)):
                         if not ".xml" in sample:
                             continue
- 			if all(not control in sample for control in processes): continue
-                        count += 1
-                        all_events = cont_event(original_dir, JECVersions_Data, JetLabels, systematics,extratext)
-                        print "Already completed "+str(count)+" out of "+str(all_events)+" jobs --> "+str(float(count)/float(all_events)*100)+"%."
-                        os.chdir(original_dir)
-                        os.chdir(path)
+                        if all(not control in sample for control in processes): continue
                         if internal_option:
-                            command = ['sframe_batch.py', internal_option, sample]
+                            command = ['sframe_batch.py', internal_option, path+sample]
                         else:
-                            command = ['sframe_batch.py', sample]
-                        process = subprocess.Popen(command)
-                        process.wait()
-                        if internal_option == "-a":
-                            time.sleep(5)
-                        os.chdir(original_dir)
+                            command = ['sframe_batch.py', path+sample]
+                        command = [path]+command
+                        list_processes.append(command)
+                        if internal_option == "-f":
+                            nProcess = 20
+                        if internal_option == "":
+                            time_ = 0.5
+    print len(list_processes)
+    parallelise(list_processes, nProcess, cwd=True, time_=time_)
 
 
-from createConfigFiles import *
 @timeit
 def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn18_V4", "Autumn18_V4"], JetLabels=["AK4CHS", "AK8Puppi"], systematics=["", "PU", "JEC", "JER"],extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
@@ -87,9 +69,9 @@ def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
 
 
 
-def main_program(option="", internal_option="", processes=[], others=[], JECVersions_Data=[], JECVersions_MC=[], JetLabels=[], systematics=[], original_dir="./SubmittedJobs/", original_file="JER2018.xml", year="2018", isMB=False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False, extratext=""):
+def main_program(option="", internal_option="", study="Standard", processes=[], others=[], JECVersions_Data=[], JECVersions_MC=[], JetLabels=[], systematics=[], original_dir="./SubmittedJobs/", original_file="JER2018.xml", year="2018", isMB=False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False, extratext=""):
     if option == "new":
-        createConfigFiles(processes, others, JECVersions_Data, JECVersions_MC, JetLabels, systematics, original_dir, original_file, outdir, year, isMB, test_trigger, isThreshold,isLowPt,isL1Seed,isECAL,extratext)
+        createConfigFiles(study, processes, others, JECVersions_Data, JECVersions_MC, JetLabels, systematics, original_dir, original_file, outdir, year, isMB, test_trigger, isThreshold,isLowPt,isL1Seed,isECAL,extratext)
     elif option == "remove" or option == "delete":
         delete_workdir(original_dir, JECVersions_Data, JetLabels, systematics, extratext)
     else:
@@ -122,6 +104,8 @@ elif option == "new":
     internal_option = ""
 elif option == "remove" or option == "delete":
     internal_option = ""
+elif option == "split":
+    internal_option = ""
 else:
     internal_option = ""
 
@@ -142,16 +126,6 @@ Data_process.append("DATA_RunA_2018")
 Data_process.append("DATA_RunB_2018")
 Data_process.append("DATA_RunC_2018")
 Data_process.append("DATA_RunD_2018")
-
-QCD_process.append("QCDHT50to100_UL17")
-QCD_process.append("QCDHT100to200_UL17")
-QCD_process.append("QCDHT200to300_UL17")
-QCD_process.append("QCDHT300to500_UL17")
-QCD_process.append("QCDHT500to700_UL17")
-QCD_process.append("QCDHT700to1000_UL17")
-QCD_process.append("QCDHT1000to1500_UL17")
-QCD_process.append("QCDHT1500to2000_UL17")
-QCD_process.append("QCDHT2000toInf_UL17")
 
 QCD_process.append("QCDHT50to100_UL17")
 QCD_process.append("QCDHT100to200_UL17")
@@ -190,26 +164,49 @@ Data_process.append("DATA_RunF_UL17")
 
 year = "UL17"
 # year = "2018"
-outdir = "DiJetJERC_DiJetHLT"
 
-userPathSframeOutput="/nfs/dust/cms/user/"+USER+"/sframe_all/"+outdir+"/"+year+"/"
+
+studies = []
+studies.append("Standard")
+# studies.append("L1L2Residual")
+# studies.append("L1L2")
+
+print "Running for: ", studies
+time.sleep(2)
+
+outdir = "DiJetJERC_DiJetHLT"
 original_file = outdir+".xml"
 original_dir_ = os.getcwd()
 
-original_dir = original_dir_
-original_dir += "/SubmittedJobs/"+year+"/"
 
-QCDSamples = ["QCDHT","DATA"]
+QCDSamples = ["QCDPt","QCDHT", "DATA"]
+# QCDSamples = ["QCDHT", "DATA"]
 processes = filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process)
 others = list(set(QCD_process+Data_process)-set(processes))
 
-JECVersions_Data = ["Fall17_17Nov2017_V32"]
-JECVersions_MC   = ["Fall17_17Nov2017_V32"]
-JECVersions_Data = ["Autumn18_V19"]
-JECVersions_MC   = ["Autumn18_V19"]
+JECVersions_Data = {}
+JECVersions_MC = {}
+
+JECVersions_Data["2017"] = ["Fall17_17Nov2017_V32"]
+JECVersions_MC["2017"]   = ["Fall17_17Nov2017_V32"]
+JECVersions_Data["2018"] = ["Autumn18_V19"]
+JECVersions_MC["2018"]   = ["Autumn18_V19"]
+JECVersions_Data["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
+JECVersions_MC["UL17"]   = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
+JECVersions_Data["UL17"] = ["Summer19UL17_V1_ComplexL1"]
+JECVersions_MC["UL17"]   = ["Summer19UL17_V1_ComplexL1"]
 # JetLabels = ["AK4CHS","AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 systematics = ["", "PU", "JEC"]
-#systematics = [""]
+# systematics = ["", "PU"]
+# systematics = [""]
+# systematics = ["PU"]
 
-main_program(option, internal_option, processes, others, JECVersions_Data, JECVersions_MC, JetLabels, systematics, original_dir, original_file, year)
+for study in studies:
+
+    userPathSframeOutput="/nfs/dust/cms/user/"+USER+"/sframe_all/"+outdir+"/"+year+"/"+study+"/"
+
+    original_dir = original_dir_
+    original_dir += "/SubmittedJobs/"+year+"/"+study+"/"
+
+    main_program(option, internal_option, study, processes, others, JECVersions_Data[year], JECVersions_MC[year], JetLabels, systematics, original_dir, original_file, year)

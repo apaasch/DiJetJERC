@@ -50,7 +50,6 @@ def main_program(path="", list_path="", out_path="", year="", JECVersions=[], Je
               os.makedirs(outdir)
             print "RUNNING ON ", run_list
             temp_time=time.time()
-            # cmd = "cp MySelector_full_Single.C MySelector.C"
             cmd = "cp MySelector_full_DiJet.C MySelector.C"
             a = os.system(cmd)
             cmd = 'sed -i -e """s/jet_thr=15/jet_thr=%s/g" MySelector.C' % (alpha_cut)
@@ -86,36 +85,50 @@ def main_program(path="", list_path="", out_path="", year="", JECVersions=[], Je
 USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
-year = "2018"
+#year = "2018"
+year = "UL17"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
-# study = "Simplified"
-study = "Standard"
 
-list_path   = common_path+"lists/"+study+"/"+year+"/"
-out_path    = common_path+"wide_eta_bin/file/"+study+"/"+year+"/"
-os.chdir(common_path+"wide_eta_bin/")
-
-list_processes = []
-list_logfiles = []
-path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/"
 samples = {}
 samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+
 JECVersions = {}
-JECVersions["UL17"] = ["Fall17_17Nov2017_V32"]
+JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
+JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1"]
 JECVersions["2018"] = ["Autumn18_V19"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 # systematics = ["", "alpha","PU", "JEC", "JER"]
 systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["", "alpha","PU"]
 # systematics = [""]
-main_program(path, list_path, out_path, year, JECVersions[year], JetLabels, systematics, samples[year])
 
-print len(list_processes)
+list_processes = []
+list_logfiles = []
+
+studies = []
+studies.append("Standard")
+# studies.append("L1L2Residual")
+# studies.append("L1L2")
+# studies.append("Simplified")
+# studies.append("PuJetId")
+
+for study in studies:
+    list_path   = common_path+"lists/"+study+"/"+year+"/"
+    out_path    = common_path+"wide_eta_bin/file/"+study+"/"+year+"/"
+    os.chdir(common_path+"wide_eta_bin/")
+
+    path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/"+study+"/"
+
+    main_program(path, list_path, out_path, year, JECVersions[year], JetLabels, systematics, samples[year])
+
 
 for i in list_processes:
   print i
+
+print len(list_processes)
 
 parallelise(list_processes, 20, list_logfiles)

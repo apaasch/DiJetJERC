@@ -1,11 +1,11 @@
 from utils import *
 
 newNumber = {
-    "DATA_RunB_UL17":        100,
-    "DATA_RunC_UL17":        100,
-    "DATA_RunD_UL17":        100,
-    "DATA_RunE_UL17":        100,
-    "DATA_RunF_UL17":        100,
+    "DATA_RunB_UL17":        150,
+    "DATA_RunC_UL17":        150,
+    "DATA_RunD_UL17":        150,
+    "DATA_RunE_UL17":        150,
+    "DATA_RunF_UL17":        150,
     "QCDPt15to30_UL17":      50,
     "QCDPt30to50_UL17":      60,
     "QCDPt50to80_UL17":      40,
@@ -18,9 +18,18 @@ newNumber = {
     "QCDPt800to1000_UL17":   50,
     "QCDPt1000to1400_UL17":  50,
     "QCDPt1400to1800_UL17":  90,
-    "QCDPt1800to2400_UL17":  100,
+    "QCDPt1800to2400_UL17":  110,
     "QCDPt2400to3200_UL17":  100,
-    "QCDPt3200toInf_UL17":   150,
+    "QCDPt3200toInf_UL17":   50,
+    "QCDHT50to100_UL17":     60,
+    "QCDHT100to200_UL17":    50,
+    "QCDHT200to300_UL17":    50,
+    "QCDHT300to500_UL17":    50,
+    "QCDHT500to700_UL17":    70,
+    "QCDHT700to1000_UL17":   50,
+    "QCDHT1000to1500_UL17":  65,
+    "QCDHT1500to2000_UL17":  75,
+    "QCDHT2000toInf_UL17":   70,
 
     "QCDHT50to100_2018":     125,
     "QCDHT100to200_2018":    105,
@@ -47,7 +56,7 @@ lumi_file = {
 }
 
 @timeit
-def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], others=[], JECVersions_Data=[""], JECVersions_MC=[""], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", year="2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False,extratext=""):
+def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], others=[], JECVersions_Data=[""], JECVersions_MC=[""], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", year="2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False,extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
     try:
         time = int(filter(lambda x: "TIME" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[5])
@@ -87,6 +96,8 @@ def createConfigFiles(processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], 
                 changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*time))+'"'])
                 changes.append(["<!ENTITY", 'LUMI_FILE', 'lumifile.root', lumi_file[year]])
                 changes.append(["<!ENTITY", "YEAR", "year", year])
+                if study!= "Standard":
+                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", study])
                 if "17" in year:
                     changes.append(["<Cycle", "TargetLumi", "158640", "41530"])
                     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])

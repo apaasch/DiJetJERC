@@ -38,5 +38,6 @@ private:
   uhh2::Event::Handle<float> tt_alpha; uhh2::Event::Handle<float> tt_alpha_sum;
   uhh2::Event::Handle<float> tt_rel_r; uhh2::Event::Handle<float> tt_mpf_r; uhh2::Event::Handle<float> tt_asymmetry; uhh2::Event::Handle<float> tt_nPU;
   uhh2::Event::Handle<int> tt_matchJetId_0; uhh2::Event::Handle<int> tt_matchJetId_1;
+  uhh2::Event::Handle<float> tt_gen_pt_ave; uhh2::Event::Handle<float> tt_gen_PUpthat;
 
 };

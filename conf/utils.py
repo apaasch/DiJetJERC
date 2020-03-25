@@ -2,6 +2,7 @@ import sys
 import os
 import subprocess
 import time
+import glob
 
 def timeit(method):
     def timed(*args, **kw):
@@ -201,7 +202,7 @@ def sub_line(path, filename, controls, inputs, outputs):
                     process.wait()
 
 
-def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None):
+def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None, time_=2):
   ntotal = len(list_processes)
   processes = []
   logfiles = []
@@ -236,7 +237,7 @@ def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None):
     logfiles.append(f)
     if cwd:
       processes.append(subprocess.Popen(process[1:], stdout=f, cwd=process[0]))
-      time.sleep(1)
+      time.sleep(time_)
     else:
       processes.append(subprocess.Popen(process, stdout=f))
 
@@ -246,4 +247,4 @@ def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None):
     file.close()
   if not condition:
     # os.remove("log.txt")
-    a = map(os.remove, glob("log_*.txt"))
+    a = map(os.remove, glob.glob("log_*.txt"))
