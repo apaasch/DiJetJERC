@@ -22,7 +22,7 @@ VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha","pTdep
 VecTS systematics_name_minimal({"gaustails_0.95","JEC", "others"});
 
 bool dosplit = true; // split source of Uncertainties
-int method = 2; //2-uncorr 4-corr
+int method = 4; //2-uncorr 4-corr
 int pt_dep_method = 4; //4-min value 5-max value
 
 // NO MERGE SM and FE
@@ -248,14 +248,10 @@ void GetValuesAndUncertainties(VecD &SF, VecD &stat, VecD &eta_bin_center, VecD 
   for (TString sys: {"JEC","PU","PLI"}) {
     VecD temp;
     for (unsigned int i = 0; i < etabins; i++) {
-      double divFactor = 2;
-      // if (sys=="JEC") divFactor=10; //TODO
-      // if (sys=="JEC" && i==0 && etabins==3) divFactor=100; //TODO
-      // if (i==0 && etabins==11) divFactor=100; //TODO
       double sys_up = systematics[sys+"_up"].at(i);
       double sys_down = systematics[sys+"_down"].at(i);
-      temp.push_back(TMath::Sqrt(TMath::Power(sys_up+sys_down,2)+2*TMath::Power(sys_up-sys_down,2))/divFactor);
-      if (dosplit) SF.at(i) += (sys_up-sys_down)/divFactor;
+      temp.push_back(TMath::Sqrt(TMath::Power(sys_up+sys_down,2)+2*TMath::Power(sys_up-sys_down,2))/2);
+      if (dosplit) SF.at(i) += (sys_up-sys_down)/2;
     }
     systematics[sys] = temp;
     temp.clear();
@@ -458,11 +454,11 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
     if (DATA.Contains("RunBCDEF"))  lumi = "41.53";
   }
 
-  // lumi_13TeV = "RunII";
+  lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
+
+  lumi_13TeV = "2016-2018";
   // lumi_13TeV = "35.92 fb^{-1}(2016)+41.53 fb^{-1}(2017)+59.74 fb^{-1}(2018)";
   //lumi_13TeV = "[MC Pythia8] RunII";
-
-  lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
 
   VecD eta_bins_all(eta_bins_JER,                eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
   VecD eta_bins_SM(eta_bins_JER,                 eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double) - shift_SM);
@@ -627,16 +623,13 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
     }
   }
 
-  // std::cout << "eta \t SF[\%] \t err[\%]\n";
-  // for (size_t i = 0; i < SF_SM.size(); i++) std::cout << i+1 << "\t" << Form("%.2f",(SF_SM[i]/SF_SM2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_SM[i]/total_sys_SM2[i]-1)*100) << '\n';
+  std::cout << "eta \t SF[\%] \t err[\%]\n";
+  for (size_t i = 0; i < SF_SM.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_SM[i]/SF_SM2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_SM[i]/total_sys_SM2[i]-1)*100) << '\n';
 
-  // for (size_t i = 0; i < SF_FE.size(); i++) std::cout << i+1 << "\t" << Form("%.2f",(SF_FE[i]/SF_FE2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_FE[i]/total_sys_FE2[i]-1)*100) << '\n';
-
-  // std::cout << "eta \t SF[\%] \t err[\%]\tsys[\%] \n";
-  // for (size_t i = 0; i < SF_final.size(); i++) std::cout << i+1 << "\t" << Form("%.2f",(SF_final[i]/SF_final2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error[i]/SF_final_error2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error_syst[i]/SF_final_error_syst2[i]-1)*100) << '\n';
+  for (size_t i = 0; i < SF_FE.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_FE[i]/SF_FE2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_FE[i]/total_sys_FE2[i]-1)*100) << '\n';
 
   std::cout << "eta \t SF[\%] \t err[\%]\tsys[\%] \n";
-  for (size_t i = 0; i < SF_final.size(); i++) std::cout << i+1 << "\t" << Form("%.2f",SF_final[i]) << "\t" << Form("%.2f",SF_final_error[i]) << "\t" << Form("%.2f",SF_final_error_syst[i]) << '\n';
+  for (size_t i = 0; i < SF_final.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_final[i]/SF_final2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error[i]/SF_final_error2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error_syst[i]/SF_final_error_syst2[i]-1)*100) << '\n';
 
 
   /////////////////////////
@@ -777,19 +770,23 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   int col2016 = kGreen-1;
   int col2017 = kRed+1;
   int col2018 = kBlue+1;
-  tdrDraw(gr_final, "P5", kFullDotLarge, col2018, kSolid, col2018, 1001, col2018, 0.15);
-  // tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullTriangleUp, col2016, kSolid, col2016, 1001, col2016, 0.15);
+  // tdrDraw(gr_final, "P5", kFullDotLarge, kBlue-4, kSolid, kBlue-4, 3004, kBlue-4);
+  tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullTriangleUp, col2016, kSolid, col2016, 1001, col2016, 0.15);
   tdrDraw(map_gr["Fall17_V3"], "P5", kFullTriangleDown, col2017, kSolid, col2017, 1001, col2017, 0.15);
-  // tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullSquare, kGreen-1, kSolid, kGreen-1, 1001, kGreen-1, 0.15);
-  // tdrDraw(map_gr["SFAutumn18_V8"+DATA], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 1001, kGreen-1, 0.15);
-  // tdrDraw(map_gr["SFAutumn18_V8_AK4Puppi"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3004, kRed+1, 0.15);
-  // leg_final->AddEntry(map_gr["Summer16_25nsV1"], "Summer16_25nsV1","f");
-  leg_final->AddEntry(map_gr["Fall17_V3"], "Fall17_V3","f");
-  // leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"Autumn18_V7","f");
+  tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullSquare, col2018, kSolid, col2018, 1001, col2018, 0.15);
+
+//   kGreen-2
+// kBlue-4
+// kRed+1
+  // tdrDraw(map_gr["SFAutumn18_V8"+DATA], "P5", kFullDotLarge, kOrange+1, kSolid, kGreen-1, 3004, kGreen-1);
+  // tdrDraw(map_gr["SFAutumn18_V8_AK4Puppi"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3004, kRed+1);
+  leg_final->AddEntry(map_gr["Summer16_25nsV1"], "2016","fp");
+  leg_final->AddEntry(map_gr["Fall17_V3"], "2017","fp");
+  leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"2018","fp");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7"+DATA],"JEC_V17_"+DATA,"f");
   //leg_final->AddEntry(map_gr["SFAutumn18_V8"+DATA],"JEC_V19_AK4CHS_"+DATA,"f");
   //leg_final->AddEntry(map_gr["SFAutumn18_V8_AK4Puppi"+DATA],"JEC_V19_AK4Puppi_"+DATA,"f");
-  leg_final->AddEntry(gr_final, TITLE_NAME,"f");
+  // leg_final->AddEntry(gr_final, TITLE_NAME,"f");
   leg_final->Draw("same");
 
   canv_SF_final->Print(path+"standard/"+QCD_DATA+"SF_final.pdf","pdf");
@@ -800,27 +797,22 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
 
 
 
-void plot_SF_systematics() {
+void plot_SF_systematics_DPnotes() {
 
   TString path_ = std::getenv("CMSSW_BASE"); path_ += "/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/";
 
   TString path ;
 
-  //TString year = "2018";
   TString year = "UL17";
 
   VecTS studies;
   // studies.push_back("MergeL2Res");
   studies.push_back("Standard");
-  studies.push_back("L1L2Residual");
-  // studies.push_back("PuJetId");
 
   VecTS JECs;
   // JECs.push_back("Autumn18_V17");
   // JECs.push_back("Autumn18_V19");
-  // JECs.push_back("Fall17_17Nov2017_V32");
-  JECs.push_back("Summer19UL17_V1_SimpleL1");
-  JECs.push_back("Summer19UL17_V1_ComplexL1");
+  JECs.push_back("Fall17_17Nov2017_V32");
 
   VecTS JETs;
   JETs.push_back("AK4CHS");
@@ -828,7 +820,7 @@ void plot_SF_systematics() {
   // JETs.push_back("AK8Puppi");
 
   VecTS QCDS;
-  QCDS.push_back("QCDHT");
+  // QCDS.push_back("QCDHT");
   QCDS.push_back("QCDPt");
 
   VecTS DATAS;

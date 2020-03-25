@@ -87,7 +87,7 @@ void setTDRStyle() {
   tdrStyle->SetMarkerStyle(20);
 
   //For the fit/function:
-  tdrStyle->SetOptFit(1);
+  // tdrStyle->SetOptFit(1);
   tdrStyle->SetFitFormat("5.4g");
   tdrStyle->SetFuncColor(2);
   tdrStyle->SetFuncStyle(1);
@@ -577,23 +577,25 @@ void setNewTitle(TString name = "new title") {
   title->Draw();
 }
 
-void tdrDraw(TH1* h, string opt, int marker=kFullCircle, int mcolor = kBlack, int lstyle=kSolid, int lcolor=-1, int fstyle=1001, int fcolor=kYellow+1) {
+void tdrDraw(TH1* h, string opt, int marker=kFullCircle, int mcolor = kBlack, int lstyle=kSolid, int lcolor=-1, int fstyle=1001, int fcolor=kYellow+1, float alpha=-1) {
   h->SetMarkerStyle(marker);
   h->SetMarkerColor(mcolor);
   h->SetLineStyle(lstyle);
   h->SetLineColor(lcolor==-1 ? mcolor : lcolor);
   h->SetFillStyle(fstyle);
   h->SetFillColor(fcolor);
+  if (alpha>0) h->SetFillColorAlpha(fcolor, alpha);
   h->Draw((opt+" SAME").c_str());
 }
 
-void tdrDraw(TGraph* g, string opt, int marker=kFullCircle, int mcolor = kBlack, int lstyle=kSolid, int lcolor=-1, int fstyle=1001, int fcolor=kYellow+1) {
+void tdrDraw(TGraph* g, string opt, int marker=kFullCircle, int mcolor = kBlack, int lstyle=kSolid, int lcolor=-1, int fstyle=1001, int fcolor=kYellow+1, float alpha=-1) {
   g->SetMarkerStyle(marker);
   g->SetMarkerColor(mcolor);
   g->SetLineStyle(lstyle);
   g->SetLineColor(lcolor==-1 ? mcolor : lcolor);
   g->SetFillStyle(fstyle);
   g->SetFillColor(fcolor);
+  if (alpha>0) g->SetFillColorAlpha(fcolor, alpha);
   g->Draw((opt+" SAME").c_str());
 }
 

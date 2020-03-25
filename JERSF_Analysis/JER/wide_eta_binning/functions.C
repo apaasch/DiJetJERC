@@ -863,6 +863,14 @@ bool removePointsforWidth(bool isFE, int m, int p, int r) {
 
 bool removePointsforFit(bool isFE, int m, int p) {
   bool check = false;
+  //TODO FOR UL17 ONLY!
+  // if ( isFE && p>=6 ) check = true;
+  if ( isFE && m==3  && p>=6 ) check = true;
+  if ( isFE && m==5  && p==6 ) check = true;
+  if ( isFE && m==6  && p==8 ) check = true;
+  if ( isFE && m==7  && p>=7 ) check = true;
+  if ( isFE && m==8  && p==6 ) check = true;
+
   // if ( p<=1 ) check = true;
   // if ( !isFE && m==5  && p==8 ) check = true;
   // if ( !isFE && m==6  && p==8 ) check = true;
@@ -957,9 +965,9 @@ TH2Poly* fill_2Dhist( TString name1, std::vector< std::vector< double > > SFs, s
     }
   }
 
-  h2->SetName(name1);  
+  h2->SetName(name1);
   h2->SetTitle(name1);
-  h2->GetXaxis()->SetTitle("p_{T}^{ave}"); 
+  h2->GetXaxis()->SetTitle("p_{T}^{ave}");
   h2->GetYaxis()->SetTitle("|#eta|");
   h2->GetZaxis()->SetRangeUser(0,3.0);
   h2->SetStats(kFALSE);
@@ -980,7 +988,7 @@ TH2Poly* fill_2Dhist( TString name1, std::vector< std::vector< double > > SFs, s
 	if ( ( !(TMath::IsNaN(SFs.at(m).at(p))) ) && SFs.at(m).at(p)!= 0. )      h2 -> SetBinContent(h2 -> FindBin(pT,eta), SFs.at(m).at(p) );
 	if ( ( !(TMath::IsNaN(SFsError.at(m).at(p))) ) && SFs.at(m).at(p)!= 0. ) h2 -> SetBinError(h2 -> FindBin(pT,eta), SFsError.at(m).at(p) );
       }
-  } 
+  }
     //    cout<<"END pof 2D fill"<<endl;
     return h2;
 }

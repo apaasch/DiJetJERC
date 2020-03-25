@@ -146,11 +146,13 @@ const double pt_bins_Si[n_pt_Si] = {
         {"DiJet_forward_2017",                { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
         {"DiJet_forward_UL17",                { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
         {"SingleJet_central_2017",            { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
-        {"SingleJet_central_UL17",            { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
-        {"SingleJet_central_UL17_ptbins",     { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
+        {"SingleJet_central_UL17",            { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
+        {"SingleJet_central_UL17_ptbins",     { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
         {"SingleJet_forward_2017",            { 73, 93, 113, 176, 239, 318 }}, // for Singlejet_HFJEC 2017 94X 17Nov2017 //TODO not used
         {"SingleJet_forward_UL17",            { 73, 93, 113, 176, 239, 318 }}, // for Singlejet_HFJEC 2017 94X 17Nov2017 //TODO not used
         {"SingleJet_forward_UL17_ptbins",     { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
+        //{"SingleJet_forward_UL17",            { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
+        //{"SingleJet_forward_UL17_ptbins",     { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
         // 2017 AK8
         {"SingleJet_central_AK8_2017",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017
         {"SingleJet_central_AK8_UL17",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017

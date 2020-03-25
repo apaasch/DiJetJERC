@@ -2,11 +2,7 @@
 #include "UHH2/DiJetJERC/include/constants.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/Jet.h"
-
-// #include "UHH2/BaconTrans/baconheaders/TJet.hh"
-// #include "UHH2/BaconTrans/baconheaders/TEventInfo.hh"
-// #include "UHH2/BaconTrans/baconheaders/BaconAnaDefs.hh"
-// #include "UHH2/BaconTrans/baconheaders/TVertex.hh"
+#include "UHH2/common/include/PartonHT.h"
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -81,7 +77,31 @@ JECAnalysisHists::JECAnalysisHists(Context & ctx, const string & dirname): Hists
 
   book<TH2D>("phi_vs_etaAllCut30","#phi vs. #eta all jet, cut at Pt > 30GeV; #eta; #phi",100,-6,6,100,-M_PI,M_PI);
 
+
+  book<TH1F>("genHT", "genHT", 150, 0, 6000);
+  book<TH1F>("binning", "binning", 150, 0, 6000);
+  book<TH1F>("gen_pt_ave", "gen_pt_ave", 150, 0, 6000);
+  book<TH1F>("PU_pThat", "PU_pThat", 100, 0, 1000);
+  book<TH1F>("ptavecoshprobejet_eta",  "ptavecoshprobejet_eta", 150, 0, 6000);
+
+  book<TH2D>("ptaveVSweight",    "; ptave;    weight", 150, 0, 6000, 1000, 0., 5000);
+  book<TH2D>("genptaveVSweight", "; genptave; weight", 150, 0, 6000, 1000, 0., 5000);
+  book<TH2D>("pthatVSweight",    "; pthat;    weight", 150, 0, 6000, 1000, 0., 5000);
+  book<TH2D>("PU_pThatVSweight", "; PU_pThat; weight", 150, 0, 6000, 1000, 0., 5000);
+  book<TH2D>("genHTVSweight",    "; genHT;    weight", 150, 0, 6000, 1000, 0., 5000);
+  book<TH2D>("ptHatVSweight",    "; ptHat;    weight", 150, 0, 6000, 1000, 0., 5000);
+
+  book<TH2D>("ptaveVSgenHT",     "; #frac{ptave}{genHT};     weight", 100, -0.5, 4.5, 1000, 0., 5000);
+  book<TH2D>("genptaveVSgenHT",  "; #frac{genptave}{genHT};  weight", 100, -0.5, 4.5, 1000, 0., 5000);
+  book<TH2D>("ptaveVSqScale",    "; #frac{ptave}{qScale};    weight", 100, -0.5, 4.5, 1000, 0., 5000);
+  book<TH2D>("PU_pThatVSgenHT",  "; #frac{PU_pThat}{genHT};  weight", 100, -0.5, 4.5, 1000, 0., 5000);
+  book<TH2D>("PU_pThatVSqScale", "; #frac{PU_pThat}{qScale}; weight", 100, -0.5, 4.5, 1000, 0., 5000);
+  book<TH2D>("ptaveVSptHat",     "; #frac{ptave}{ptHat};     weight", 100, -0.5, 4.5, 1000, 0., 5000);
+  book<TH2D>("genptaveVSptHat",  "; #frac{genptave}{ptHat};  weight", 100, -0.5, 4.5, 1000, 0., 5000);
+
   tt_gen_pthat  = ctx.get_handle<float>("gen_pthat");
+  tt_gen_pt_ave = ctx.get_handle<float>("gen_pt_ave");
+  tt_gen_PUpthat = ctx.get_handle<float>("gen_PUpthat");
   tt_gen_weight = ctx.get_handle<float>("gen_weight");
   tt_jet1_pt = ctx.get_handle<float>("jet1_pt");
   tt_jet2_pt = ctx.get_handle<float>("jet2_pt");
@@ -125,8 +145,10 @@ void JECAnalysisHists::fill(const uhh2::Event & ev, const int rand){
 
   hist("N_jets")->Fill(njets, weight);
 
+  double pthat = ev.get(tt_gen_pthat);
+
   try{
-    if(!ev.isRealData)hist("pt_hat")->Fill(ev.get(tt_gen_pthat),weight);
+    if(!ev.isRealData)hist("pt_hat")->Fill(pthat,weight);
   }
   catch(const std::runtime_error& error){
     std::cout<<"Problem with gen in JECAnalysishists.cxx"<<std::endl;
@@ -165,19 +187,12 @@ void JECAnalysisHists::fill(const uhh2::Event & ev, const int rand){
   Jet* jet2 = &ev.jets->at(1);
   hist("pt_2")->Fill(jet2->pt(), weight);
   hist("eta_2")->Fill(jet2->eta(), weight);
-  // float ratio_pt = 0.;
 
-  try{
-    float ratio_pt = (ev.get(tt_pt_ave) - ev.get(tt_gen_pthat))/ev.get(tt_gen_pthat);
-  }
-  catch(const std::runtime_error& error){
-    std::cout<<"Problem with gen in JECAnalysishists.cxx"<<std::endl;
-    std::cout<<error.what();
-  }
+  double pt_ave = ev.get(tt_pt_ave);
 
-  hist("pt_ave")          ->Fill(ev.get(tt_pt_ave), weight);
-  hist("pt_ave_pthat")   ->Fill(ev.get(tt_pt_ave), weight); //FIXME why is this filled with pt_ave?
-  hist("pt_ave_rebin") ->Fill(ev.get(tt_pt_ave), weight);  //FIXME why is this filled with pt_ave?
+  hist("pt_ave")          ->Fill(pt_ave, weight);
+  hist("pt_ave_pthat")   ->Fill((pt_ave - pthat)/pthat, weight);
+  hist("pt_ave_rebin") ->Fill(pt_ave, weight);
   hist("ptRaw_barrel")    ->Fill(ev.get(tt_barreljet_ptRaw), weight);
   hist("ptRaw_probe")     ->Fill(ev.get(tt_probejet_ptRaw) , weight);
   hist("pt_barrel")   ->Fill(ev.get(tt_barreljet_pt), weight);
@@ -190,9 +205,41 @@ void JECAnalysisHists::fill(const uhh2::Event & ev, const int rand){
   hist("asym")        ->Fill(ev.get(tt_asymmetry), weight);
   hist("r_rel")       ->Fill(ev.get(tt_rel_r), weight);
 
+  if (!ev.isRealData) {
+
+    double genHT = PartonHT::calculate(*ev.genparticles);
+    double gen_pt_ave = ev.get(tt_gen_pt_ave);
+    double PUpthat = ev.get(tt_gen_PUpthat);
+    double ptHat = (ev.genInfo->binningValues().size()>0)? ev.genInfo->binningValues().at(0) : -1;
+
+    hist("genHT")      ->Fill(genHT, weight);
+    hist("binning")    ->Fill(ptHat, weight);
+    hist("gen_pt_ave") ->Fill(gen_pt_ave, weight);
+    hist("PU_pThat")   ->Fill(PUpthat, weight);
+    hist("ptavecoshprobejet_eta") ->Fill(pt_ave*cosh(ev.get(tt_probejet_eta)), weight);
+
+    ((TH2D*)hist("ptaveVSgenHT"))    ->Fill( (pt_ave/genHT<5)?      pt_ave/genHT:     4.8, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("genptaveVSgenHT")) ->Fill( (gen_pt_ave/genHT<5)?  gen_pt_ave/genHT: 4.8, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("ptaveVSqScale"))   ->Fill( (pt_ave/pthat<5)?      pt_ave/pthat:     4.8, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("PU_pThatVSgenHT")) ->Fill( (PUpthat/genHT<5)?     PUpthat/genHT:    4.8, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("PU_pThatVSqScale"))->Fill( (PUpthat/pthat<5)?     PUpthat/pthat:    4.8, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("ptaveVSptHat"))    ->Fill( (pt_ave/ptHat<5)?      pt_ave/ptHat:     4.8, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("genptaveVSptHat")) ->Fill( (gen_pt_ave/genHT<5)?  gen_pt_ave/genHT: 4.8, (weight<5000)?weight:4900, weight);
+
+
+    ((TH2D*)hist("ptaveVSweight"))    ->Fill( pt_ave,     (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("genptaveVSweight")) ->Fill( gen_pt_ave, (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("pthatVSweight"))    ->Fill( pthat,      (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("PU_pThatVSweight")) ->Fill( PUpthat,    (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("genHTVSweight"))    ->Fill( genHT,      (weight<5000)?weight:4900, weight);
+    ((TH2D*)hist("ptHatVSweight"))    ->Fill( ptHat,      (weight<5000)?weight:4900, weight);
+
+
+  }
+
+
   ((TH2D*)hist("mpf_vs_etaProbe"))->Fill(ev.get(tt_probejet_eta),ev.get(tt_mpf_r),weight);
   ((TH2D*)hist("r_rel_vs_etaProbe"))->Fill(ev.get(tt_probejet_eta),ev.get(tt_rel_r),weight);
-  float pt_ave = (0.5*(ev.get(tt_jet1_pt) + ev.get(tt_jet2_pt)));
   ((TH2D*)hist("pt_ave_vs_etaProbe"))->Fill(ev.get(tt_probejet_eta),pt_ave,weight);
 
   ((TH2D*)hist("phi_vs_etaProbe"))->Fill(ev.get(tt_probejet_eta),ev.get(tt_probejet_phi),weight);

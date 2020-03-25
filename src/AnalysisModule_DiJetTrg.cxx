@@ -196,7 +196,7 @@ protected:
   std::unique_ptr<JECAnalysisPUjetsHists> h_dataRECO_pt[n_pt-1];
   std::unique_ptr<JECAnalysisPUjetsHists> h_dataRECO_3rd_pt[n_pt-1];
 
-  std::unique_ptr<JECAnalysisHists> h_nocuts, h_sel, h_dijet, h_match, h_final;
+  std::unique_ptr<JECAnalysisHists> h_nocuts, h_sel, h_dijet, h_match, h_final, h_output;
   std::unique_ptr<JECAnalysisHists> h_trg40, h_trg60, h_trg80, h_trg140, h_trg200,h_trg260,h_trg320,h_trg400, h_trg450,h_trg500;
   std::unique_ptr<JECAnalysisHists> h_trgHF40, h_trgHF60, h_trgHF80, h_trgHF100, h_trgHF140, h_trgHF160, h_trgHF200, h_trgHF220, h_trgHF260, h_trgHF300, h_trgHF320, h_trgHF400;
   std::unique_ptr<LuminosityHists> h_lumi_nocuts, h_lumi_sel, h_lumi_dijet, h_lumi_match, h_lumi_final;
@@ -219,7 +219,7 @@ protected:
   bool ts;
   string SysType_PU;
   TString dataset_version, jetLabel;
-  string JEC_Version, jecTag, jecVer, jet_coll;
+  string JEC_Version, jecTag, jecVer, JEC_Level, jet_coll;
   JetId Jet_PFID;
   int n_evt;
   bool isThreshold;
@@ -445,6 +445,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
   h_match.reset(new JECAnalysisHists(ctx,"JetMatching"));
   h_sel.reset(new JECAnalysisHists(ctx,"Selection"));
   h_final.reset(new JECAnalysisHists(ctx,"Final"));
+  h_output.reset(new JECAnalysisHists(ctx,"Output"));
 
   h_trg40.reset(new JECAnalysisHists(ctx,"h_trg40"));
   h_trg60.reset(new JECAnalysisHists(ctx,"h_trg60"));
@@ -561,6 +562,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   JEC_Version = ctx.get("JEC_Version");
   jecTag = JEC_Version.substr(0,JEC_Version.find("_V"));
   jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
+  JEC_Level = ctx.get("JEC_Level", "L1L2L3Residual");
 
   JECClosureTest = string2bool(ctx.get("JECClosureTest"));
   JERClosureTest = string2bool(ctx.get("JERClosureTest","false"));
@@ -637,12 +639,20 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   /* metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter"); TODO Not recommended, under review.Separate module in ntuple_generator for 2016v2*/
 
   for (const std::string & run : runs[year]) {
-    std::vector<std::string> JEC_corr = (run=="MC")? JERFiles::JECFilesMC(jecTag, jecVer, jet_coll) : JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run,JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3);
-    JetCorr[run].reset(new GenericJetCorrector(ctx, JEC_corr,"jets"));
+    //std::vector<std::string> JEC_corr = (run=="MC")? JERFiles::JECFilesMC(jecTag, jecVer, jet_coll) : JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run,JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3);//TODO
+    // JetCorr[run].reset(new GenericJetCorrector(ctx, JEC_corr,"jets"));
+    if (run=="MC") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesMC(jecTag, jecVer, jet_coll),"jets"));
+    else {
+      if (JEC_Level=="L1L2") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run, JECClosureTest? JERFiles::L1L2 : JERFiles::L1L2L3),"jets"));
+      else if (JEC_Level=="L1L2Residual") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run, JECClosureTest? JERFiles::L1L2Residual : JERFiles::L1L2L3),"jets"));
+      else if (JEC_Level=="L1L2L3Residual") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run, JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3),"jets"));
+      else throw std::invalid_argument(JEC_Level+" is not implemented");
+    }
   }
 
   if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
   else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
+  // const JetId jetId = AndId<Jet> (HotZoneVetoId(ctx), JetPFID(JETwp));
   jetID.reset(new JetCleaner(ctx, Jet_PFID));
   jetPUid.reset(new JetCleaner(ctx, JetPUid(JetPUid::WP_TIGHT)));
 
@@ -2053,6 +2063,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   event.set(tt_jet5_genID, jet5_genID);
   event.set(tt_jet6_genID, jet6_genID);
 
+  h_output->fill(event);
 
   if(debug) {
     cout<<"After full Selection!! Njet="<<jet_n<<endl;

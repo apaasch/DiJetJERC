@@ -350,7 +350,10 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 bool MySelector::Process(Long64_t entry) {
 
   ++TotalEvents;
-  if ( TotalEvents%100000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
+  if ( TotalEvents%1000000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
+
+  // if (weight <= 0 || weight > 1000) weight = 0;
+
   GetEntry(entry);
   BuildEvent();
 

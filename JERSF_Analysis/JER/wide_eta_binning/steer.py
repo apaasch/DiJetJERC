@@ -86,7 +86,8 @@ source_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/"
 
 
-year = "2018"
+# year = "2018"
+year = "UL17"
 
 samples = {}
 samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
@@ -96,20 +97,28 @@ samples["UL17"] = ["BCDEF"]
 
 QCDSamples = {}
 QCDSamples["2018"] = ["QCDHT"]
-QCDSamples["UL17"] = ["QCDPt"]
+# QCDSamples["UL17"] = ["QCDPt"]
+# QCDSamples["UL17"] = ["QCDHT"]
+QCDSamples["UL17"] = ["QCDHT", "QCDPt"]
 
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
-JECVersions["UL17"] = ["Fall17_17Nov2017_V32"]
+JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
+# JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1"]
+# JECVersions["UL17"] = ["Summer19UL17_V1_SimpleL1"]
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
-studies = ["Standard"]
 # systematics=["", "PU", "JEC", "alpha", "JER"]
 systematics=["", "PU", "JEC", "alpha"]
+# systematics=["", "PU", "alpha"]
 # systematics=[""]
-#systematics=["", "JEC"]
 
+
+studies = []
+studies.append("Standard")
+studies.append("L1L2Residual")
+# studies.append("L1L2")
 
 for extraText in [""]:
     for study in studies:
@@ -144,7 +153,7 @@ for extraText in [""]:
                                     continue
                                 # print MC_file, Data_file
                                 main_function(gaustails=False)
-                                if syst == "":
+                                if syst == "" and len(systematics)!=1:
                                   main_function(gaustails=False, shiftForPLI="up")
                                   main_function(gaustails=False, shiftForPLI="down")
                                   main_function(gaustails=True, shiftForPLI="central")
