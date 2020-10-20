@@ -454,11 +454,11 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
     if (DATA.Contains("RunBCDEF"))  lumi = "41.53";
   }
 
-  lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
-
-  lumi_13TeV = "2016-2018";
   // lumi_13TeV = "35.92 fb^{-1}(2016)+41.53 fb^{-1}(2017)+59.74 fb^{-1}(2018)";
   //lumi_13TeV = "[MC Pythia8] RunII";
+
+  lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
+  lumi_13TeV = "2016-2018";
 
   VecD eta_bins_all(eta_bins_JER,                eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
   VecD eta_bins_SM(eta_bins_JER,                 eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double) - shift_SM);
@@ -623,13 +623,13 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
     }
   }
 
-  std::cout << "eta \t SF[\%] \t err[\%]\n";
-  for (size_t i = 0; i < SF_SM.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_SM[i]/SF_SM2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_SM[i]/total_sys_SM2[i]-1)*100) << '\n';
+  // std::cout << "eta \t SF[\%] \t err[\%]\n";
+  // for (size_t i = 0; i < SF_SM.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_SM[i]/SF_SM2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_SM[i]/total_sys_SM2[i]-1)*100) << '\n';
 
-  for (size_t i = 0; i < SF_FE.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_FE[i]/SF_FE2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_FE[i]/total_sys_FE2[i]-1)*100) << '\n';
+  // for (size_t i = 0; i < SF_FE.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_FE[i]/SF_FE2[i]-1)*100) << "\t" << Form("%.2f",(total_sys_FE[i]/total_sys_FE2[i]-1)*100) << '\n';
 
-  std::cout << "eta \t SF[\%] \t err[\%]\tsys[\%] \n";
-  for (size_t i = 0; i < SF_final.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_final[i]/SF_final2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error[i]/SF_final_error2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error_syst[i]/SF_final_error_syst2[i]-1)*100) << '\n';
+  // std::cout << "eta \t SF[\%] \t err[\%]\tsys[\%] \n";
+  // for (size_t i = 0; i < SF_final.size(); i++) std::cout << i << "\t" << Form("%.2f",(SF_final[i]/SF_final2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error[i]/SF_final_error2[i]-1)*100) << "\t" << Form("%.2f",(SF_final_error_syst[i]/SF_final_error_syst2[i]-1)*100) << '\n';
 
 
   /////////////////////////

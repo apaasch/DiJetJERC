@@ -86,7 +86,8 @@ USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
 #year = "2018"
-year = "UL17"
+# year = "UL17"
+year = "UL18"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
 
@@ -94,15 +95,18 @@ samples = {}
 samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 
 JECVersions = {}
 JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
 JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1"]
 JECVersions["2018"] = ["Autumn18_V19"]
+JECVersions["UL18"] = ["Summer19UL18_V4"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 # systematics = ["", "alpha","PU", "JEC", "JER"]
-systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["", "alpha","PU", "JEC"]
+systematics = ["JER"]
 # systematics = ["", "alpha","PU"]
 # systematics = [""]
 

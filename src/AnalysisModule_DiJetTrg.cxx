@@ -210,8 +210,8 @@ protected:
   //useful booleans
   bool debug, no_genp;
   bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_L1seed_from_bx1_filter, apply_PUid;
-  bool is2016v2, is2016v3, is2017, is2018;
-  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL17", runPeriods2017}, {"2018", runPeriods2018}};
+  bool is2016v2, is2016v3, is2017, is2018, isUL17, isUL18;
+  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
   std::string year;
   bool isAK8, ispuppi;
   string PtBinsTrigger;
@@ -577,9 +577,11 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   is2016v3 = (ctx.get("dataset_version").find("2016v3") != std::string::npos);
   is2017 = (ctx.get("dataset_version").find("2017") != std::string::npos);
   is2018 = (ctx.get("dataset_version").find("2018") != std::string::npos);
+  isUL17 = (ctx.get("dataset_version").find("UL17") != std::string::npos);
+  isUL18 = (ctx.get("dataset_version").find("UL18") != std::string::npos);
   year = ctx.get("year");
   std::cout << "year " << year << '\n';
-  runs[year].push_back("MC");
+  if (isMC) runs[year] = {"MC"};
   PtBinsTrigger = ctx.get("PtBinsTrigger");
 
   debug = string2bool(ctx.get("Debug","false"));
@@ -633,15 +635,15 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");
   metfilters_sel->add<TriggerSelection>("HBHENoiseIsoFilter", "Flag_HBHENoiseIsoFilter");
   metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter");
-  if (year != "2016") metfilters_sel->add<EcalBadCalibSelection>("EcalBadCalibSelection"); /*TODO check 2016*/ // Use this instead of Flag_ecalBadCalibFilter, uses ecalBadCalibReducedMINIAODFilter in ntuple_generator
-  if (year != "2016") metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter"); /*TODO check 2016, maybe Extra_BadPFMuonFilter */
+  if (year.find("16") == std::string::npos) metfilters_sel->add<EcalBadCalibSelection>("EcalBadCalibSelection"); /*TODO check 2016*/ // Use this instead of Flag_ecalBadCalibFilter, uses ecalBadCalibReducedMINIAODFilter in ntuple_generator
+  if (year.find("16") == std::string::npos) metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter"); /*TODO check 2016, maybe Extra_BadPFMuonFilter */
   if (!isMC) metfilters_sel->add<TriggerSelection>("eeBadScFilter", "Flag_eeBadScFilter"); /* TODO Not recommended for MC, but do check */
   /* metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter"); TODO Not recommended, under review.Separate module in ntuple_generator for 2016v2*/
 
   for (const std::string & run : runs[year]) {
     //std::vector<std::string> JEC_corr = (run=="MC")? JERFiles::JECFilesMC(jecTag, jecVer, jet_coll) : JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run,JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3);//TODO
     // JetCorr[run].reset(new GenericJetCorrector(ctx, JEC_corr,"jets"));
-    if (run=="MC") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesMC(jecTag, jecVer, jet_coll),"jets"));
+    if (isMC && run=="MC") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesMC(jecTag, jecVer, jet_coll),"jets"));
     else {
       if (JEC_Level=="L1L2") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run, JECClosureTest? JERFiles::L1L2 : JERFiles::L1L2L3),"jets"));
       else if (JEC_Level=="L1L2Residual") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run, JECClosureTest? JERFiles::L1L2Residual : JERFiles::L1L2L3),"jets"));
@@ -649,10 +651,13 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
       else throw std::invalid_argument(JEC_Level+" is not implemented");
     }
   }
+  // if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
+  // else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
+  if (apply_EtaPhi_cut) {
+    if(ispuppi) Jet_PFID = AndId<Jet> (HotZoneVetoId(true), JetPFID(JetPFID::WP_TIGHT_PUPPI));
+    else Jet_PFID = AndId<Jet> (HotZoneVetoId(true), JetPFID(JetPFID::WP_TIGHT_CHS));
+  }
 
-  if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
-  else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
-  // const JetId jetId = AndId<Jet> (HotZoneVetoId(ctx), JetPFID(JETwp));
   jetID.reset(new JetCleaner(ctx, Jet_PFID));
   jetPUid.reset(new JetCleaner(ctx, JetPUid(JetPUid::WP_TIGHT)));
 
@@ -702,9 +707,10 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //JER Smearing for corresponding JEC-Version
   if(JERClosureTest && isMC) {
-    if(is2018)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", JERSmearing::SF_13TeV_Autumn18_RunABCD_V4, "2018/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));
-    if(is2017)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", JERSmearing::SF_13TeV_Fall17_V3_RunBCDEF_Madgraph,"2017/Fall17_V3_MC_PtResolution_AK4PFchs.txt"));
-    if(is2016v2 || is2016v3)  jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", JERSmearing::SF_13TeV_Summer16_25nsV1,"2016/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL18)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL18_JRV1_MC/Summer19UL18_JRV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV1_MC/Summer19UL18_JRV1_MC_PtResolution_AK4PFchs.txt"));
+    if(is2018)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));
+    if(is2017)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt"));
+    if(is2016v2 || is2016v3)  jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"));
   }
 
   //output
@@ -870,6 +876,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(jet_n<2) return false;
 
   jetID->process(event); //TODO FixME: make sure JetID works for AK8
+
   if(apply_PUid) jetPUid->process(event);
   int n_jets_afterCleaner = ak4jets->size();
   // TODO discard events if not all jets fulfill JetID instead of just discarding single jets
@@ -907,8 +914,8 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if (!isMC) {
     for (const std::string & run : runs[year]) {
       if (run=="MC") continue;
-      if (year=="UL17") {
-        if (run_number_map.at("2017").at(run).first <= event.run && event.run <= run_number_map.at("2017").at(run).second) apply_run[run] = true;
+      if (year.find("UL")!= std::string::npos) {
+        if (run_number_map.at("20"+year.substr(2,4)).at(run).first <= event.run && event.run <= run_number_map.at("20"+year.substr(2,4)).at(run).second) apply_run[run] = true;
       } else {
         if (run_number_map.at(year).at(run).first <= event.run && event.run <= run_number_map.at(year).at(run).second) apply_run[run] = true;
       }
@@ -1409,7 +1416,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     if(!sel->PtMC()) return false; // For MC only one Pt threshold
   }
   //PhiEta Region cleaning
-  if(apply_EtaPhi_cut && !sel->ApplyHotMap()) return false;
+  // if(apply_EtaPhi_cut && !sel->ApplyHotMap()) return false;
   if(apply_EtaPhi_HCAL && !sel->EtaPhiCleaning()) return false;
   if(!sel->EnergyEtaCut()) return false;
   if(!sel->DiJetAdvanced()) return false;

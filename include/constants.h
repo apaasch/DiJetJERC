@@ -161,11 +161,19 @@ const double pt_bins_Si[n_pt_Si] = {
         {"DiJet_central_2018_ptbins",         { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
         {"DiJet_forward_2018",                { 93, 116, 142, 210, 279, 379 }},
         {"DiJet_forward_2018_ptbins",         { 93, 116, 142, 210, 279, 379 }},
+        {"DiJet_central_UL18",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
+        {"DiJet_central_UL18_ptbins",         { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
+        {"DiJet_forward_UL18",                { 93, 116, 142, 210, 279, 379 }},
+        {"DiJet_forward_UL18_ptbins",         { 93, 116, 142, 210, 279, 379 }},
         // 2018 AK8
         {"SingleJet_central_AK8_2018",        { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }}, //HLT AK8PFJet* //https://indico.desy.de/indico/event/24350/contribution/0/material/slides/0.pdf
         {"SingleJet_central_AK8_2018_ptbins", { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
         {"SingleJet_forward_AK8_2018",        { 62, 95, 110, 182, 260, 339, 420, 508 }}, // HLT AK8PFJetFwd* //https://indico.desy.de/indico/event/24423/contribution/1/material/slides/1.pdf
         {"SingleJet_forward_AK8_2018_ptbins", { 62, 95, 110, 182, 260, 339, 420, 508 }},
+        {"SingleJet_central_AK8_UL18",        { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }}, //HLT AK8PFJet* //https://indico.desy.de/indico/event/24350/contribution/0/material/slides/0.pdf
+        {"SingleJet_central_AK8_UL18_ptbins", { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
+        {"SingleJet_forward_AK8_UL18",        { 62, 95, 110, 182, 260, 339, 420, 508 }}, // HLT AK8PFJetFwd* //https://indico.desy.de/indico/event/24423/contribution/1/material/slides/1.pdf
+        {"SingleJet_forward_AK8_UL18_ptbins", { 62, 95, 110, 182, 260, 339, 420, 508 }},
       };
 
 

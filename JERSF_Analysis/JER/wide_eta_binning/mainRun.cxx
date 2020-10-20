@@ -1216,24 +1216,34 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //////////////////////////////////////////////////////////////////////////////////////////
   //    store SFs as 2D (pt,eta) histograms                                               //
   //////////////////////////////////////////////////////////////////////////////////////////
-  TH2Poly* JER_SF_correlated_SM_2D = fill_2Dhist( "2D_SF_SM", scales_correlated_SM, scales_correlated_SM_error, Pt_bins_Central, Pt_bins_HF, eta_bins_edge_SM,eta_cut);
-  TH2Poly* JER_SF_correlated_FE_2D = fill_2Dhist( "2D_SF_FE", scales_correlated_FE, scales_correlated_FE_error, Pt_bins_Central, Pt_bins_HF, eta_bins_edge_FE,eta_cut);
+  TH2Poly* JER_SF_uncorrelated_SM_2D = fill_2Dhist( "2D_SF_SM", scales_uncorrelated_SM, scales_uncorrelated_SM_error, Pt_bins_Central, Pt_bins_HF, eta_bins_edge_SM,eta_cut);
+  TH2Poly* JER_SF_uncorrelated_FE_2D = fill_2Dhist( "2D_SF_FE", scales_uncorrelated_FE, scales_uncorrelated_FE_error, Pt_bins_Central, Pt_bins_HF, eta_bins_edge_FE,eta_cut);
+  TH2Poly* JER_SF_correlated_SM_2D   = fill_2Dhist( "2D_SF_SM", scales_correlated_SM,   scales_correlated_SM_error,   Pt_bins_Central, Pt_bins_HF, eta_bins_edge_SM,eta_cut);
+  TH2Poly* JER_SF_correlated_FE_2D   = fill_2Dhist( "2D_SF_FE", scales_correlated_FE,   scales_correlated_FE_error,   Pt_bins_Central, Pt_bins_HF, eta_bins_edge_FE,eta_cut);
+  
   TFile JERSF2Droot(outdir+"output/DijetJERSF2D.root","RECREATE");
+  JER_SF_uncorrelated_FE_2D->Write();
+  JER_SF_uncorrelated_SM_2D->Write();
   JER_SF_correlated_FE_2D->Write();
   JER_SF_correlated_SM_2D->Write();
   JERSF2Droot.Close();
-
+  
   TCanvas* canv_2D_SF = new TCanvas();
   gStyle->SetPaintTextFormat("5.2f");
   canv_2D_SF->SetTickx(0);
   canv_2D_SF->SetTicky(0);
+  JER_SF_uncorrelated_FE_2D->Draw("colz TEXT0");
+  canv_2D_SF->SaveAs(outdir+"output/DijetJERSF2D_FE_uncorrelated.pdf");
+  JER_SF_uncorrelated_SM_2D->Draw("colz TEXT0");
+  canv_2D_SF->SaveAs(outdir+"output/DijetJERSF2D_SM_uncorrelated.pdf");
   JER_SF_correlated_FE_2D->Draw("colz TEXT0");
-  canv_2D_SF->SaveAs(outdir+"output/DijetJERSF2D_FE.pdf");
+  canv_2D_SF->SaveAs(outdir+"output/DijetJERSF2D_FE_correlated.pdf");
   JER_SF_correlated_SM_2D->Draw("colz TEXT0");
-  canv_2D_SF->SaveAs(outdir+"output/DijetJERSF2D_SM.pdf");
+  canv_2D_SF->SaveAs(outdir+"output/DijetJERSF2D_SM_correlated.pdf");
+  delete JER_SF_uncorrelated_SM_2D;
+  delete JER_SF_uncorrelated_FE_2D;
   delete JER_SF_correlated_SM_2D;
   delete JER_SF_correlated_FE_2D;
-
   //////////////////////////////////////////////////////////////////////////////////////////
   //    resolution cross check with mcTruth                                               //
   //////////////////////////////////////////////////////////////////////////////////////////

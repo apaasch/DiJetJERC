@@ -158,11 +158,28 @@ Data_process.append("DATA_RunE_UL17")
 Data_process.append("DATA_RunF_UL17")
 
 
+
+QCD_process.append("QCDHT50to100_UL18")
+QCD_process.append("QCDHT100to200_UL18")
+QCD_process.append("QCDHT200to300_UL18")
+QCD_process.append("QCDHT300to500_UL18")
+QCD_process.append("QCDHT500to700_UL18")
+QCD_process.append("QCDHT700to1000_UL18")
+QCD_process.append("QCDHT1000to1500_UL18")
+QCD_process.append("QCDHT1500to2000_UL18")
+QCD_process.append("QCDHT2000toInf_UL18")
+Data_process.append("DATA_RunA_UL18")
+Data_process.append("DATA_RunB_UL18")
+Data_process.append("DATA_RunC_UL18")
+Data_process.append("DATA_RunD_UL18")
+
+
 # JECVersions_Data = ["Autumn18_V4"]
 # JetLabels = ["AK4CHS", "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
 
-year = "UL17"
+# year = "UL17"
+year = "UL18"
 # year = "2018"
 
 
@@ -179,8 +196,8 @@ original_file = outdir+".xml"
 original_dir_ = os.getcwd()
 
 
-QCDSamples = ["QCDPt","QCDHT", "DATA"]
-# QCDSamples = ["QCDHT", "DATA"]
+# QCDSamples = ["QCDPt","QCDHT", "DATA"]
+QCDSamples = ["QCDHT", "DATA"]
 processes = filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process)
 others = list(set(QCD_process+Data_process)-set(processes))
 
@@ -195,12 +212,17 @@ JECVersions_Data["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL
 JECVersions_MC["UL17"]   = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
 JECVersions_Data["UL17"] = ["Summer19UL17_V1_ComplexL1"]
 JECVersions_MC["UL17"]   = ["Summer19UL17_V1_ComplexL1"]
+JECVersions_Data["UL18"] = ["Summer19UL18_V4"]
+JECVersions_MC["UL18"]   = ["Summer19UL18_V2"]
 # JetLabels = ["AK4CHS","AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
-systematics = ["", "PU", "JEC"]
-# systematics = ["", "PU"]
-# systematics = [""]
+# JetLabels = ["AK8Puppi", "AK4Puppi"]
+systematics = ["", "PU", "JEC", "JER"]
+# systematics = ["", "PU", "JEC"]
+# systematics = ["PU", "JEC"]
 # systematics = ["PU"]
+# systematics = [""]
+systematics = ["JER"]
 
 for study in studies:
 

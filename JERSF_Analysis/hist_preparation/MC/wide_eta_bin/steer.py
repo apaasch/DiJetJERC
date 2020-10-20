@@ -85,7 +85,8 @@ USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
 #year = "2018"
-year = "UL17"
+# year = "UL17"
+year = "UL18"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/MC/"
 
@@ -94,17 +95,22 @@ samples["2018"] = ["HT"]
 # samples["UL17"] = ["Pt"]
 # samples["UL17"] = ["HT"]
 samples["UL17"] = ["Pt", "HT"]
+samples["UL18"] = ["HT"]
 
 JECVersions = {}
 JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
 JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1"]
 JECVersions["2018"] = ["Autumn18_V19"]
+JECVersions["UL18"] = ["Summer19UL18_V4"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 # systematics = ["", "alpha","PU", "JEC", "JER"]
-systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["", "alpha","PU", "JEC"]
+systematics = ["JEC"]
 # systematics = ["", "alpha","PU"]
 # systematics = [""]
+# systematics = ["PU"]
+systematics = ["JER"]
 
 list_processes = []
 list_logfiles = []
@@ -131,4 +137,4 @@ for i in list_processes:
 
 print len(list_processes)
 
-parallelise(list_processes, 3, list_logfiles)
+parallelise(list_processes, 1, list_logfiles)

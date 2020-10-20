@@ -72,7 +72,44 @@ TGraphErrors* CreateTGraphSF(VecD eta, VecDD jer) {
   return gr;
 }
 
+TGraphErrors* CreateTGraphSFfromFile(TString ver, TString fname="Source" ) {
+  VecD eta_center, eta_err, SF, SF_Err;
+  TString filename = std::getenv("CMSSW_BASE"); filename += "/src/UHH2/JRDatabase/textFiles/"+ver+"_MC/"+fname+".txt";
+  std::ifstream infile(filename);
+  std::string line;
+  std::getline(infile, line); //skip header
+  while (std::getline(infile, line)) {
+    std::istringstream iss(line);
+    // std::cout << line << std::endl;
+    if (line=="" || line=="\n") continue;
+    TString tok;
+    int from = 0;
+    double eta_max=0, eta_min=0, sf=0, sf_down=0, sf_err=0;
+    while (((TString)line).Tokenize(tok, from, "[ |]")) {
+      if (atof(tok)<0) break;
+      // std::cout << tok << " " << from << " " << typeid(from).name() << std::endl;
+      if (from == 6)  eta_min = atof(tok);
+      if (from == 12) eta_max = atof(tok);
+      if (from == 21) sf = atof(tok);
+      if (from == 28) sf_down = atof(tok);
+    }
+    if (sf<=0) continue;
+    // std::cout << (eta_max+eta_min)/2 << " " << (eta_max-eta_min)/2 << " " << sf << " " << sf-sf_down << std::endl;
+    eta_center.push_back((eta_max+eta_min)/2);
+    eta_err.push_back((eta_max-eta_min)/2);
+    SF.push_back(sf);
+    SF_Err.push_back(sf-sf_down);
+  }
+  infile.close();
 
+  std::cout<< eta_center.size() << std::endl;
+  for (int i =0 ; i < eta_center.size(); i++){
+    std::cout<< i << " " <<  eta_center[i] << " " << eta_err[i] << " " << SF[i] << " " << SF_Err[i] << std::endl;
+  }
+
+  TGraphErrors* gr = new TGraphErrors(SF.size(), &(eta_center[0]), &SF[0], &(eta_err[0]), &SF_Err[0]);
+  return gr;
+}
 
 void LoadSF2(VecDDD &SFs, TString filename, int skip_front=0, int skip_back=0) {
   VecDD SF;
@@ -440,7 +477,7 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
 
   TString lumi;
 
-  if (year=="2018") {
+  if (year.Contains("18")) {
     if (DATA.Contains("RunA"))    lumi = "14.00";
     if (DATA.Contains("RunB"))    lumi = "7.10";
     if (DATA.Contains("RunC"))    lumi = "6.94";
@@ -449,7 +486,7 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
     if (DATA.Contains("RunABC"))  lumi = "28.04";
     if (DATA.Contains("RunABCD")) lumi = "59.74";
   }
-  if (year=="UL17") {
+  if (year.Contains("17")) {
     if (DATA.Contains("RunB"))      lumi = "4.82";
     if (DATA.Contains("RunC"))      lumi = "9.66";
     if (DATA.Contains("RunD"))      lumi = "4.25";
@@ -638,7 +675,6 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   std::cout << "eta \t SF[\%] \t err[\%]\tsys[\%] \n";
   for (size_t i = 0; i < SF_final.size(); i++) std::cout << i+1 << "\t" << Form("%.2f",SF_final[i]) << "\t" << Form("%.2f",SF_final_error[i]) << "\t" << Form("%.2f",SF_final_error_syst[i]) << '\n';
 
-
   /////////////////////////
   // PLOTS AND TXT FILES //
   /////////////////////////
@@ -761,10 +797,13 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
 
   map_gr["Summer16_25nsV1"] = CreateTGraphSF(etaSummer16_25nsV1, jerSummer16_25nsV1);
   map_gr["Fall17_V3"] = CreateTGraphSF(etaFall17_V3, jerFall17_V3);
+  map_gr["Autumn18_V7b"] = CreateTGraphSFfromFile("Autumn18_V7b");
+  map_gr["Summer19UL17_JRV2"] = CreateTGraphSFfromFile("Summer19UL17_JRV2", "Summer19UL17_JRV2_MC_SF_AK4PFchs");
+  map_gr["Summer19UL18_JRV1"] = CreateTGraphSFfromFile("Summer19UL18_JRV1", "Summer19UL18_JRV1_MC_SF_AK4PFchs");
   // map_gr["Autumn18_V4_RunD"]    = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunD);
   // map_gr["Autumn18_V4_RunABC"]  = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunABC);
   // map_gr["Autumn18_V4_RunABCD"] = CreateTGraphSF(etaAutumn18_V4, jerAutumn18_V4_RunABCD);
-  map_gr["SFAutumn18_V7_RunABCD"] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/RunABCD/");
+  // map_gr["SFAutumn18_V7_RunABCD"] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/RunABCD/");
   // map_gr["SFAutumn18_V7"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V17_save/AK4CHS/standard/QCDHT/"+DATA+"/");
   // map_gr["SFAutumn18_V8"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4CHS/standard/QCDHT/"+DATA+"/");
   // map_gr["SFAutumn18_V8_AK4Puppi"+DATA] = CreateTGraphSF(path_+"MergeL2Res/Autumn18_V19/AK4Puppi/standard/QCDHT/"+DATA+"/");
@@ -776,15 +815,24 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
 
   int col2016 = kGreen-1;
   int col2017 = kRed+1;
+  int colUL17 = kGreen-1;
   int col2018 = kBlue+1;
-  tdrDraw(gr_final, "P5", kFullDotLarge, col2018, kSolid, col2018, 1001, col2018, 0.15);
+  int colUL18 = kOrange+1;
+
   // tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullTriangleUp, col2016, kSolid, col2016, 1001, col2016, 0.15);
+  //tdrDraw(map_gr["Summer19UL17_JRV2"], "P5", kFullTriangleUp, colUL17, kSolid, colUL17, 1001, colUL17, 0.15);
+  tdrDraw(map_gr["Summer19UL18_JRV1"], "P5", kFullTriangleUp, colUL17, kSolid, colUL17, 1001, colUL17, 0.15);
   tdrDraw(map_gr["Fall17_V3"], "P5", kFullTriangleDown, col2017, kSolid, col2017, 1001, col2017, 0.15);
+  tdrDraw(map_gr["Autumn18_V7b"], "P5", kFullTriangleUp, col2018, kSolid, col2018, 1001, col2018, 0.15);
   // tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullSquare, kGreen-1, kSolid, kGreen-1, 1001, kGreen-1, 0.15);
   // tdrDraw(map_gr["SFAutumn18_V8"+DATA], "P5", kFullDotLarge, kGreen-1, kSolid, kGreen-1, 1001, kGreen-1, 0.15);
   // tdrDraw(map_gr["SFAutumn18_V8_AK4Puppi"+DATA], "P5", kFullDotLarge, kRed+1, kSolid, kRed+1, 3004, kRed+1, 0.15);
   // leg_final->AddEntry(map_gr["Summer16_25nsV1"], "Summer16_25nsV1","f");
-  leg_final->AddEntry(map_gr["Fall17_V3"], "Fall17_V3","f");
+  tdrDraw(gr_final, "P5", kFullDotLarge, colUL18, kSolid, colUL18, 1001, colUL18, 0.15);
+  leg_final->AddEntry(map_gr["Fall17_V3"], "EOY17","f");
+  leg_final->AddEntry(map_gr["Autumn18_V7b"], "EOY18","f");
+  // leg_final->AddEntry(map_gr["Summer19UL17_JRV2"], "UL17","f");
+  leg_final->AddEntry(map_gr["Summer19UL18_JRV1"], "UL18","f");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"Autumn18_V7","f");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7"+DATA],"JEC_V17_"+DATA,"f");
   //leg_final->AddEntry(map_gr["SFAutumn18_V8"+DATA],"JEC_V19_AK4CHS_"+DATA,"f");
@@ -807,20 +855,22 @@ void plot_SF_systematics() {
   TString path ;
 
   //TString year = "2018";
-  TString year = "UL17";
+  // TString year = "UL17";
+  TString year = "UL18";
 
   VecTS studies;
   // studies.push_back("MergeL2Res");
   studies.push_back("Standard");
-  studies.push_back("L1L2Residual");
+  // studies.push_back("L1L2Residual");
   // studies.push_back("PuJetId");
 
   VecTS JECs;
   // JECs.push_back("Autumn18_V17");
   // JECs.push_back("Autumn18_V19");
   // JECs.push_back("Fall17_17Nov2017_V32");
-  JECs.push_back("Summer19UL17_V1_SimpleL1");
-  JECs.push_back("Summer19UL17_V1_ComplexL1");
+  // JECs.push_back("Summer19UL17_V1_SimpleL1");
+  // JECs.push_back("Summer19UL17_V1_ComplexL1");
+  JECs.push_back("Summer19UL18_V4");
 
   VecTS JETs;
   JETs.push_back("AK4CHS");
@@ -829,13 +879,16 @@ void plot_SF_systematics() {
 
   VecTS QCDS;
   QCDS.push_back("QCDHT");
-  QCDS.push_back("QCDPt");
+  // QCDS.push_back("QCDPt");
 
   VecTS DATAS;
-  // DATAS.push_back("RunABC");
-  // DATAS.push_back("RunD");
-  // DATAS.push_back("RunABCD");
-  DATAS.push_back("RunBCDEF");
+  DATAS.push_back("RunA");
+  DATAS.push_back("RunB");
+  DATAS.push_back("RunC");
+  DATAS.push_back("RunABC");
+  DATAS.push_back("RunD");
+  DATAS.push_back("RunABCD");
+  // DATAS.push_back("RunBCDEF");
 
 
 

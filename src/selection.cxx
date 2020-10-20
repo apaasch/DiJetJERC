@@ -49,18 +49,18 @@ namespace uhh2DiJetJERC {
     tt_nPU = ctx.declare_event_output<float>("nPU");
     tt_probejet_chEmEF = ctx.declare_event_output<float>("probejet_chEmEF");
 
-    dataset_version = ctx.get("dataset_version");
+    // dataset_version = ctx.get("dataset_version");
+    //
+    // if (dataset_version.Contains("RunA")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runA.root";
+    // else if (dataset_version.Contains("RunB")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runB.root";
+    // else if (dataset_version.Contains("RunC")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runC-ver3.root";
+    // else if (dataset_version.Contains("RunD")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runD.root";
+    // else Cut_Dir = ctx.get("Cut_dir") + "hotjets-18MC.root";
 
-    if (dataset_version.Contains("RunA")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runA.root";
-    else if (dataset_version.Contains("RunB")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runB.root";
-    else if (dataset_version.Contains("RunC")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runC-ver3.root";
-    else if (dataset_version.Contains("RunD")) Cut_Dir = ctx.get("Cut_dir") + "hotjets-18runD.root";
-    else Cut_Dir = ctx.get("Cut_dir") + "hotjets-18MC.root";
-
-    cut_map = new TFile(Cut_Dir,"READ");
-    h_map = (TH2D*) cut_map->Get("h2hotfilter");
-    h_map->SetDirectory(0);
-    cut_map->Close();
+    // cut_map = new TFile(Cut_Dir,"READ");
+    // h_map = (TH2D*) cut_map->Get("h2hotfilter");
+    // h_map->SetDirectory(0);
+    // cut_map->Close();
 
     try{
       // diJetTrg  = (ctx.get("Trigger_Single") == "false");
@@ -220,13 +220,13 @@ namespace uhh2DiJetJERC {
   }
 
 
-  bool Selection::ApplyHotMap() {
-    assert(event);
-    for(auto jet: *event->jets) {
-      if(h_map->GetBinContent(h_map->GetXaxis()->FindBin(jet.eta()), h_map->GetYaxis()->FindBin(jet.phi())) > 0) return false;
-    }
-    return true;
-  }
+  // bool Selection::ApplyHotMap() {
+  //   assert(event);
+  //   for(auto jet: *event->jets) {
+  //     if(h_map->GetBinContent(h_map->GetXaxis()->FindBin(jet.eta()), h_map->GetYaxis()->FindBin(jet.phi())) > 0) return false;
+  //   }
+  //   return true;
+  // }
 
 
   bool Selection::L1JetBXclean(Jet& jet, bool usePtRatioFilter){
