@@ -87,37 +87,43 @@ common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/JER/w
 
 
 # year = "2018"
-year = "UL17"
+# year = "UL17"
+year = "UL18"
 
 samples = {}
 samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 samples["2018"] = ["D", "ABC", "ABCD"]
 samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
 samples["UL17"] = ["BCDEF"]
+samples["UL18"] = ["ABC", "ABCD", "A", "B", "C", "D"]
+# samples["UL18"] = ["ABCD"]
 
 QCDSamples = {}
 QCDSamples["2018"] = ["QCDHT"]
 # QCDSamples["UL17"] = ["QCDPt"]
 # QCDSamples["UL17"] = ["QCDHT"]
 QCDSamples["UL17"] = ["QCDHT", "QCDPt"]
+QCDSamples["UL18"] = ["QCDHT"]
 
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
 # JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1"]
 # JECVersions["UL17"] = ["Summer19UL17_V1_SimpleL1"]
+JECVersions["UL18"] = ["Summer19UL18_V4"]
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
-# systematics=["", "PU", "JEC", "alpha", "JER"]
-systematics=["", "PU", "JEC", "alpha"]
+systematics=["", "PU", "JEC", "alpha", "JER"]
+systematics=["JER"]
+# systematics=["", "PU", "JEC", "alpha"]
 # systematics=["", "PU", "alpha"]
 # systematics=[""]
 
 
 studies = []
 studies.append("Standard")
-studies.append("L1L2Residual")
+# studies.append("L1L2Residual")
 # studies.append("L1L2")
 
 for extraText in [""]:

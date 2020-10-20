@@ -3,10 +3,12 @@ import glob, numpy as np
 
 check = "*.o*"
 rt = "Real time"
-year = "UL17"
+# year = "UL17"
+year = "UL18"
 # year = "2018"
 # version = "Autumn18_V19"
-version = "Standard/Summer19UL17_V1_ComplexL1/"
+# version = "Standard/Summer19UL17_V1_ComplexL1/"
+version = "Standard/Summer19UL18_V4/"
 JetLabels = "AK4CHS"
 
 for Sample in newNumber:

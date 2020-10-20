@@ -45,6 +45,19 @@ newNumber = {
     "DATA_RunC_2018":        270,
     "DATA_RunD_2018":        180,
 
+    "QCDHT50to100_UL18":     150,
+    "QCDHT100to200_UL18":    130,
+    "QCDHT200to300_UL18":    100,
+    "QCDHT300to500_UL18":    100,
+    "QCDHT500to700_UL18":    100,
+    "QCDHT700to1000_UL18":   100,
+    "QCDHT1000to1500_UL18":  100,
+    "QCDHT1500to2000_UL18":  140,
+    "QCDHT2000toInf_UL18":   100,
+    "DATA_RunA_UL18":        220,
+    "DATA_RunB_UL18":        200,
+    "DATA_RunC_UL18":        200,
+    "DATA_RunD_UL18":        70,
 }
 
 
@@ -52,7 +65,9 @@ newNumber = {
 lumi_file = {
     "2017": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
     "2018": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
-    "UL17": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
+    "UL16": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.root",
+    "UL17": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.root",
+    "UL18": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.root",
 }
 
 @timeit
@@ -103,7 +118,7 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
                 if "UL17" == year:
                     changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
-                if "2018" == year:
+                if "18" in year:
                     changes.append(["<Cycle", "TargetLumi", "158640", "59740"])
                 changes.append(["<!ENTITY", "OUTDIR", outdir , outdir+add_name+"/"+add_path])
                 changes.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+"_"+process])
@@ -146,7 +161,7 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                         if "JEC" in sys:
                             changes.append(["<!ENTITY", "JECSMEAR_DIRECTION", '"nominal"', '"'+dir+'"'])
                         elif "JER" in sys:
-                            changes.append(["<!ENTITY", "DO_JERSMEAR", '"false"', '"true"'])
+                            changes.append(["<!ENTITY", "jer_closuretest", '"false"', '"true"'])
                         elif "PU" in sys:
                             changes.append(["<!ENTITY", "SYSTYPE_PU", '"central"', '"'+dir+'"'])
                         change_lines(path+add_path_sys, newfilename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
