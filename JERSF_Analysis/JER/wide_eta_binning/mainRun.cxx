@@ -396,10 +396,6 @@ void SFtoTXT(std::ofstream& texfile, std::vector< TH1F* > h_JER, std::vector< st
     TF1 * constfit = h_JER.at(m) -> GetFunction("constfit");
     TF1 * NSC_ratio = h_JER.at(m) -> GetFunction("NSC_ratio");
     h_JER.at(m)->GetFunction("NSC_ratio")->SetBit(TF1::kNotDraw);
-    if (constfit==0)  continue;
-    // std::cout << findMinMax(h_JER.at(m), width_pt.at(m), NSC_ratio, constfit, 1) << " " <<  findMinMax(h_JER.at(m), width_pt.at(m), NSC_ratio, constfit, 0) << '\n';
-    SF_ptdep_min.push_back(findMinMax(h_JER.at(m), width_pt.at(m), NSC_ratio, constfit, 1));
-    SF_ptdep_max.push_back(findMinMax(h_JER.at(m), width_pt.at(m), NSC_ratio, constfit, 0));
     h_JER.at(m) -> Write();
     int diff = 0;
     if (isFE) diff = shift - h_JER.size();
@@ -407,6 +403,9 @@ void SFtoTXT(std::ofstream& texfile, std::vector< TH1F* > h_JER, std::vector< st
       eta_bin_center.push_back((eta_bins[diff+m+1]+eta_bins[diff+m]) /2);
       eta_bin_err.push_back((eta_bins[diff+m+1]-eta_bins[diff+m]) /2);
     }
+
+    SF_ptdep_min.push_back(findMinMax(h_JER.at(m), width_pt.at(m), NSC_ratio, constfit, 1));
+    SF_ptdep_max.push_back(findMinMax(h_JER.at(m), width_pt.at(m), NSC_ratio, constfit, 0));
     SF.push_back(constfit -> GetParameter( 0 ));
     SF_err.push_back(constfit -> GetParError( 0 ));
     texfile << constfit -> GetParameter( 0 ) << " \\pm " << constfit -> GetParError( 0 ) << " & ";
@@ -559,10 +558,12 @@ void PLOT_NCS(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     canv->SetTicky(0);
     tdrDraw(h_SF.at(m), "", kFullCircle, color_data );
     TF1 * constfit = new TF1( "constfit", "pol0", min_fit, max_fit );
+    constfit->SetParameter(0,1);
     constfit->SetLineColor(color_MC);
     constfit->SetLineWidth(2);
-    if (h_SF.at(m)->GetEntries() != 0) h_SF.at(m) -> Fit("constfit","RMQ+");
+    if (h_SF.at(m)->GetEntries() > 1) h_SF.at(m) -> Fit("constfit","RMQ+");
     else h_SF.at(m)->GetListOfFunctions()->Add(constfit);
+    if (h_SF.at(m) -> GetFunction("constfit")==0) h_SF.at(m)->GetListOfFunctions()->Add(constfit);
     TF1 *NSC_ratio = new TF1("NSC_ratio", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )/TMath::Sqrt( ([0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )",min_fit,max_fit);
     NSC_ratio -> SetParameters(N, S, C, kNS, kC);
     NSC_ratio->SetLineColor(color_NSC);
@@ -637,11 +638,20 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   bool isAK8 = outdir.Contains("AK8");
   std::cout << outdir << "\t" << isAK8 << "\t" << year << "\n";
 
-  int EtaBins_SM            = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<eta_cut; });; // st method bins
-  int EtaBins_SM_control    = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i>eta_cut; });; // st method bins control
-  int EtaBins_FE_reference  = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<s_eta_barr;});; // fe method bins reference
-  int EtaBins_FE_control    = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return (i>=s_eta_barr)&&(i<eta_cut);});; // fe method bins control
-  int EtaBins_FE            = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i>eta_cut; });; // fe method bins
+  std::vector<double> eta_bins;
+
+  if (Trigger=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
+  else if (Trigger=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (Trigger=="eta_L2R")    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
+  else                            eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
+
+  int n_eta_bins = eta_bins.size();
+
+  int EtaBins_SM            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<eta_cut; });; // st method bins
+  int EtaBins_SM_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });; // st method bins control
+  int EtaBins_FE_reference  = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<s_eta_barr;});; // fe method bins reference
+  int EtaBins_FE_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return (i>=s_eta_barr)&&(i<eta_cut);});; // fe method bins control
+  int EtaBins_FE            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });; // fe method bins
 
   std::cout << "EtaBins_SM " << EtaBins_SM << '\n';
   std::cout << "EtaBins_SM_control " << EtaBins_SM_control << '\n';
@@ -662,8 +672,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
 
   std::vector<double> Pt_bins_Central, Pt_bins_HF;
 
-  std::string triggerName = "DiJet";
-  if (isAK8 || year=="UL17") triggerName = "SingleJet";
+  std::string triggerName = isAK8? "SingleJet" : "DiJet";
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
@@ -683,8 +692,11 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::cout << "Pt_bins_Central\t"; for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << Pt_bins_Central[i] << '\t'; std::cout << '\n';
   std::cout << "Pt_bins_HF\t";  for (size_t i = 0; i < Pt_bins_HF.size(); i++) std::cout << Pt_bins_HF[i] << '\t'; std::cout << '\n';
 
-  std::vector<double> eta_bins_edge_SM(eta_bins_JER, eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
-  std::vector<double> eta_bins_edge_FE(eta_bins_JER+1, eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
+  //std::vector<double> eta_bins_edge_SM(eta_bins, eta_bins + sizeof(eta_bins)/sizeof(double));
+  // std::vector<double> eta_bins_edge_FE(eta_bins+1, eta_bins + sizeof(eta_bins)/sizeof(double));
+
+  std::vector<double> eta_bins_edge_SM(&eta_bins[0], &eta_bins[0]+n_eta_bins);
+  std::vector<double> eta_bins_edge_FE(&eta_bins[1], &eta_bins[0]+n_eta_bins);
 
   // std::vector<double> eta_bins_edge_SM(eta_bins2, eta_bins2 + sizeof(eta_bins2)/sizeof(double));
   // std::vector<double> eta_bins_edge_FE(eta_bins2, eta_bins2 + sizeof(eta_bins2)/sizeof(double));
@@ -1220,14 +1232,14 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   TH2Poly* JER_SF_uncorrelated_FE_2D = fill_2Dhist( "2D_SF_FE", scales_uncorrelated_FE, scales_uncorrelated_FE_error, Pt_bins_Central, Pt_bins_HF, eta_bins_edge_FE,eta_cut);
   TH2Poly* JER_SF_correlated_SM_2D   = fill_2Dhist( "2D_SF_SM", scales_correlated_SM,   scales_correlated_SM_error,   Pt_bins_Central, Pt_bins_HF, eta_bins_edge_SM,eta_cut);
   TH2Poly* JER_SF_correlated_FE_2D   = fill_2Dhist( "2D_SF_FE", scales_correlated_FE,   scales_correlated_FE_error,   Pt_bins_Central, Pt_bins_HF, eta_bins_edge_FE,eta_cut);
-  
+
   TFile JERSF2Droot(outdir+"output/DijetJERSF2D.root","RECREATE");
   JER_SF_uncorrelated_FE_2D->Write();
   JER_SF_uncorrelated_SM_2D->Write();
   JER_SF_correlated_FE_2D->Write();
   JER_SF_correlated_SM_2D->Write();
   JERSF2Droot.Close();
-  
+
   TCanvas* canv_2D_SF = new TCanvas();
   gStyle->SetPaintTextFormat("5.2f");
   canv_2D_SF->SetTickx(0);

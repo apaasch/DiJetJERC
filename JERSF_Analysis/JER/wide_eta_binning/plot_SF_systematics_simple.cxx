@@ -28,8 +28,8 @@ int pt_dep_method = 6; //4-min value 5-max value
 
 // NO MERGE SM and FE
 
-int shift_SM = 11; // How many point to skip from the end
-int shift_FE = 3; // How many point to skip from the beginning
+int shift_SM = 7; // How many point to skip from the end
+int shift_FE = 2; // How many point to skip from the beginning
 int shift_barrel = 1; // How many point used to calculate SF in the previous step
 
 bool isOverlap = false; // just define the global variable. The value should be adjusted afterwards in the code; //TODO
@@ -509,9 +509,9 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   // lumi_13TeV = MCversion+" "+DATA+" ("+year+")";
   lumi_13TeV = "RunII Legacy";
 
-  VecD eta_bins_all(eta_bins_JER,                eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
-  VecD eta_bins_SM(eta_bins_JER,                 eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double) - shift_SM);
-  VecD eta_bins_FE(eta_bins_JER + shift_FE,      eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
+  VecD eta_bins_all(eta_bins_simple,                eta_bins_simple+ sizeof(eta_bins_simple)/sizeof(double));
+  VecD eta_bins_SM(eta_bins_simple,                 eta_bins_simple+ sizeof(eta_bins_simple)/sizeof(double) - shift_SM);
+  VecD eta_bins_FE(eta_bins_simple + shift_FE,      eta_bins_simple+ sizeof(eta_bins_simple)/sizeof(double));
 
 
   std::cout << std::string(230, 42) << "\n";
@@ -860,7 +860,7 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
 
 
 
-void plot_SF_systematics() {
+void plot_SF_systematics_simple() {
 
   TString path_ = std::getenv("CMSSW_BASE"); path_ += "/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/";
 
@@ -878,8 +878,8 @@ void plot_SF_systematics() {
   // studies.push_back("Standard");
   // studies.push_back("L1L2Residual");
   // studies.push_back("PuJetId");
-  studies.push_back("eta_JER");
-  // studies.push_back("eta_simple");
+  // studies.push_back("eta_JER");
+  studies.push_back("eta_simple");
 
   MapTS JECs;
   // JECs.push_back("Autumn18_V17");

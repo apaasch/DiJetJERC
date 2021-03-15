@@ -210,16 +210,17 @@ protected:
   //useful booleans
   bool debug, no_genp;
   bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_L1seed_from_bx1_filter, apply_PUid;
-  bool is2016v2, is2016v3, is2017, is2018, isUL17, isUL18;
-  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
+  bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18;
+  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL16preVFP", runPeriodsUL16preVFP}, {"UL16postVFP", runPeriodsUL16postVFP}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
   std::string year;
   bool isAK8, ispuppi;
   string PtBinsTrigger;
   bool ispythia8;
   bool ts;
   string SysType_PU;
-  TString dataset_version, jetLabel;
+  string dataset_version, jetLabel;
   string JEC_Version, jecTag, jecVer, JEC_Level, jet_coll;
+  string Study;
   JetId Jet_PFID;
   int n_evt;
   bool isThreshold;
@@ -564,21 +565,26 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
   JEC_Level = ctx.get("JEC_Level", "L1L2L3Residual");
 
+  Study = ctx.get("Study", "default");
+
   JECClosureTest = string2bool(ctx.get("JECClosureTest"));
   JERClosureTest = string2bool(ctx.get("JERClosureTest","false"));
   apply_EtaPhi_cut = string2bool(ctx.get("EtaPhi_cut", "true"));
-  apply_EtaPhi_HCAL = string2bool(ctx.get("EtaPhi_HCAL", "true"));
+  // apply_EtaPhi_HCAL = string2bool(ctx.get("EtaPhi_HCAL", "false"));
   isThreshold = string2bool(ctx.get("isThreshold", "false"));
   apply_PUid = string2bool(ctx.get("Apply_PUid_3rdjet", "false"));
   cout << "Dataset is " << ((isMC) ? " mc " : " data") << endl;
 
   apply_L1seed_from_bx1_filter =  (ctx.get("Apply_L1Seed_From_BX1_Filter","false") == "true" && !isMC);
-  is2016v2 = (ctx.get("dataset_version").find("2016v2") != std::string::npos);
-  is2016v3 = (ctx.get("dataset_version").find("2016v3") != std::string::npos);
-  is2017 = (ctx.get("dataset_version").find("2017") != std::string::npos);
-  is2018 = (ctx.get("dataset_version").find("2018") != std::string::npos);
-  isUL17 = (ctx.get("dataset_version").find("UL17") != std::string::npos);
-  isUL18 = (ctx.get("dataset_version").find("UL18") != std::string::npos);
+  is2016v2      = (dataset_version.find("2016v2")      != std::string::npos);
+  is2016v3      = (dataset_version.find("2016v3")      != std::string::npos);
+  is2017        = (dataset_version.find("2017")        != std::string::npos);
+  is2018        = (dataset_version.find("2018")        != std::string::npos);
+  isUL16        = (dataset_version.find("UL16")        != std::string::npos);
+  isUL16preVFP  = (dataset_version.find("UL16preVFP")  != std::string::npos);
+  isUL16postVFP = (dataset_version.find("UL16postVFP") != std::string::npos);
+  isUL17        = (dataset_version.find("UL17")        != std::string::npos);
+  isUL18        = (dataset_version.find("UL18")        != std::string::npos);
   year = ctx.get("year");
   std::cout << "year " << year << '\n';
   if (isMC) runs[year] = {"MC"};
@@ -641,6 +647,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   /* metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter"); TODO Not recommended, under review.Separate module in ntuple_generator for 2016v2*/
 
   for (const std::string & run : runs[year]) {
+    if (debug) std::cout << "JECS: " << run << " " << jecTag << " " << jecVer << " " << jet_coll << '\n';
     //std::vector<std::string> JEC_corr = (run=="MC")? JERFiles::JECFilesMC(jecTag, jecVer, jet_coll) : JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run,JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3);//TODO
     // JetCorr[run].reset(new GenericJetCorrector(ctx, JEC_corr,"jets"));
     if (isMC && run=="MC") JetCorr[run].reset(new GenericJetCorrector(ctx, JERFiles::JECFilesMC(jecTag, jecVer, jet_coll),"jets"));
@@ -654,8 +661,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   // if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
   // else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
   if (apply_EtaPhi_cut) {
-    if(ispuppi) Jet_PFID = AndId<Jet> (HotZoneVetoId(true), JetPFID(JetPFID::WP_TIGHT_PUPPI));
-    else Jet_PFID = AndId<Jet> (HotZoneVetoId(true), JetPFID(JetPFID::WP_TIGHT_CHS));
+    if(ispuppi) Jet_PFID = AndId<Jet> (HotZoneVetoId(), JetPFID(JetPFID::WP_TIGHT_PUPPI));
+    else Jet_PFID = AndId<Jet> (HotZoneVetoId(), JetPFID(JetPFID::WP_TIGHT_CHS));
   }
 
   jetID.reset(new JetCleaner(ctx, Jet_PFID));
@@ -685,7 +692,11 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
       std::string triggerModeName = PtBinsTrigger+"_"+mode;
       for (size_t i = 0; i < pt_indexes.at(triggerModeName).size() ; i++) {
         std::string trg_xml = PtBinsTrigger+"_"+pt_indexes.at(triggerModeName)[i];
+        if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) trg_xml = TString(trg_xml).ReplaceAll("550","500");
         if (isAK8) trg_xml += "_AK8";
+        if ((is2017 || isUL17) && ((dataset_version.find("RunB") != std::string::npos) || (dataset_version.find("RunC") != std::string::npos))){
+          trg_xml = TString(trg_xml).ReplaceAll("DiJet","SingleJet");
+        }
         const std::string& trg_name = ctx.get( trg_xml , "NULL");
         if (debug) {
           std::cout << "mode: " << mode << " i: " << i << '\n';
@@ -707,7 +718,10 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //JER Smearing for corresponding JEC-Version
   if(JERClosureTest && isMC) {
-    if(isUL18)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL18_JRV1_MC/Summer19UL18_JRV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV1_MC/Summer19UL18_JRV1_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL16preVFP)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL16_JRV1_MC/Summer19UL16_JRV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL16postVFP)         jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL16_JRV1_MC/Summer19UL16_JRV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL17)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL17_JRV3_MC/Summer19UL17_JRV3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL17_JRV3_MC/Summer19UL17_JRV3_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL18)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"));
     if(is2018)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));
     if(is2017)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt"));
     if(is2016v2 || is2016v3)  jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"));
@@ -876,6 +890,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(jet_n<2) return false;
 
   jetID->process(event); //TODO FixME: make sure JetID works for AK8
+  if(debug) cout<<"after jet ID"<<endl;
 
   if(apply_PUid) jetPUid->process(event);
   int n_jets_afterCleaner = ak4jets->size();
@@ -915,7 +930,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     for (const std::string & run : runs[year]) {
       if (run=="MC") continue;
       if (year.find("UL")!= std::string::npos) {
-        if (run_number_map.at("20"+year.substr(2,4)).at(run).first <= event.run && event.run <= run_number_map.at("20"+year.substr(2,4)).at(run).second) apply_run[run] = true;
+        if (run_number_map.at("20"+year.substr(2,2)).at(run).first <= event.run && event.run <= run_number_map.at("20"+year.substr(2,2)).at(run).second) apply_run[run] = true;
       } else {
         if (run_number_map.at(year).at(run).first <= event.run && event.run <= run_number_map.at(year).at(run).second) apply_run[run] = true;
       }
@@ -931,6 +946,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   for (const std::string run : runs[year]) {
     if (apply_run[run]){
+      if(debug){ cout<<"JEC RUN " <<  run <<endl; }
       JetCorr[run]->process(event);
     }
   }
@@ -1085,11 +1101,26 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   float probejet_ptRaw    = probejet_pt*factor_raw_probe;
 
   //Store events in the same eta bin for SM method JER SFs
-  for (int i = 0; i < n_eta_bins_JER; i++) {
-    if(fabs(barreljet_eta)>=eta_bins_JER[i] && fabs(barreljet_eta)<eta_bins_JER[i+1] && fabs(probejet_eta)>=eta_bins_JER[i] && fabs(probejet_eta)<eta_bins_JER[i+1]) {
+
+  std::vector<double> eta_bins;
+
+  if (Study=="eta_narrow")      eta_bins = vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
+  else if (Study=="eta_simple") eta_bins = vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (Study=="eta_L2R")    eta_bins = vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
+  else                          eta_bins = vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
+
+  for (unsigned int i = 0; i < eta_bins.size()-1; i++) {
+    if(fabs(barreljet_eta)>=eta_bins[i] && fabs(barreljet_eta)<eta_bins[i+1] && fabs(probejet_eta)>=eta_bins[i] && fabs(probejet_eta)<eta_bins[i+1]) {
       isJER_SM = true;
     }
   }
+
+  // for (int i = 0; i < n_eta_bins; i++) {
+  //   std::cout << "FIND " << i << " " << eta_bins[i] << std::endl;
+  //   if(fabs(barreljet_eta)>=eta_bins[i] && fabs(barreljet_eta)<eta_bins[i+1] && fabs(probejet_eta)>=eta_bins[i] && fabs(probejet_eta)<eta_bins[i+1]) {
+  //     isJER_SM = true;
+  //   }
+  // }
 
 
   float asymmetry = (barreljet_pt - probejet_pt)/(barreljet_pt + probejet_pt);
@@ -1151,6 +1182,10 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
         std::string trg_xml   = pt_indexes.at(PtBinsTrigger+"_central")[i];
         double pt_min = trg_thresh[trg_xml];
         double pt_max = ((i+1)<pt_indexes.at(PtBinsTrigger+"_central").size()) ? trg_thresh[pt_indexes.at(PtBinsTrigger+"_central")[i+1]]: PT_trigger_max;
+        if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) {
+          if ((trg_xml.find("trigger500")!= std::string::npos) || trg_xml.find("trigger550")!= std::string::npos)
+          pt_max = PT_trigger_max;
+        }
         pass_trigger[trg_xml] = trigger_sel[i]->passes(event) && pt_ave>pt_min && pt_ave<pt_max;
         if (debug) { std::cout << "pass_trigger: " << trg_xml << " index: " << i << " pt_min: " << pt_min << " pt_max: " << pt_max << " passed: " << pass_trigger[trg_xml] << '\n'; }
       }
@@ -1164,6 +1199,10 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
         std::string trg_xml   = pt_indexes.at(PtBinsTrigger+"_forward")[i];
         double pt_min = trgHF_thresh[trg_xml];
         double pt_max = ((i+1)<pt_indexes.at(PtBinsTrigger+"_forward").size()) ? trgHF_thresh[pt_indexes.at(PtBinsTrigger+"_forward")[i+1]]: PT_trigger_max;
+        if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) {
+          if ((trg_xml.find("trigger500")!= std::string::npos) || trg_xml.find("trigger550")!= std::string::npos)
+          pt_max = PT_trigger_max;
+        }
         pass_trigger_HFJEC[trg_xml] = trigger_HFJEC_sel[i]->passes(event) && pt_ave>pt_min && pt_ave<pt_max;
         if (debug) { std::cout << "pass_trigger: " << trg_xml << " index: " << i << " pt_min: " << pt_min << " pt_max: " << pt_max << " passed: " << pass_trigger_HFJEC[trg_xml] << '\n'; }
       }
@@ -1417,7 +1456,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   }
   //PhiEta Region cleaning
   // if(apply_EtaPhi_cut && !sel->ApplyHotMap()) return false;
-  if(apply_EtaPhi_HCAL && !sel->EtaPhiCleaning()) return false;
+  // if(apply_EtaPhi_HCAL && !sel->EtaPhiCleaning()) return false;
   if(!sel->EnergyEtaCut()) return false;
   if(!sel->DiJetAdvanced()) return false;
 

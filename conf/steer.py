@@ -127,6 +127,34 @@ Data_process.append("DATA_RunB_2018")
 Data_process.append("DATA_RunC_2018")
 Data_process.append("DATA_RunD_2018")
 
+QCD_process.append("QCDHT50to100_UL16preVFP")
+QCD_process.append("QCDHT100to200_UL16preVFP")
+QCD_process.append("QCDHT200to300_UL16preVFP")
+QCD_process.append("QCDHT300to500_UL16preVFP")
+QCD_process.append("QCDHT500to700_UL16preVFP")
+QCD_process.append("QCDHT700to1000_UL16preVFP")
+QCD_process.append("QCDHT1000to1500_UL16preVFP")
+QCD_process.append("QCDHT1500to2000_UL16preVFP")
+QCD_process.append("QCDHT2000toInf_UL16preVFP")
+QCD_process.append("QCDHT50to100_UL16postVFP")
+QCD_process.append("QCDHT100to200_UL16postVFP")
+QCD_process.append("QCDHT200to300_UL16postVFP")
+QCD_process.append("QCDHT300to500_UL16postVFP")
+QCD_process.append("QCDHT500to700_UL16postVFP")
+QCD_process.append("QCDHT700to1000_UL16postVFP")
+QCD_process.append("QCDHT1000to1500_UL16postVFP")
+QCD_process.append("QCDHT1500to2000_UL16postVFP")
+QCD_process.append("QCDHT2000toInf_UL16postVFP")
+Data_process.append("DATA_RunB_UL16preVFP")
+Data_process.append("DATA_RunC_UL16preVFP")
+Data_process.append("DATA_RunD_UL16preVFP")
+Data_process.append("DATA_RunE_UL16preVFP")
+Data_process.append("DATA_RunF_UL16preVFP")
+Data_process.append("DATA_RunF_UL16postVFP")
+Data_process.append("DATA_RunG_UL16postVFP")
+Data_process.append("DATA_RunH_UL16postVFP")
+
+
 QCD_process.append("QCDHT50to100_UL17")
 QCD_process.append("QCDHT100to200_UL17")
 QCD_process.append("QCDHT200to300_UL17")
@@ -178,15 +206,21 @@ Data_process.append("DATA_RunD_UL18")
 # JetLabels = ["AK4CHS", "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
 
-# year = "UL17"
-year = "UL18"
 # year = "2018"
+year = "UL16preVFP"
+# year = "UL16postVFP"
+# year = "UL17"
+# year = "UL18"
 
 
 studies = []
-studies.append("Standard")
+# studies.append("Standard")
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
+studies.append("eta_JER")
+# studies.append("eta_L2R")
+# studies.append("eta_narrow")
+studies.append("eta_simple")
 
 print "Running for: ", studies
 time.sleep(2)
@@ -204,16 +238,18 @@ others = list(set(QCD_process+Data_process)-set(processes))
 JECVersions_Data = {}
 JECVersions_MC = {}
 
-JECVersions_Data["2017"] = ["Fall17_17Nov2017_V32"]
-JECVersions_MC["2017"]   = ["Fall17_17Nov2017_V32"]
-JECVersions_Data["2018"] = ["Autumn18_V19"]
-JECVersions_MC["2018"]   = ["Autumn18_V19"]
-JECVersions_Data["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
-JECVersions_MC["UL17"]   = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
-JECVersions_Data["UL17"] = ["Summer19UL17_V1_ComplexL1"]
-JECVersions_MC["UL17"]   = ["Summer19UL17_V1_ComplexL1"]
-JECVersions_Data["UL18"] = ["Summer19UL18_V4"]
-JECVersions_MC["UL18"]   = ["Summer19UL18_V2"]
+JECVersions_Data["2017"]        = ["Fall17_17Nov2017_V32"]
+JECVersions_MC["2017"]          = ["Fall17_17Nov2017_V32"]
+JECVersions_Data["2018"]        = ["Autumn18_V19"]
+JECVersions_MC["2018"]          = ["Autumn18_V19"]
+JECVersions_Data["UL16preVFP"]  = ["Summer19UL16APV_V3"]
+JECVersions_MC["UL16preVFP"]    = ["Summer19UL16APV_V3"]
+JECVersions_Data["UL16postVFP"] = ["Summer19UL16_V2"]
+JECVersions_MC["UL16postVFP"]   = ["Summer19UL16_V2"]
+JECVersions_Data["UL17"]        = ["Summer19UL17_V5"]
+JECVersions_MC["UL17"]          = ["Summer19UL17_V5"]
+JECVersions_Data["UL18"]        = ["Summer19UL18_V5"]
+JECVersions_MC["UL18"]          = ["Summer19UL18_V5"]
 # JetLabels = ["AK4CHS","AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4CHS"]
 # JetLabels = ["AK8Puppi", "AK4Puppi"]
@@ -222,7 +258,7 @@ systematics = ["", "PU", "JEC", "JER"]
 # systematics = ["PU", "JEC"]
 # systematics = ["PU"]
 # systematics = [""]
-systematics = ["JER"]
+# systematics = ["JEC"]
 
 for study in studies:
 
