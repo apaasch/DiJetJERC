@@ -27,12 +27,14 @@
 
 
 double Weight( TString filename );
+bool JetInRange(double jet_eta, double min, double max);
+bool JetInEtaBin(double jet_eta, std::vector<double> bins, int bin);
 
 class MySelector : public TSelector {
 public:
 
   TString outdir;
-  std::string year;
+  std::string year, study;
   bool isAK8;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -76,7 +78,7 @@ public:
   TBranch *b_rho;
 
 
-  MySelector(TString name, std::string year_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), isAK8(isAK8_) { }
+  MySelector(TString name, std::string year_, std::string study_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), isAK8(isAK8_) { }
   virtual ~MySelector() { }
   virtual int   Version() const { return 2; }
   virtual void    Begin(TTree *tree);

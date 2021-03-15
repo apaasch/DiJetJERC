@@ -34,6 +34,16 @@
 #include "MySelector.h"
 #include "constants.h"
 
+
+bool JetInRange(double jet_eta, double min, double max) {
+  return (TMath::Abs(jet_eta) > min && TMath::Abs(jet_eta) < max);
+}
+
+bool JetInEtaBin(double jet_eta, std::vector<double> bins, int bin) {
+  return JetInRange(jet_eta, bins[bin], bins[bin+1]);
+}
+
+
 #define FILL_HISTOS(region,method)                                                                      \
 if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
 asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                                            \
@@ -217,11 +227,20 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   TString option = GetOption();
 
-  EtaBins_SM            = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<eta_cut; });
-  EtaBins_SM_control    = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i>eta_cut; });
-  EtaBins_FE_reference  = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i<s_eta_barr;});
-  EtaBins_FE_control    = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return (i>=s_eta_barr)&&(i<eta_cut);});
-  EtaBins_FE            = std::count_if(eta_bins_JER, eta_bins_JER+n_eta_bins_JER, [](double i) { return i>eta_cut; });
+  std::vector<double> eta_bins;
+
+  if (study=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
+  else if (study=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (study=="eta_L2R")    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
+  else                          eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
+
+  int n_eta_bins = eta_bins.size();
+
+  EtaBins_SM            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<eta_cut; });
+  EtaBins_SM_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });
+  EtaBins_FE_reference  = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<s_eta_barr;});
+  EtaBins_FE_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return (i>=s_eta_barr)&&(i<eta_cut);});
+  EtaBins_FE            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });
 
   etaShift_SM           = 0;
   etaShift_SM_control   = EtaBins_SM;
@@ -229,16 +248,13 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   etaShift_FE_control   = EtaBins_FE_reference;
   etaShift_FE           = EtaBins_FE_reference + EtaBins_FE_control;
 
+  for (size_t i = etaShift_SM;            i < etaShift_SM           + EtaBins_SM            + 1; i++)  Eta_bins_SM.push_back(eta_bins[i]);
+  for (size_t i = etaShift_SM_control;    i < etaShift_SM_control   + EtaBins_SM_control    + 1; i++)  Eta_bins_SM_control.push_back(eta_bins[i]);
+  for (size_t i = etaShift_FE_reference;  i < etaShift_FE_reference + EtaBins_FE_reference  + 1; i++)  Eta_bins_FE_reference.push_back(eta_bins[i]);
+  for (size_t i = etaShift_FE_control;    i < etaShift_FE_control   + EtaBins_FE_control    + 1; i++)  Eta_bins_FE_control.push_back(eta_bins[i]);
+  for (size_t i = etaShift_FE;            i < etaShift_FE           + EtaBins_FE            + 1; i++)  Eta_bins_FE.push_back(eta_bins[i]);
 
-
-  for (size_t i = etaShift_SM;            i < etaShift_SM           + EtaBins_SM            + 1; i++)  Eta_bins_SM.push_back(eta_bins_JER[i]);
-  for (size_t i = etaShift_SM_control;    i < etaShift_SM_control   + EtaBins_SM_control    + 1; i++)  Eta_bins_SM_control.push_back(eta_bins_JER[i]);
-  for (size_t i = etaShift_FE_reference;  i < etaShift_FE_reference + EtaBins_FE_reference  + 1; i++)  Eta_bins_FE_reference.push_back(eta_bins_JER[i]);
-  for (size_t i = etaShift_FE_control;    i < etaShift_FE_control   + EtaBins_FE_control    + 1; i++)  Eta_bins_FE_control.push_back(eta_bins_JER[i]);
-  for (size_t i = etaShift_FE;            i < etaShift_FE           + EtaBins_FE            + 1; i++)  Eta_bins_FE.push_back(eta_bins_JER[i]);
-
-  std::string triggerName = "DiJet";
-  if (isAK8 || year=="UL17") triggerName = "SingleJet";
+  std::string triggerName = isAK8? "SingleJet" : "DiJet";
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
@@ -399,7 +415,8 @@ bool MySelector::Process(Long64_t entry) {
   double DR2 = TMath::Sqrt( TMath::Power(DPhi2, 2 ) + TMath::Power(DEta2, 2));
 
   bool dofill; int shift;
-  bool isHF = probejet_eta>eta_cut? true : false;
+  // bool isHF = probejet_eta>eta_cut? true : false;
+  bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
   if (!isHF) {
     dofill=true;
@@ -407,22 +424,22 @@ bool MySelector::Process(Long64_t entry) {
       if ((pt_ave > Pt_bins_Central[k]) && (pt_ave < Pt_bins_Central[k+1]) ) {
         for ( int r = 0 ; r < EtaBins_SM ; r++ ) {
           if (!is_JER_SM) continue;
-          cond1 = (TMath::Abs(barreljet_eta) > Eta_bins_SM[r] && TMath::Abs(barreljet_eta) < Eta_bins_SM[r+1] && TMath::Abs(probejet_eta) > Eta_bins_SM[r] && TMath::Abs(probejet_eta) < Eta_bins_SM[r+1]);
+          cond1 = (JetInEtaBin(barreljet_eta, Eta_bins_SM, r) && JetInEtaBin(probejet_eta, Eta_bins_SM, r));
           cond2 = false;
           shift = 0;
           SELECT_ETA_ALPHA_BIN(SM,SM,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE_reference ; r++ ) {
           if (is_JER_SM) continue;
-          cond1 = (TMath::Abs(barreljet_eta)> 0. && TMath::Abs(barreljet_eta)< s_eta_barr && TMath::Abs(probejet_eta) > Eta_bins_FE_reference[r] && TMath::Abs(probejet_eta) < Eta_bins_FE_reference[r+1]);
-          cond2 = (TMath::Abs(probejet_eta) > 0. && TMath::Abs(probejet_eta) < s_eta_barr && TMath::Abs(barreljet_eta)> Eta_bins_FE_reference[r] && TMath::Abs(barreljet_eta)< Eta_bins_FE_reference[r+1]);
+          cond1 = (JetInRange(barreljet_eta, 0, s_eta_barr) && JetInEtaBin(probejet_eta,  Eta_bins_FE_reference, r));
+          cond2 = (JetInRange(probejet_eta,  0, s_eta_barr) && JetInEtaBin(barreljet_eta, Eta_bins_FE_reference, r));
           shift = 0;
           SELECT_ETA_ALPHA_BIN(FE_reference,FE,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE_control ; r++ ) {
           if (is_JER_SM) continue;
-          cond1 = (TMath::Abs(barreljet_eta)> 0. && TMath::Abs(barreljet_eta)< s_eta_barr && TMath::Abs(probejet_eta) > Eta_bins_FE_control[r] && TMath::Abs(probejet_eta) < Eta_bins_FE_control[r+1]);
-          cond2 = (TMath::Abs(probejet_eta) > 0. && TMath::Abs(probejet_eta) < s_eta_barr && TMath::Abs(barreljet_eta)> Eta_bins_FE_control[r] && TMath::Abs(barreljet_eta)< Eta_bins_FE_control[r+1]);
+          cond1 = (JetInRange(barreljet_eta, 0, s_eta_barr) && JetInEtaBin(probejet_eta,  Eta_bins_FE_control, r));
+          cond2 = (JetInRange(probejet_eta,  0, s_eta_barr) && JetInEtaBin(barreljet_eta, Eta_bins_FE_control, r));
           shift = etaShift_FE_control;
           SELECT_ETA_ALPHA_BIN(FE_control,FE,cond1,cond2)
         }
@@ -435,15 +452,15 @@ bool MySelector::Process(Long64_t entry) {
       if ((pt_ave > Pt_bins_HF[k]) && (pt_ave < Pt_bins_HF[k+1]) ) {
         for ( int r = 0 ; r < EtaBins_SM_control; r++ ) {
           if (!is_JER_SM) continue;
-          cond1 = (TMath::Abs(barreljet_eta) > Eta_bins_SM_control[r] && TMath::Abs(barreljet_eta) < Eta_bins_SM_control[r+1] && TMath::Abs(probejet_eta) > Eta_bins_SM_control[r] && TMath::Abs(probejet_eta) < Eta_bins_SM_control[r+1]);
+          cond1 = (JetInEtaBin(barreljet_eta, Eta_bins_SM_control, r) && JetInEtaBin(probejet_eta, Eta_bins_SM_control, r));
           cond2 = false;
           shift = etaShift_SM_control;
           SELECT_ETA_ALPHA_BIN(SM_control,SM,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE ; r++ ) {
           if (is_JER_SM) continue;
-          cond1 = (TMath::Abs(barreljet_eta)> 0. && TMath::Abs(barreljet_eta)< s_eta_barr && TMath::Abs(probejet_eta) > Eta_bins_FE[r] && TMath::Abs(probejet_eta) < Eta_bins_FE[r+1]);
-          cond2 = (TMath::Abs(probejet_eta) > 0. && TMath::Abs(probejet_eta) < s_eta_barr && TMath::Abs(barreljet_eta)> Eta_bins_FE[r] && TMath::Abs(barreljet_eta)< Eta_bins_FE[r+1]);
+          cond1 = (JetInRange(barreljet_eta, 0, s_eta_barr) && JetInEtaBin(probejet_eta, Eta_bins_FE, r));
+          cond2 = (JetInRange(probejet_eta,  0, s_eta_barr) && JetInEtaBin(barreljet_eta, Eta_bins_FE, r));
           shift = etaShift_FE;
           SELECT_ETA_ALPHA_BIN(FE,FE,cond1,cond2)
         }
@@ -458,21 +475,21 @@ bool MySelector::Process(Long64_t entry) {
       if ((gen_pt_ave > Pt_bins_Central[k]) && (gen_pt_ave < Pt_bins_Central[k+1])) {
         for ( int r = 0 ; r < EtaBins_SM ; r++ ) {
           if (!is_JER_SM) continue;
-          cond1 = (TMath::Abs(barrelgenjet_eta) > Eta_bins_SM[r] && TMath::Abs(barrelgenjet_eta) < Eta_bins_SM[r+1] && TMath::Abs(probegenjet_eta) > Eta_bins_SM[r] && TMath::Abs(probegenjet_eta) < Eta_bins_SM[r+1]);
+          cond1 = (JetInEtaBin(barrelgenjet_eta, Eta_bins_SM, r) && JetInEtaBin(probegenjet_eta, Eta_bins_SM, r));
           cond2 = false;
           SELECT_ETA_ALPHA_BIN_GEN(SM,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE_reference ; r++ ) {
           if (is_JER_SM) continue;
-          cond1 = (TMath::Abs(barrelgenjet_eta) > 0. && TMath::Abs(barrelgenjet_eta) < s_eta_barr && TMath::Abs(probegenjet_eta) > Eta_bins_FE_reference[r] && TMath::Abs(probegenjet_eta) < Eta_bins_FE_reference[r+1]);
-          cond2 = (TMath::Abs(probegenjet_eta) > 0. && TMath::Abs(probegenjet_eta) < s_eta_barr && TMath::Abs(barrelgenjet_eta) > Eta_bins_FE_reference[r] && TMath::Abs(barrelgenjet_eta) < Eta_bins_FE_reference[r+1]);
+          cond1 = (JetInRange(barrelgenjet_eta, 0, s_eta_barr) && JetInEtaBin(probegenjet_eta, Eta_bins_FE_reference, r));
+          cond2 = (JetInRange(probegenjet_eta,  0, s_eta_barr) && JetInEtaBin(barrelgenjet_eta, Eta_bins_FE_reference, r));
           SELECT_ETA_ALPHA_BIN_GEN(FE_reference,cond1,cond2)
         }
 
         for ( int r = 0 ; r < EtaBins_FE_control ; r++ ) {
           if (is_JER_SM) continue;
-          cond1 = (TMath::Abs(barrelgenjet_eta) > 0. && TMath::Abs(barrelgenjet_eta) < s_eta_barr && TMath::Abs(probegenjet_eta) > Eta_bins_FE_control[r] && TMath::Abs(probegenjet_eta) < Eta_bins_FE_control[r+1]);
-          cond2 = (TMath::Abs(probegenjet_eta) > 0. && TMath::Abs(probegenjet_eta) < s_eta_barr && TMath::Abs(barrelgenjet_eta) > Eta_bins_FE_control[r] && TMath::Abs(barrelgenjet_eta) < Eta_bins_FE_control[r+1]);
+          cond1 = (JetInRange(barrelgenjet_eta, 0, s_eta_barr) && JetInEtaBin(probegenjet_eta, Eta_bins_FE_control, r));
+          cond2 = (JetInRange(probegenjet_eta,  0, s_eta_barr) && JetInEtaBin(barrelgenjet_eta, Eta_bins_FE_control, r));
           SELECT_ETA_ALPHA_BIN_GEN(FE_control,cond1,cond2)
         }
 
@@ -485,14 +502,14 @@ bool MySelector::Process(Long64_t entry) {
       if ((gen_pt_ave > Pt_bins_HF[k]) && (gen_pt_ave < Pt_bins_HF[k+1])) {
         for ( int r = 0 ; r < EtaBins_SM_control ; r++ ) {
           if (!is_JER_SM) continue;
-          cond1 = (TMath::Abs(barrelgenjet_eta) > Eta_bins_SM_control[r] && TMath::Abs(barrelgenjet_eta) < Eta_bins_SM_control[r+1] && TMath::Abs(probegenjet_eta) > Eta_bins_SM_control[r] && TMath::Abs(probegenjet_eta) < Eta_bins_SM_control[r+1]);
+          cond1 = (JetInEtaBin(barrelgenjet_eta, Eta_bins_SM_control, r) && JetInEtaBin(probegenjet_eta, Eta_bins_SM_control, r));
           cond2 = false;
           SELECT_ETA_ALPHA_BIN_GEN(SM_control,cond1,cond2)
         }
         for ( int r = 0 ; r < EtaBins_FE ; r++ ) {
           if (is_JER_SM) continue;
-          cond1 = (TMath::Abs(barrelgenjet_eta) > 0. && TMath::Abs(barrelgenjet_eta) < s_eta_barr && TMath::Abs(probegenjet_eta) > Eta_bins_FE[r] && TMath::Abs(probegenjet_eta) < Eta_bins_FE[r+1]);
-          cond2 = (TMath::Abs(probegenjet_eta) > 0. && TMath::Abs(probegenjet_eta) < s_eta_barr && TMath::Abs(barrelgenjet_eta) > Eta_bins_FE[r] && TMath::Abs(barrelgenjet_eta) < Eta_bins_FE[r+1]);
+          cond1 = (JetInRange(barrelgenjet_eta, 0, s_eta_barr) && JetInEtaBin(probegenjet_eta, Eta_bins_FE, r));
+          cond2 = (JetInRange(probegenjet_eta,  0, s_eta_barr) && JetInEtaBin(barrelgenjet_eta, Eta_bins_FE, r));
           SELECT_ETA_ALPHA_BIN_GEN(FE,cond1,cond2)
         }
         break;

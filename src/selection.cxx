@@ -207,7 +207,7 @@ namespace uhh2DiJetJERC {
 
   bool Selection::EtaPhiCleaning() {
     assert(event);
-    if (dataset_version.Contains("RunC") || dataset_version.Contains("RunD")) {//TODO for year dependance
+    if (((dataset_version.Contains("RunC") || dataset_version.Contains("RunD")) && dataset_version.Contains("18") )) {//TODO for year dependance
 
       // None of the first 3 jets should be in that region.
       for (size_t i = 0; i < 3; i++) {

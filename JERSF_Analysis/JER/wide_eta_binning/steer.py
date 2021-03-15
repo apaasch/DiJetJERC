@@ -31,6 +31,8 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     ref_shift = 3
     if "barrel_check" in extraText:
         ref_shift = int(extraText[-2])
+    if "eta_simple" in MC_file:
+        ref_shift = 1
     if gaustails:
         outdir = out_path+year+"/"+newJECVersion+"/"+newJetLabel+"/gaustails_"+str(gaustail_num)+"/"+QCDsample+"/"+run+"/"
     if shiftForPLI=="up":
@@ -87,44 +89,62 @@ common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/JER/w
 
 
 # year = "2018"
+year = "UL16preVFP"
+# year = "UL16postVFP"
 # year = "UL17"
-year = "UL18"
+# year = "UL18"
+year = "Legacy"
+
 
 samples = {}
-samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
-samples["2018"] = ["D", "ABC", "ABCD"]
-samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+# samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
+# samples["2018"] = ["D", "ABC", "ABCD"]
+# samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+# samples["UL18"] = ["ABC", "ABCD", "A", "B", "C", "D"]
+
+# samples["UL16preVFP"] = ["B", "C", "D", "E", "F", "BCD", "EF", "BCDEF"]
+# samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
+samples["UL16preVFP"] = ["BCDEF"]
+samples["UL16postVFP"] = ["FGH"]
 samples["UL17"] = ["BCDEF"]
-samples["UL18"] = ["ABC", "ABCD", "A", "B", "C", "D"]
-# samples["UL18"] = ["ABCD"]
+samples["UL18"] = ["ABCD"]
+samples["Legacy"] = ["II"]
+
+
 
 QCDSamples = {}
 QCDSamples["2018"] = ["QCDHT"]
 # QCDSamples["UL17"] = ["QCDPt"]
-# QCDSamples["UL17"] = ["QCDHT"]
-QCDSamples["UL17"] = ["QCDHT", "QCDPt"]
+QCDSamples["UL16preVFP"] = ["QCDHT"]
+QCDSamples["UL16postVFP"] = ["QCDHT"]
+QCDSamples["UL17"] = ["QCDHT"]
 QCDSamples["UL18"] = ["QCDHT"]
+QCDSamples["Legacy"] = ["QCDHT"]
 
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
-JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1","Summer19UL17_V1_SimpleL1"]
-# JECVersions["UL17"] = ["Summer19UL17_V1_ComplexL1"]
-# JECVersions["UL17"] = ["Summer19UL17_V1_SimpleL1"]
-JECVersions["UL18"] = ["Summer19UL18_V4"]
+JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
+JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
+JECVersions["UL17"] = ["Summer19UL17_V5"]
+JECVersions["UL18"] = ["Summer19UL18_V5"]
+JECVersions["Legacy"] = ["Summer19Legacy"]
+
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
 systematics=["", "PU", "JEC", "alpha", "JER"]
-systematics=["JER"]
+# systematics=["JER"]
 # systematics=["", "PU", "JEC", "alpha"]
-# systematics=["", "PU", "alpha"]
+# systematics=["PU", "alpha"]
 # systematics=[""]
 
 
 studies = []
-studies.append("Standard")
+# studies.append("Standard")
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
+studies.append("eta_JER")
+studies.append("eta_simple")
 
 for extraText in [""]:
     for study in studies:

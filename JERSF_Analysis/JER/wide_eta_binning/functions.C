@@ -179,9 +179,9 @@ void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetr
           low = temp_hist->GetBinCenter(temp_hist->FindBin(yq[0])); up = temp_hist->GetBinCenter(temp_hist->FindBin(yq[1]));
         } else { asym = 0.; asymerr = 0.; low = 10.0; up = 10.0;};
 
-        if (!fill_all) {
-          if (removePointsforWidth(isFE, m, p, r)) { asym = 0.; asymerr = 0.; };
-        }
+        // if (!fill_all) {
+        //   if (removePointsforWidth(isFE, m, p, r)) { asym = 0.; asymerr = 0.; };
+        // }
         temp1.push_back( asym );
         temp_error1.push_back( asymerr );
         temp1_lower_x.push_back(low);
@@ -257,7 +257,7 @@ void histLinFit( std::vector< std::vector< TH1F* > > widths_hist_all , std::vect
       if ( widths_hist_all.at(m).at(p)->GetEntries() != 0 ) {
         fitLin( *( widths_hist_all.at(m).at(p) ), value, error );
 
-        if (removePointsforFit(isFE, m, p)) {value = 0; error = 0;}
+        // if (removePointsforFit(isFE, m, p)) {value = 0; error = 0;}
 
         temp2.push_back(value);
         temp_error2.push_back(error);

@@ -58,16 +58,54 @@ newNumber = {
     "DATA_RunB_UL18":        200,
     "DATA_RunC_UL18":        200,
     "DATA_RunD_UL18":        70,
+
+    "QCDHT50to100_UL16preVFP":      150,
+    "QCDHT100to200_UL16preVFP":     130,
+    "QCDHT200to300_UL16preVFP":     100,
+    "QCDHT300to500_UL16preVFP":     100,
+    "QCDHT500to700_UL16preVFP":     100,
+    "QCDHT700to1000_UL16preVFP":    100,
+    "QCDHT1000to1500_UL16preVFP":   100,
+    "QCDHT1500to2000_UL16preVFP":   140,
+    "QCDHT2000toInf_UL16preVFP":    100,
+    "QCDHT50to100_UL16postVFP":     150,
+    "QCDHT100to200_UL16postVFP":    130,
+    "QCDHT200to300_UL16postVFP":    100,
+    "QCDHT300to500_UL16postVFP":    100,
+    "QCDHT500to700_UL16postVFP":    100,
+    "QCDHT700to1000_UL16postVFP":   100,
+    "QCDHT1000to1500_UL16postVFP":  100,
+    "QCDHT1500to2000_UL16postVFP":  140,
+    "QCDHT2000toInf_UL16postVFP":   100,
+    "DATA_RunB_UL16preVFP":         150,
+    "DATA_RunC_UL16preVFP":         150,
+    "DATA_RunD_UL16preVFP":         150,
+    "DATA_RunE_UL16preVFP":         150,
+    "DATA_RunF_UL16preVFP":         150,
+    "DATA_RunF_UL16postVFP":        150,
+    "DATA_RunG_UL16postVFP":        150,
+    "DATA_RunH_UL16postVFP":        150,
 }
 
 
-
 lumi_file = {
-    "2017": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
-    "2018": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
-    "UL16": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.root",
-    "UL17": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.root",
-    "UL18": os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.root",
+    "2017":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
+    "2018":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
+    "UL16preVFP":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL16preVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16preVFP_normtag.root",
+    "UL16postVFP":  os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL16postVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16postVFP_normtag.root",
+    "UL17":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root",
+    "UL18":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON_normtag.root",
+}
+
+TargetLumi = {
+    "2016":         "35920",
+    "2017":         "41530",
+    "2018":         "59740",
+    "UL16preVFP":   "35920",
+    "UL16postVFP":  "35920",
+    "UL17":         "41530",
+    "UL18":         "59740",
+    "RunII":       "137190",
 }
 
 @timeit
@@ -78,7 +116,6 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
     except:
         time = 3
     FileSplit = filter(lambda x: "FileSplit" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[3]
-    print add_name
     for index_JEC, newJECVersion in enumerate(JECVersions_Data):
         for newJetLabel in JetLabels:
             add_path = newJECVersion+"/"+newJetLabel+extratext+"/"
@@ -102,24 +139,27 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                         comments.append(["<InputData", "Type", "DATA", '"'+el+'"'])
                 comment_lines(path, filename, comments, remove=True)
                 changes = []
-                changes.append(["user", "amalara/WorkingArea", "/nfs/dust/cms/user/amalara/WorkingArea/UHH2_102X_v1/CMSSW_10_2_10/", os.environ["CMSSW_BASE"]+"/"])
+                changes.append(["Mail=", "USER@mail.desy.de", "USER@mail.desy.de", os.environ["USER"]+"@mail.desy.de"])
+                changes.append(["<!ENTITY", "/nfs/dust/cms/user/USER", "USER", os.environ["USER"]])
+                changes.append(["<!ENTITY", "CMSSW_BASE", "CMSSW_BASE", os.environ["CMSSW_BASE"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
                 changes.append(["user", "amalara", "amalara", os.environ["USER"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
-                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*time))+'"'])
+                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*0.9*time))+'"'])
                 changes.append(["<!ENTITY", 'LUMI_FILE', 'lumifile.root', lumi_file[year]])
                 changes.append(["<!ENTITY", "YEAR", "year", year])
-                if study!= "Standard":
+                changes.append(["<Cycle", "TargetLumi", "defaultValue", TargetLumi[year]])
+                changes.append(["<!ENTITY", "Study", "default", study])
+                if study!= "Standard" and "L1" in study:
                     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", study])
-                if "17" in year:
-                    changes.append(["<Cycle", "TargetLumi", "158640", "41530"])
-                    changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
-                if "UL17" == year:
-                    changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
-                if "18" in year:
-                    changes.append(["<Cycle", "TargetLumi", "158640", "59740"])
+                # if "17" in year:
+                #     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
+                # if "UL17" == year:
+                #     changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
+                # if "18" in year:
+                #     changes.append(["<!ENTITY", "APPLY_EtaPhi_HCAL", '"false"', '"true"'])
                 changes.append(["<!ENTITY", "OUTDIR", outdir , outdir+add_name+"/"+add_path])
                 changes.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+"_"+process])
                 if isThreshold:
