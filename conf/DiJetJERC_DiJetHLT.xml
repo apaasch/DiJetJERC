@@ -132,10 +132,10 @@
 <!ENTITY DATA_RunE_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL17/JetHT_2017E_v1.xml">
 <!ENTITY DATA_RunF_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL17/JetHT_2017F_v1.xml">
 
-<!ENTITY DATA_RunA_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18//JetHT_2018A_v2.xml">
-<!ENTITY DATA_RunB_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18//JetHT_2018B_v2.xml">
-<!ENTITY DATA_RunC_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18//JetHT_2018C_v1.xml">
-<!ENTITY DATA_RunD_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18//JetHT_2018D.xml">
+<!ENTITY DATA_RunA_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18/JetHT_2018A_v2.xml">
+<!ENTITY DATA_RunB_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18/JetHT_2018B_v2.xml">
+<!ENTITY DATA_RunC_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18/JetHT_2018C_v1.xml">
+<!ENTITY DATA_RunD_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v1/UL18/JetHT_2018D.xml">
 
 
 ]>
