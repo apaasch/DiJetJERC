@@ -86,18 +86,20 @@ USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
 #year = "2018"
+year = "UL16preVFP_split"
 # year = "UL16preVFP"
 # year = "UL16postVFP"
 # year = "UL17"
 # year = "UL18"
 
-year = "Legacy"
+# year = "Legacy"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/MC/"
 
 samples = {}
-samples["2018"] = ["HT"]
-# samples["UL17"] = ["Pt"]
+# samples["2018"] = ["HT"]
+# samples["2018"] = ["Pt"]
+samples["UL16preVFP_split"] = ["HT"]
 samples["UL16preVFP"] = ["HT"]
 samples["UL16postVFP"] = ["HT"]
 samples["UL17"] = ["HT"]
@@ -106,6 +108,7 @@ samples["Legacy"] = ["HT"]
 
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
+JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
 JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
 JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
 JECVersions["UL17"] = ["Summer19UL17_V5"]

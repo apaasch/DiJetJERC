@@ -298,19 +298,7 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
     else for (size_t i = 0; i <= h_data.at(m).size(); i++) { Pt_bins.push_back(Pt_bins_HF[i]); }
     for( unsigned int p = 0; p < h_data.at(m).size(); p++ ){
 
-      double range = 0.05;
-      if ( p == 0) range = 0.25;
-      if ( p == 1) range = 0.2;
-      if ( p == 2) range = 0.15;
-      if ( p == 3) range = 0.15;
-      if ( p == 4) range = 0.1;
-      if ( p == 5) range = 0.1;
-
-      if (!isFE && m >= 6 && p == 2) range = 0.2;
-      if (!isFE && m >= 2 && p == 3) range = 0.15;
-      if (!isFE && m >= 4 && p >= 6) range = 0.1;
-      if ( isFE && m >= 11&& p == 0) range = 0.2;
-      if ( isFE && m == 10&& p == 8) range = 0.15;
+      double range = std::max(0.05,removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1));
 
       TString canvName  = h_data.at(m).at(p)->GetTitle();
       TString nameXaxis = "#alpha_{max}";
@@ -483,7 +471,7 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
   }
 }
 
-void PLOT_NCS(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vector< TH1F* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE) {
+void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vector< TH1F* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE) {
   int color_data  = kBlue;
   int color_MC    = kRed;
   int color_NSC   = kGreen+2;
@@ -613,7 +601,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   gErrorIgnoreLevel = kFatal;
   double hist_max_value = 0.3;
   double hist_max_value_SF = 3.0;
-  std::cout << "Start" << '\n';
 
   ////////////////////////////////////////////////////////////////////////////
   //    I load all histograms I will need                                   //
@@ -636,7 +623,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // ------------------------------
 
   bool isAK8 = outdir.Contains("AK8");
-  std::cout << outdir << "\t" << isAK8 << "\t" << year << "\n";
+  if (debug) std::cout << outdir << "\t" << isAK8 << "\t" << year << "\n";
 
   std::vector<double> eta_bins;
 
@@ -653,11 +640,13 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   int EtaBins_FE_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return (i>=s_eta_barr)&&(i<eta_cut);});; // fe method bins control
   int EtaBins_FE            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });; // fe method bins
 
-  std::cout << "EtaBins_SM " << EtaBins_SM << '\n';
-  std::cout << "EtaBins_SM_control " << EtaBins_SM_control << '\n';
-  std::cout << "EtaBins_FE_reference " << EtaBins_FE_reference << '\n';
-  std::cout << "EtaBins_FE_control " << EtaBins_FE_control << '\n';
-  std::cout << "EtaBins_FE " << EtaBins_FE << '\n';
+  if (debug) {
+    std::cout << "EtaBins_SM " << EtaBins_SM << '\n';
+    std::cout << "EtaBins_SM_control " << EtaBins_SM_control << '\n';
+    std::cout << "EtaBins_FE_reference " << EtaBins_FE_reference << '\n';
+    std::cout << "EtaBins_FE_control " << EtaBins_FE_control << '\n';
+    std::cout << "EtaBins_FE " << EtaBins_FE << '\n';
+  }
 
   int shift_ = EtaBins_SM + EtaBins_FE;// TODO recheck
   if (debug) std::cout << "shift_: " << shift_ << '\n';
@@ -687,10 +676,11 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   Pt_bins_HF.push_back(1500);
 
 
-
-  std::cout << "Trigger " << Trigger << " " << Pt_bins_Central.size() << " " << Pt_bins_HF.size() << '\n';
-  std::cout << "Pt_bins_Central\t"; for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << Pt_bins_Central[i] << '\t'; std::cout << '\n';
-  std::cout << "Pt_bins_HF\t";  for (size_t i = 0; i < Pt_bins_HF.size(); i++) std::cout << Pt_bins_HF[i] << '\t'; std::cout << '\n';
+  if (debug) {
+    std::cout << "Trigger " << Trigger << " " << Pt_bins_Central.size() << " " << Pt_bins_HF.size() << '\n';
+    std::cout << "Pt_bins_Central\t"; for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << Pt_bins_Central[i] << '\t'; std::cout << '\n';
+    std::cout << "Pt_bins_HF\t";  for (size_t i = 0; i < Pt_bins_HF.size(); i++) std::cout << Pt_bins_HF[i] << '\t'; std::cout << '\n';
+  }
 
   //std::vector<double> eta_bins_edge_SM(eta_bins, eta_bins + sizeof(eta_bins)/sizeof(double));
   // std::vector<double> eta_bins_edge_FE(eta_bins+1, eta_bins + sizeof(eta_bins)/sizeof(double));
@@ -701,10 +691,11 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // std::vector<double> eta_bins_edge_SM(eta_bins2, eta_bins2 + sizeof(eta_bins2)/sizeof(double));
   // std::vector<double> eta_bins_edge_FE(eta_bins2, eta_bins2 + sizeof(eta_bins2)/sizeof(double));
 
-
-  std::cout << "Eta bins " << Trigger << " " << eta_bins_edge_SM.size() << " " << eta_bins_edge_FE.size() << '\n';
-  for (size_t i = 0; i < eta_bins_edge_SM.size(); i++) std::cout << eta_bins_edge_SM[i] << '\t'; std::cout << '\n';
-  for (size_t i = 0; i < eta_bins_edge_FE.size(); i++) std::cout << eta_bins_edge_FE[i] << '\t'; std::cout << '\n';
+  if (debug) {
+    std::cout << "Eta bins " << Trigger << " " << eta_bins_edge_SM.size() << " " << eta_bins_edge_FE.size() << '\n';
+    for (size_t i = 0; i < eta_bins_edge_SM.size(); i++) std::cout << eta_bins_edge_SM[i] << '\t'; std::cout << '\n';
+    for (size_t i = 0; i < eta_bins_edge_FE.size(); i++) std::cout << eta_bins_edge_FE[i] << '\t'; std::cout << '\n';
+  }
 
   // EtaBins_FE   = 3;
   // EtaBins_SM       = n_eta_bins - EtaBins_FE - 1;
@@ -718,8 +709,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   f = new TFile( filename, "READ");
   f_data = new TFile( filename_data, "READ");
 
-  std::cout << "filename MC " << filename << '\n';
-  std::cout << "filename DATA " << filename_data << '\n';
+  if (debug) {
+    std::cout << "filename MC " << filename << '\n';
+    std::cout << "filename DATA " << filename_data << '\n';
+  }
 
   // ------------------------------
   //      loading histograms
@@ -830,15 +823,15 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< std::vector< std::vector< double > > > asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE, gen_asymmetries_width_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE, lower_x_data_FE, upper_x_data_FE, gen_lower_x_data_FE, gen_upper_x_data_FE;
   std::vector< std::vector< std::vector< double > > > asymmetries_width_FE_error, gen_asymmetries_width_FE_error, asymmetries_width_data_FE_error, gen_asymmetries_width_data_FE_error;
 
-  histWidthAsym( asymmetries_SM , asymmetries_width_SM, asymmetries_width_SM_error, false, gaustails, 0, lower_x_SM, upper_x_SM);
-  histWidthAsym( gen_asymmetries_SM , gen_asymmetries_width_SM, gen_asymmetries_width_SM_error, false, gaustails, 0, gen_lower_x_SM, gen_upper_x_SM);
-  histWidthAsym( asymmetries_data_SM , asymmetries_width_data_SM, asymmetries_width_data_SM_error, false, gaustails, 0, lower_x_data_SM, upper_x_data_SM);
-  histWidthAsym( gen_asymmetries_data_SM , gen_asymmetries_width_data_SM, gen_asymmetries_width_data_SM_error, false, gaustails, 0, gen_lower_x_data_SM, gen_upper_x_data_SM);
+  histWidthAsym( asymmetries_SM , asymmetries_width_SM, asymmetries_width_SM_error, false, gaustails, 0, lower_x_SM, upper_x_SM, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_SM , gen_asymmetries_width_SM, gen_asymmetries_width_SM_error, false, gaustails, 0, gen_lower_x_SM, gen_upper_x_SM, eta_bins, alpha);
+  histWidthAsym( asymmetries_data_SM , asymmetries_width_data_SM, asymmetries_width_data_SM_error, false, gaustails, 0, lower_x_data_SM, upper_x_data_SM, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_data_SM , gen_asymmetries_width_data_SM, gen_asymmetries_width_data_SM_error, false, gaustails, 0, gen_lower_x_data_SM, gen_upper_x_data_SM, eta_bins, alpha);
 
-  histWidthAsym( asymmetries_FE , asymmetries_width_FE, asymmetries_width_FE_error, false, gaustails, 1, lower_x_FE, upper_x_FE);
-  histWidthAsym( gen_asymmetries_FE , gen_asymmetries_width_FE, gen_asymmetries_width_FE_error, false, gaustails, 1, gen_lower_x_FE, gen_upper_x_FE);
-  histWidthAsym( asymmetries_data_FE , asymmetries_width_data_FE, asymmetries_width_data_FE_error, false, gaustails, 1, lower_x_data_FE, upper_x_data_FE);
-  histWidthAsym( gen_asymmetries_data_FE , gen_asymmetries_width_data_FE, gen_asymmetries_width_data_FE_error, false, gaustails, 1, gen_lower_x_data_FE, gen_upper_x_data_FE);
+  histWidthAsym( asymmetries_FE , asymmetries_width_FE, asymmetries_width_FE_error, false, gaustails, 1, lower_x_FE, upper_x_FE, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_FE , gen_asymmetries_width_FE, gen_asymmetries_width_FE_error, false, gaustails, 1, gen_lower_x_FE, gen_upper_x_FE, eta_bins, alpha);
+  histWidthAsym( asymmetries_data_FE , asymmetries_width_data_FE, asymmetries_width_data_FE_error, false, gaustails, 1, lower_x_data_FE, upper_x_data_FE, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_data_FE , gen_asymmetries_width_data_FE, gen_asymmetries_width_data_FE_error, false, gaustails, 1, gen_lower_x_data_FE, gen_upper_x_data_FE, eta_bins, alpha);
 
   if (debug) {
     std::cout << "asymmetries_width_SM " << asymmetries_width_SM.size() << '\n';
@@ -857,15 +850,15 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE_error, gen_soft_asymmetries_width_FE_error, soft_asymmetries_width_data_FE_error, gen_soft_asymmetries_width_data_FE_error;
   std::vector< std::vector< std::vector< double > > > dummy_vec_x, dummy_vec_y;
 
-  histWidthAsym( asymmetries_SM , soft_asymmetries_width_SM, soft_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y);
-  histWidthAsym( gen_asymmetries_SM , soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y);
-  histWidthAsym( asymmetries_data_SM , soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y);
-  histWidthAsym( gen_asymmetries_data_SM , soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y);
+  histWidthAsym( asymmetries_SM , soft_asymmetries_width_SM, soft_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_SM , soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  histWidthAsym( asymmetries_data_SM , soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_data_SM , soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
 
-  histWidthAsym( asymmetries_FE , soft_asymmetries_width_FE, soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y);
-  histWidthAsym( gen_asymmetries_FE , gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y);
-  histWidthAsym( asymmetries_data_FE , soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y);
-  histWidthAsym( gen_asymmetries_data_FE , gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y);
+  histWidthAsym( asymmetries_FE , soft_asymmetries_width_FE, soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_FE , gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  histWidthAsym( asymmetries_data_FE , soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  histWidthAsym( gen_asymmetries_data_FE , gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
 
   if (debug) {
     std::cout << "asymmetries_SM " << asymmetries_SM.size() << '\n';
@@ -1104,8 +1097,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_FE, JER_uncorrelated_corrected_data_FE;
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_FE_error, JER_uncorrelated_corrected_data_FE_error;
 
-  correctForRef( "mccorrected", JER_uncorrelated_corrected_MC_FE, JER_uncorrelated_corrected_MC_FE_error, JER_uncorrelated_corrected_MC_FE_ref, JER_uncorrelated_corrected_MC_FE_ref_error, width_pt_FE, ref_shift, outdir);
-  correctForRef( "datacorrect", JER_uncorrelated_corrected_data_FE, JER_uncorrelated_corrected_data_FE_error, JER_uncorrelated_corrected_data_FE_ref, JER_uncorrelated_corrected_data_FE_ref_error, width_pt_FE, ref_shift, outdir);
+  correctForRef( "mccorrected", JER_uncorrelated_corrected_MC_FE, JER_uncorrelated_corrected_MC_FE_error, JER_uncorrelated_corrected_MC_FE_ref, JER_uncorrelated_corrected_MC_FE_ref_error, JER_uncorrelated_corrected_MC_SM, JER_uncorrelated_corrected_MC_SM_error, width_pt_FE, ref_shift, outdir);
+  correctForRef( "datacorrect", JER_uncorrelated_corrected_data_FE, JER_uncorrelated_corrected_data_FE_error, JER_uncorrelated_corrected_data_FE_ref, JER_uncorrelated_corrected_data_FE_ref_error, JER_uncorrelated_corrected_data_SM, JER_uncorrelated_corrected_data_SM_error, width_pt_FE, ref_shift, outdir);
 
   if (debug) std::cout << "JER_uncorrelated_corrected_MC_FE " << JER_uncorrelated_corrected_MC_FE.size() << '\n';
 
@@ -1118,8 +1111,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< std::vector< double > > JER_correlated_corrected_MC_FE, JER_correlated_corrected_data_FE;
   std::vector< std::vector< double > > JER_correlated_corrected_MC_FE_error, JER_correlated_corrected_data_FE_error;
 
-  correctForRef( "mc_cor_corrected", JER_correlated_corrected_MC_FE,   JER_correlated_corrected_MC_FE_error,   JER_correlated_corrected_MC_FE_ref,   JER_correlated_corrected_MC_FE_ref_error,   width_pt_FE, ref_shift, outdir);
-  correctForRef( "data_cor_correct", JER_correlated_corrected_data_FE, JER_correlated_corrected_data_FE_error, JER_correlated_corrected_data_FE_ref, JER_correlated_corrected_data_FE_ref_error, width_pt_FE, ref_shift, outdir);
+  correctForRef( "mc_cor_corrected", JER_correlated_corrected_MC_FE,   JER_correlated_corrected_MC_FE_error,   JER_correlated_corrected_MC_FE_ref,   JER_correlated_corrected_MC_FE_ref_error,   JER_correlated_corrected_MC_SM,   JER_correlated_corrected_MC_SM_error,   width_pt_FE, ref_shift, outdir);
+  correctForRef( "data_cor_correct", JER_correlated_corrected_data_FE, JER_correlated_corrected_data_FE_error, JER_correlated_corrected_data_FE_ref, JER_correlated_corrected_data_FE_ref_error, JER_correlated_corrected_data_SM, JER_correlated_corrected_data_SM_error, width_pt_FE, ref_shift, outdir);
 
   if (debug) std::cout << "JER_correlated_corrected_MC_FE " << JER_correlated_corrected_MC_FE.size() << '\n';
 
@@ -1132,8 +1125,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< std::vector< double > > JER015_MC_FE, JER015_data_FE;
   std::vector< std::vector< double > > JER015_MC_FE_error, JER015_data_FE_error;
 
-  correctForRef( "mccorrected015", JER015_MC_FE,   JER015_MC_FE_error,   JER015_MC_FE_ref,   JER015_MC_FE_ref_error,   width_pt_FE, ref_shift, outdir);
-  correctForRef( "datacorrect015", JER015_data_FE, JER015_data_FE_error, JER015_data_FE_ref, JER015_data_FE_ref_error, width_pt_FE, ref_shift, outdir);
+  correctForRef( "mccorrected015", JER015_MC_FE,   JER015_MC_FE_error,   JER015_MC_FE_ref,   JER015_MC_FE_ref_error,   JER015_MC_SM,   JER015_MC_SM_error,    width_pt_FE, ref_shift, outdir);
+  correctForRef( "datacorrect015", JER015_data_FE, JER015_data_FE_error, JER015_data_FE_ref, JER015_data_FE_ref_error, JER015_data_SM, JER015_data_SM_error,  width_pt_FE, ref_shift, outdir);
 
   ////////////////////////////////////////////////////////////////////////////
   //    Ref reg corrected for widths at alpha = 0.15                        //
@@ -1191,22 +1184,22 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   fill_hist( "data_JER_uncorrelated_SM",  JER_uncorrelated_data_hist_SM , JER_uncorrelated_corrected_data_SM, JER_uncorrelated_corrected_data_SM_error, width_pt_SM, hist_max_value);
   fill_hist( "SF_uncorrelated_SM",        JER_uncorrelated_scale_hist_SM, scales_uncorrelated_SM,             scales_uncorrelated_SM_error,             width_pt_SM, hist_max_value_SF);
 
-  fill_hist( "MC_JER_uncorrelated_FE",    JER_uncorrelated_MC_hist_FE,    JER_uncorrelated_corrected_MC_FE,   JER_uncorrelated_corrected_MC_FE_error,   width_pt_FE, hist_max_value);
-  fill_hist( "data_JER_uncorrelated_FE",  JER_uncorrelated_data_hist_FE,  JER_uncorrelated_corrected_data_FE, JER_uncorrelated_corrected_data_FE_error, width_pt_FE, hist_max_value);
-  fill_hist( "SF_uncorrelated_FE",        JER_uncorrelated_scale_hist_FE, scales_uncorrelated_FE,             scales_uncorrelated_FE_error,             width_pt_FE, hist_max_value_SF);
+  fill_hist( "MC_JER_uncorrelated_FE",    JER_uncorrelated_MC_hist_FE,    JER_uncorrelated_corrected_MC_FE,   JER_uncorrelated_corrected_MC_FE_error,   width_pt_FE, hist_max_value,1);
+  fill_hist( "data_JER_uncorrelated_FE",  JER_uncorrelated_data_hist_FE,  JER_uncorrelated_corrected_data_FE, JER_uncorrelated_corrected_data_FE_error, width_pt_FE, hist_max_value,1);
+  fill_hist( "SF_uncorrelated_FE",        JER_uncorrelated_scale_hist_FE, scales_uncorrelated_FE,             scales_uncorrelated_FE_error,             width_pt_FE, hist_max_value_SF,1);
 
   fill_hist( "MC_JER_uncorrelated_FE_control",    JER_uncorrelated_MC_hist_FE_control,    JER_uncorrelated_corrected_MC_FE_ref,   JER_uncorrelated_corrected_MC_FE_ref_error,   width_pt_FE, hist_max_value);
   fill_hist( "data_JER_uncorrelated_FE_control",  JER_uncorrelated_data_hist_FE_control,  JER_uncorrelated_corrected_data_FE_ref, JER_uncorrelated_corrected_data_FE_ref_error, width_pt_FE, hist_max_value);
   fill_hist( "SF_uncorrelated_FE_control",        JER_FE_uncorrelated_scale_control_hist, scales_uncorrelated_FE_control,         scales_uncorrelated_FE_control_error,           width_pt_FE, hist_max_value_SF);
 
   fill_hist( "MC_JER015_uncorrelated_SM", JER015_uncorrelated_MC_hist_SM, JER015_MC_SM,                       JER015_MC_SM_error,                       width_pt_SM,      hist_max_value);
-  fill_hist( "MC_JER015_uncorrelated_FE", JER015_uncorrelated_MC_hist_FE, JER015_MC_FE,                       JER015_MC_FE_error,                       width_pt_FE,      hist_max_value);
+  fill_hist( "MC_JER015_uncorrelated_FE", JER015_uncorrelated_MC_hist_FE, JER015_MC_FE,                       JER015_MC_FE_error,                       width_pt_FE,      hist_max_value,1);
   // fill_hist( "MC_JER015_uncorrelated_FE_control", JER015_uncorrelated_MC_hist_FE_control, JER015_MC_FE_control,                   JER015_MC_FE_error,                           width_pt_FE,      0.2);
 
   std::vector< TH1F* > JER015_scale_hist_SM, JER015_scale_hist_FE;
 
   fill_hist( "SF_SM015", JER015_scale_hist_SM,  scales015_SM, scales015_SM_error, width_pt_SM, hist_max_value_SF);
-  fill_hist( "SF_FE015", JER015_scale_hist_FE,  scales015_FE, scales015_FE_error, width_pt_FE, hist_max_value_SF);
+  fill_hist( "SF_FE015", JER015_scale_hist_FE,  scales015_FE, scales015_FE_error, width_pt_FE, hist_max_value_SF,1);
 
   std::vector< TH1F* > JER_correlated_MC_hist_SM,         JER_correlated_data_hist_SM,         JER_correlated_scale_hist_SM;
   std::vector< TH1F* > JER_correlated_MC_hist_FE,         JER_correlated_data_hist_FE,         JER_correlated_scale_hist_FE;
@@ -1216,9 +1209,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   fill_hist( "data_JER_correlated_SM", JER_correlated_data_hist_SM,  JER_correlated_corrected_data_SM,       JER_correlated_corrected_data_SM_error,       width_pt_SM, hist_max_value);
   fill_hist( "SF_correlated_SM",       JER_correlated_scale_hist_SM, scales_correlated_SM, scales_correlated_SM_error, width_pt_SM, hist_max_value_SF);
 
-  fill_hist( "MC_JER_correlated_FE",   JER_correlated_MC_hist_FE,    JER_correlated_corrected_MC_FE,   JER_correlated_corrected_MC_FE_error,   width_pt_FE, hist_max_value);
-  fill_hist( "data_JER_correlated_FE", JER_correlated_data_hist_FE,  JER_correlated_corrected_data_FE, JER_correlated_corrected_data_FE_error, width_pt_FE, hist_max_value);
-  fill_hist( "SF_correlated_FE",       JER_correlated_scale_hist_FE, scales_correlated_FE,   scales_correlated_FE_error,   width_pt_FE, hist_max_value_SF);
+  fill_hist( "MC_JER_correlated_FE",   JER_correlated_MC_hist_FE,    JER_correlated_corrected_MC_FE,   JER_correlated_corrected_MC_FE_error,   width_pt_FE, hist_max_value,1);
+  fill_hist( "data_JER_correlated_FE", JER_correlated_data_hist_FE,  JER_correlated_corrected_data_FE, JER_correlated_corrected_data_FE_error, width_pt_FE, hist_max_value,1);
+  fill_hist( "SF_correlated_FE",       JER_correlated_scale_hist_FE, scales_correlated_FE,   scales_correlated_FE_error,   width_pt_FE, hist_max_value_SF,1);
 
   fill_hist( "MC_JER_correlated_FE_control",   JER_correlated_MC_hist_FE_control,    JER_correlated_corrected_MC_FE_ref,   JER_correlated_corrected_MC_FE_ref_error,   width_pt_FE, hist_max_value);
   fill_hist( "data_JER_correlated_FE_control", JER_correlated_data_hist_FE_control,  JER_correlated_corrected_data_FE_ref, JER_correlated_corrected_data_FE_ref_error, width_pt_FE, hist_max_value);
@@ -1348,10 +1341,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   /////////////////////////////////////////////////////////////////////////////////////////
 
   TFile NSCroot(outdir+"output/NSC.root","RECREATE");
-  PLOT_NCS(JER_uncorrelated_data_hist_SM,JER_uncorrelated_MC_hist_SM,JER_uncorrelated_scale_hist_SM,outdir,eta_bins_edge_SM,false);
-  PLOT_NCS(JER_correlated_data_hist_SM,JER_correlated_MC_hist_SM,JER_correlated_scale_hist_SM,outdir,eta_bins_edge_SM,false);
-  PLOT_NCS(JER_uncorrelated_data_hist_FE,JER_uncorrelated_MC_hist_FE,JER_uncorrelated_scale_hist_FE,outdir,eta_bins_edge_FE, true);
-  PLOT_NCS(JER_correlated_data_hist_FE,JER_correlated_MC_hist_FE,JER_correlated_scale_hist_FE,outdir,eta_bins_edge_FE, true);
+  PLOT_NSC(JER_uncorrelated_data_hist_SM,JER_uncorrelated_MC_hist_SM,JER_uncorrelated_scale_hist_SM,outdir,eta_bins_edge_SM,false);
+  PLOT_NSC(JER_correlated_data_hist_SM,JER_correlated_MC_hist_SM,JER_correlated_scale_hist_SM,outdir,eta_bins_edge_SM,false);
+  PLOT_NSC(JER_uncorrelated_data_hist_FE,JER_uncorrelated_MC_hist_FE,JER_uncorrelated_scale_hist_FE,outdir,eta_bins_edge_FE, true);
+  PLOT_NSC(JER_correlated_data_hist_FE,JER_correlated_MC_hist_FE,JER_correlated_scale_hist_FE,outdir,eta_bins_edge_FE, true);
 
   NSCroot.Close();
 
