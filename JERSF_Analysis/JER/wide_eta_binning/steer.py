@@ -89,11 +89,14 @@ common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/JER/w
 
 
 # year = "2018"
-year = "UL16preVFP"
+year = "UL16preVFP_split"
+# year = "UL16preVFP"
 # year = "UL16postVFP"
 # year = "UL17"
 # year = "UL18"
 year = "Legacy"
+
+year = sys.argv[1]
 
 
 samples = {}
@@ -104,10 +107,26 @@ samples = {}
 
 # samples["UL16preVFP"] = ["B", "C", "D", "E", "F", "BCD", "EF", "BCDEF"]
 # samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
+# samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
+samples["UL16preVFP_split"] = ["BCDEF"]
 samples["UL16preVFP"] = ["BCDEF"]
 samples["UL16postVFP"] = ["FGH"]
 samples["UL17"] = ["BCDEF"]
 samples["UL18"] = ["ABCD"]
+
+
+samples["UL16preVFP"] = ["B", "C", "D", "E", "F"]
+samples["UL16postVFP"] = ["FG", "H"]
+samples["UL17"] = ["B", "C", "D", "E", "F"]
+samples["UL18"] = ["A", "B", "C", "D", "AB", "CD", "ABC"]
+
+
+
+samples["UL16preVFP"] = ["EF"]
+samples["UL17"] = ["EF"]
+
+
+
 samples["Legacy"] = ["II"]
 
 
@@ -115,6 +134,7 @@ samples["Legacy"] = ["II"]
 QCDSamples = {}
 QCDSamples["2018"] = ["QCDHT"]
 # QCDSamples["UL17"] = ["QCDPt"]
+QCDSamples["UL16preVFP_split"] = ["QCDHT"]
 QCDSamples["UL16preVFP"] = ["QCDHT"]
 QCDSamples["UL16postVFP"] = ["QCDHT"]
 QCDSamples["UL17"] = ["QCDHT"]
@@ -123,6 +143,7 @@ QCDSamples["Legacy"] = ["QCDHT"]
 
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
+JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
 JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
 JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
 JECVersions["UL17"] = ["Summer19UL17_V5"]
@@ -133,8 +154,9 @@ JECVersions["Legacy"] = ["Summer19Legacy"]
 JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
 systematics=["", "PU", "JEC", "alpha", "JER"]
+# systematics=["", "JER"]
 # systematics=["JER"]
-# systematics=["", "PU", "JEC", "alpha"]
+# systematics=["JEC"]
 # systematics=["PU", "alpha"]
 # systematics=[""]
 
@@ -144,7 +166,7 @@ studies = []
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
 studies.append("eta_JER")
-studies.append("eta_simple")
+# studies.append("eta_simple")
 
 for extraText in [""]:
     for study in studies:

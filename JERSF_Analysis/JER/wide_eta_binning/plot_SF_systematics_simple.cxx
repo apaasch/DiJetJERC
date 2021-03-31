@@ -23,8 +23,8 @@ VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha","pTdep
 VecTS systematics_name_minimal({"gaustails_0.95","JEC", "others"});
 
 bool dosplit = true; // split source of Uncertainties
-int method = 2; //2-uncorr 4-corr
-int pt_dep_method = 6; //4-min value 5-max value
+int method = 4; //2-uncorr 4-corr
+int pt_dep_method = 8; //4-min value 5-max value
 
 // NO MERGE SM and FE
 
@@ -786,7 +786,7 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   Plot_Uncertainties("all", eta_bins_all, eta_bin_all_center, SF_final, eta_bin_all_error, SF_final_error_stat, SF_final_error_syst, SF_sys, SF_final_error, path+"standard/"+QCD_DATA, SF_SM);
 
 
-  TCanvas* canv_SF_final = tdrCanvas("SF_final", eta_bins_all.at(0)-plotshift, eta_bins_all.at(eta_bins_all.size()-1)+plotshift, 0., 3.0, "|#eta|", "JER SF");
+  TCanvas* canv_SF_final = tdrCanvas("SF_final", eta_bins_all.at(0)-plotshift, eta_bins_all.at(eta_bins_all.size()-1)+plotshift, 0.8, 1.8, "|#eta|", "JER SF");
   TLegend *leg_final = tdrLeg(0.65,0.67,0.79,0.92, 0.035, 42, kBlack);
   tdrHeader(leg_final,"", 12);
 
@@ -830,8 +830,8 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   int colUL16 = kAzure+2;
 
   // tdrDraw(map_gr["Summer16_25nsV1"], "P5", kFullTriangleUp, col2016, kSolid, col2016, 1001, col2016, 0.15);
-  tdrDraw(map_gr["Summer19UL17_JRV2"], "P5", kFullTriangleUp, colUL17, kSolid, colUL17, 1001, colUL17, 0.15);
-  tdrDraw(map_gr["Summer19UL18_JRV1"], "P5", kFullTriangleUp, colUL18, kSolid, colUL18, 1001, colUL18, 0.15);
+  // tdrDraw(map_gr["Summer19UL17_JRV2"], "P5", kFullTriangleUp, colUL17, kSolid, colUL17, 1001, colUL17, 0.15);
+  // tdrDraw(map_gr["Summer19UL18_JRV1"], "P5", kFullTriangleUp, colUL18, kSolid, colUL18, 1001, colUL18, 0.15);
   // tdrDraw(map_gr["Fall17_V3"], "P5", kFullTriangleDown, col2017, kSolid, col2017, 1001, col2017, 0.15);
   // tdrDraw(map_gr["Autumn18_V7b"], "P5", kFullTriangleUp, col2018, kSolid, col2018, 1001, col2018, 0.15);
   // tdrDraw(map_gr["SFAutumn18_V7_RunABCD"], "P5", kFullSquare, kGreen-1, kSolid, kGreen-1, 1001, kGreen-1, 0.15);
@@ -843,8 +843,8 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   // leg_final->AddEntry(map_gr["Fall17_V3"], "EOY17","f");
   // leg_final->AddEntry(map_gr["Autumn18_V7b"], "EOY18","f");
   leg_final->AddEntry(gr_final, "UL16postVFP","f");
-  leg_final->AddEntry(map_gr["Summer19UL17_JRV2"], "UL17","f");
-  leg_final->AddEntry(map_gr["Summer19UL18_JRV1"], "UL18","f");
+  // leg_final->AddEntry(map_gr["Summer19UL17_JRV2"], "UL17","f");
+  // leg_final->AddEntry(map_gr["Summer19UL18_JRV1"], "UL18","f");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7_RunABCD"],"Autumn18_V7","f");
   // leg_final->AddEntry(map_gr["SFAutumn18_V7"+DATA],"JEC_V17_"+DATA,"f");
   //leg_final->AddEntry(map_gr["SFAutumn18_V8"+DATA],"JEC_V19_AK4CHS_"+DATA,"f");
@@ -854,6 +854,21 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
 
   canv_SF_final->Print(path+"standard/"+QCD_DATA+"SF_final.pdf","pdf");
 
+
+
+  TCanvas* canv_SF_band = tdrCanvas("SF_band", eta_bins_all.at(0)-plotshift, eta_bins_all.at(eta_bins_all.size()-1)+plotshift, 0.85, 1.55, "|#eta|", "JER SF");
+  TLegend *leg_band = tdrLeg(0.65,0.67,0.79,0.92, 0.035, 42, kBlack);
+  tdrHeader(leg_band,"", 12);
+  TLine* line_MC = new TLine(eta_bins_all.at(0)-plotshift, 1, eta_bins_all.at(eta_bins_all.size()-1)+plotshift, 1);
+  line_MC->SetLineWidth(1); line_MC->SetLineColor(kBlack); line_MC->Draw("same");
+
+  VecD SF_MC_dummy(SF_final.size(), 1);
+  TGraphErrors* gr_data = new TGraphErrors(SF_final.size(), &(eta_bin_all_center[0]), &SF_final[0], &(eta_bin_all_error[0]), &SF_final_error_stat[0]);
+  TGraphErrors* gr_MC = new TGraphErrors(SF_final.size(), &(eta_bin_all_center[0]), &SF_MC_dummy[0], &(eta_bin_all_error[0]), &SF_final_error_syst[0]);
+  tdrDraw(gr_data, "P5", kFullDotLarge, colUL16, kSolid, colUL16, 1001, colUL16, 0.15);
+  tdrDraw(gr_MC, "E2", kFullDotLarge, col2016, kSolid, col2016, 1001, col2016, 0.15);
+
+  canv_SF_band->Print(path+"standard/"+QCD_DATA+"SF_band.pdf","pdf");
   return true;
 
 }
@@ -866,12 +881,13 @@ void plot_SF_systematics_simple() {
 
   TString path ;
 
+  VecTS years;
+  years.push_back("UL16preVFP");
+  years.push_back("UL16postVFP");
+  years.push_back("UL17");
+  years.push_back("UL18");
+  years.push_back("Legacy");
   //TString year = "2018";
-  // TString year = "UL16preVFP";
-  // TString year = "UL16postVFP";
-  // TString year = "UL17";
-  // TString year = "UL18";
-  TString year = "Legacy";
 
   VecTS studies;
   // studies.push_back("MergeL2Res");
@@ -900,9 +916,12 @@ void plot_SF_systematics_simple() {
   // DATAS.push_back("RunFG");
   // DATAS.push_back("RunH");
   DATAS["UL16preVFP"]  = {"RunBCDEF"};
+  // DATAS["UL16preVFP"]  = {"RunBCDEF", "RunBCD", "RunEF"};
   DATAS["UL16postVFP"] = {"RunFGH"};
   DATAS["UL17"]        = {"RunBCDEF"};
+  // DATAS["UL17"]        = {"RunBCDEF", "RunB", "RunC", "RunD", "RunE", "RunF"};
   DATAS["UL18"]        = {"RunABCD"};
+  // DATAS["UL18"]        = {"RunABCD", "RunA", "RunB", "RunC", "RunD"};
   DATAS["Legacy"]      = {"RunII"};
 
   VecTS JETs;
@@ -915,21 +934,22 @@ void plot_SF_systematics_simple() {
   // QCDS.push_back("QCDPt");
 
 
-
-  for(TString study : studies){
-    for(TString JEC : JECs[year]){
-      for(TString JET : JETs){
-        path = path_+study+"/"+year+"/"+JEC+"/"+JET+"/";
-        if (!gSystem->AccessPathName(path)) {
-          std::cout << path << '\n';
-          for(TString QCD : QCDS){
-            for(TString DATA : DATAS[year]){
-              TString QCD_DATA = QCD+"/"+DATA+"/";
-              TString TITLE_NAME = "JEC"; TITLE_NAME+= JEC(JEC.Index("_"),JEC.Length())+"_"+JET+"_"+DATA;
-              std::cout << "start: " << QCD_DATA << " " << TITLE_NAME << '\n';
-              plot_SF_systematics_(path_, path, year, QCD_DATA,DATA,TITLE_NAME);
-              std::cout << "end: " << QCD_DATA << '\n';
-              sleep(5);
+  for(TString year: years){
+    for(TString study : studies){
+      for(TString JEC : JECs[year]){
+        for(TString JET : JETs){
+          path = path_+study+"/"+year+"/"+JEC+"/"+JET+"/";
+          if (!gSystem->AccessPathName(path)) {
+            std::cout << path << '\n';
+            for(TString QCD : QCDS){
+              for(TString DATA : DATAS[year]){
+                TString QCD_DATA = QCD+"/"+DATA+"/";
+                TString TITLE_NAME = "JEC"; TITLE_NAME+= JEC(JEC.Index("_"),JEC.Length())+"_"+JET+"_"+DATA;
+                std::cout << "start: " << QCD_DATA << " " << TITLE_NAME << '\n';
+                plot_SF_systematics_(path_, path, year, QCD_DATA,DATA,TITLE_NAME);
+                std::cout << "end: " << QCD_DATA << '\n';
+                sleep(5);
+              }
             }
           }
         }
