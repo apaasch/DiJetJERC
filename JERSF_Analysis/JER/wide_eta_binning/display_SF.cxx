@@ -88,7 +88,8 @@ TGraphErrors* CreateTGraphSFfromFile(TString ver, TString fname="Source" ) {
 void PlotCanvas(TString cName, MapG map_gr, VecS names, VecI colors, VecI shapes){
   lumi_13TeV = "RunII Legacy";
 
-  TCanvas* canv = tdrCanvas(cName, -0.5, 5.191+0.5, 0., 3.0, "|#eta|", "JER SF");
+  //TCanvas* canv = tdrCanvas(cName, -0.5, 5.191+0.5, 0., 3.0, "|#eta|", "JER SF");
+  TCanvas* canv = tdrCanvas(cName, -0.5, 5.191+0.5, 0.85, 1.8, "|#eta|", "JER SF");
   TLegend* leg = tdrLeg(0.65,0.67,0.79,0.90, 0.035, 42, kBlack);
   for(int i=0; i<names.size(); i++){
     TString name = names[i];
@@ -101,7 +102,6 @@ void PlotCanvas(TString cName, MapG map_gr, VecS names, VecI colors, VecI shapes
   leg->Draw("same");
   canv->SaveAs("plots/"+cName+".pdf");
 }
-
 
 void display_SF() {
   TString path_ = std::getenv("CMSSW_BASE"); path_ += "/src/UHH2/DiJetJERC/JERSF_Analysis/JER/wide_eta_binning/file/";
@@ -134,20 +134,39 @@ void display_SF() {
   map_gr["UL17"] = CreateTGraphSFfromFile("Summer19UL17_JRV3", "Summer19UL17_JRV3_MC_SF_AK4PFchs");
   map_gr["UL18"] = CreateTGraphSFfromFile("Summer19UL18_JRV2", "Summer19UL18_JRV2_MC_SF_AK4PFchs");
 
-  map_gr["UL16preVFP"]  = CreateTGraphSF(path_+"eta_JER/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/");
-  map_gr["UL16postVFP"] = CreateTGraphSF(path_+"eta_JER/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/");
+  map_gr["UL16preVFP"]  = CreateTGraphSF(path_+"eta_JER_tot/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/");
+  map_gr["UL16postVFP"] = CreateTGraphSF(path_+"eta_JER_tot/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/");
 
-  map_gr["UL16_new"] = CreateTGraphSF(path_+"eta_JER/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/");
-  map_gr["UL17_new"] = CreateTGraphSF(path_+"eta_JER/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/");
-  map_gr["UL18_new"] = CreateTGraphSF(path_+"eta_JER/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/");
-  map_gr["RunII_new"] = CreateTGraphSF(path_+"eta_JER/Legacy/Summer19Legacy/AK4CHS/standard/QCDHT/RunII/");
+  map_gr["UL16_new"] = CreateTGraphSF(path_+"eta_JER_tot/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/");
+  map_gr["UL17_new"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/");
+  map_gr["UL18_new"] = CreateTGraphSF(path_+"eta_JER_tot/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/");
+  map_gr["RunII_new"] = CreateTGraphSF(path_+"eta_JER_tot/Legacy/Summer19Legacy/AK4CHS/standard/QCDHT/RunII/");
 
   map_gr["UL16preVFP_eta"]  = CreateTGraphSF(path_+"eta_simple/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/");
+  map_gr["UL16postVFP_eta"] = CreateTGraphSF(path_+"eta_simple/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/");
   map_gr["UL16_eta"] = CreateTGraphSF(path_+"eta_simple/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/");
   map_gr["UL17_eta"] = CreateTGraphSF(path_+"eta_simple/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/");
   map_gr["UL18_eta"] = CreateTGraphSF(path_+"eta_simple/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/");
   map_gr["RunII_eta"] = CreateTGraphSF(path_+"eta_simple/Legacy/Summer19Legacy/AK4CHS/standard/QCDHT/RunII/");
 
+  map_gr["UL17_B"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunB/");
+  map_gr["UL17_C"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunC/");
+  map_gr["UL17_D"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunD/");
+  map_gr["UL17_E"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunE/");
+  map_gr["UL17_F"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunF/");
+  map_gr["UL17_BCDEF"] = CreateTGraphSF(path_+"eta_JER_tot/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/");
+
+  map_gr["UL18_A"] = CreateTGraphSF(path_+"eta_JER_tot/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunA/");
+  map_gr["UL18_B"] = CreateTGraphSF(path_+"eta_JER_tot/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunB/");
+  map_gr["UL18_C"] = CreateTGraphSF(path_+"eta_JER_tot/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunC/");
+  map_gr["UL18_D"] = CreateTGraphSF(path_+"eta_JER_tot/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunD/");
+  map_gr["UL18_ABCD"] = CreateTGraphSF(path_+"eta_JER_tot/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/");
+
+  map_gr["UL18_A_eta"] = CreateTGraphSF(path_+"eta_simple/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunA/");
+  map_gr["UL18_B_eta"] = CreateTGraphSF(path_+"eta_simple/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunB/");
+  map_gr["UL18_C_eta"] = CreateTGraphSF(path_+"eta_simple/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunC/");
+  map_gr["UL18_D_eta"] = CreateTGraphSF(path_+"eta_simple/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunD/");
+  map_gr["UL18_ABCD_eta"] = CreateTGraphSF(path_+"eta_simple/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/");
 
   for (auto [name,gr]: map_gr) gr->SetMarkerSize(0.7);
 
@@ -215,5 +234,19 @@ void display_SF() {
 
   PlotCanvas("SF_UL_RunII_full",     map_gr, {"UL16preVFP", "UL16_new","UL17_new","UL18_new","RunII_new"}, {kAzure+2, kRed+1,kBlue+1,kGreen-1,kOrange+1}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
   PlotCanvas("SF_UL_RunII_eta_full", map_gr, {"UL16preVFP_eta", "UL16_eta","UL17_eta","UL18_eta","RunII_eta"}, {kAzure+2, kRed+1,kBlue+1,kGreen-1,kOrange+1}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
+
+  PlotCanvas("minsuk", map_gr, {"UL16preVFP", "UL16postVFP","UL18"}, {kRed+1,kBlue+1,kGreen-1}, {kFullTriangleDown,kFullTriangleUp,kFullSquare});
+  PlotCanvas("minsuk2", map_gr, {"UL16preVFP", "UL16postVFP","UL18_new"}, {kRed+1,kBlue+1,kGreen-1}, {kFullTriangleDown,kFullTriangleUp,kFullSquare});
+  PlotCanvas("mikko", map_gr, {"UL16preVFP", "UL16postVFP","UL17_new", "UL18_new"}, {kRed+1,kBlue+1,kOrange+1,kGreen-1}, {kFullTriangleDown,kFullTriangleUp,kFullCircle, kFullSquare});
+
+
+  PlotCanvas("UL18_run", map_gr, {"UL18_A", "UL18_B","UL18_C", "UL18_D"}, {kRed+1,kBlue+1,kGreen-1,kOrange+1}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
+  PlotCanvas("UL18_run_all", map_gr, {"UL18_A", "UL18_B","UL18_C", "UL18_D", "UL18_ABCD"}, {kRed+1,kBlue+1,kGreen-1,kOrange+1,kAzure+2}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
+
+  PlotCanvas("UL18_eta_run", map_gr, {"UL18_A_eta", "UL18_B_eta","UL18_C_eta", "UL18_D_eta"}, {kRed+1,kBlue+1,kGreen-1,kOrange+1}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
+  PlotCanvas("UL18_eta_run_all", map_gr, {"UL18_A_eta", "UL18_B_eta","UL18_C_eta", "UL18_D_eta", "UL18_ABCD_eta"}, {kRed+1,kBlue+1,kGreen-1,kOrange+1,kAzure+2}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
+
+
+  PlotCanvas("UL17_run", map_gr, {"UL17_B", "UL17_C","UL17_D", "UL17_E", "UL17_F"}, {kRed+1,kBlue+1,kGreen-1,kOrange+1,kAzure+2}, {kFullStar, kFullTriangleDown,kFullTriangleUp,kFullSquare,kFullCircle});
 
 }
