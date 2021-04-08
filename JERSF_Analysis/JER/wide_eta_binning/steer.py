@@ -62,6 +62,7 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     os.makedirs("pdfy")
     os.makedirs("pdfy/MCTruth")
     os.makedirs("pdfy/SFs")
+    os.makedirs("pdfy/kValues")
     os.makedirs("pdfy/NSC_SFs")
     os.makedirs("pdfy/JERs")
     os.makedirs("pdfy/widths")
@@ -115,15 +116,15 @@ samples["UL17"] = ["BCDEF"]
 samples["UL18"] = ["ABCD"]
 
 
-samples["UL16preVFP"] = ["B", "C", "D", "E", "F"]
-samples["UL16postVFP"] = ["FG", "H"]
-samples["UL17"] = ["B", "C", "D", "E", "F"]
-samples["UL18"] = ["A", "B", "C", "D", "AB", "CD", "ABC"]
+# samples["UL16preVFP"] = ["B", "C", "D", "E", "F"]
+# samples["UL16postVFP"] = ["FG", "H"]
+# samples["UL17"] = ["B", "C", "D", "E", "F"]
+# samples["UL18"] = ["A", "B", "C", "D", "AB", "CD", "ABC"]
 
 
 
-samples["UL16preVFP"] = ["EF"]
-samples["UL17"] = ["EF"]
+# samples["UL16preVFP"] = ["EF"]
+# samples["UL17"] = ["EF"]
 
 
 
@@ -153,12 +154,12 @@ JECVersions["Legacy"] = ["Summer19Legacy"]
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
-systematics=["", "PU", "JEC", "alpha", "JER"]
+# systematics=["", "PU", "JEC", "alpha", "JER"]
 # systematics=["", "JER"]
 # systematics=["JER"]
 # systematics=["JEC"]
 # systematics=["PU", "alpha"]
-# systematics=[""]
+systematics=[""]
 
 
 studies = []

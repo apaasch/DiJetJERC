@@ -471,101 +471,25 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
   }
 }
 
-void PLOT_kVALUES(TString outdir, std::vector<double> eta_bins, vector<double> kNS_values, vector<double> kC_values, vector<double> kNS_errors, vector<double> kC_errors, bool isFE, bool isCorr){
-  cout << "PLOTS kVALUES " << endl;
-  int color_k = kBlack;
-  vector<double> kNSC_ratio, kNSC_diff, kNSC_add, kNSC_avg, kNSC_reso;
-  vector<double> kNSC_ratio_err, kNSC_diff_err, kNSC_add_err, kNSC_avg_err, kNSC_reso_err;
-  vector<double> eta_bin_center, eta_bin_width;
-
-  TString method, corr;
-  if(isFE) method = "FE";
-  else     method = "SM";
-  cout << isFE << " " << method << endl;
-
-
-  if(isCorr) corr = "correlated";
-  else       corr = "uncorrelated";
-
-  for(unsigned int i=0; i<eta_bins.size()-1; i++)
-  {
-    double bin_width = (eta_bins[i+1]-eta_bins[i])/2;
-    cout << "Left: " << setw(6) << eta_bins[i] << " | Right: " << setw(6) << eta_bins[i+1] << " | Center: " << setw(6) << eta_bins[i]+bin_width << endl;
-    eta_bin_center.push_back(eta_bins[i]+bin_width);
-    eta_bin_width.push_back(bin_width);
-  }
-
-  vector<TGraphErrors*> hists; // {hist_kNS, hist_kC, hist_kDiff, hist_kRatio, hist_kReso}
-  vector<TString> hists_name  = {"kNS", "kC", "Diff",   "ratio",  "Reso"};
-  vector<TString> hists_title = {"kNS", "kC", "kNS-kC", "kNS/kC", "(kNS-kC)/kC"};
-
-  cout << eta_bins.size() << endl;
-  cout << right;
-  cout << setw(8) << "\u03B7" << " | ";
-  cout << setw(17) << "kNS" << " | ";
-  cout << setw(17) << "kC" << " | ";
-  cout << setw(17) << "ratio" << " | ";
-  cout << setw(17) << "diff" << " | ";
-  cout << setw(17) << "reso" << endl;
-  for(unsigned int i=0; i<eta_bins.size()-1; i++)
-  {
-    kNSC_ratio.push_back(kNS_values[i]/kC_values[i]);
-    kNSC_diff.push_back(kNS_values[i]-kC_values[i]);
-    kNSC_reso.push_back(kNSC_diff[i]/kNS_values[i]);
-
-    // delta y(x1,x2) = x1er/x2+x2er*(x1/x2^2)
-    kNSC_ratio_err.push_back(kNSC_ratio[i]*(kNS_errors[i]/kNS_values[i]+kC_errors[i]/kC_values[i]));
-    kNSC_diff_err.push_back(kNS_errors[i]+kC_errors[i]);
-    kNSC_reso_err.push_back(kNSC_reso[i]*(kNSC_diff_err[i]/kNSC_diff[i]+kC_errors[i]/kC_values[i]));
-
-    cout << fixed;
-    cout << setprecision(4);
-    cout << setw(7) << eta_bin_center[i] << " | ";
-    cout << setw(7) << kNS_values[i]     << " +- ";
-    cout << setw(7) << kNS_errors[i]     << " | ";
-    cout << setw(7) << kC_values[i]      << " +- ";
-    cout << setw(7) << kC_errors[i]      << " | ";
-    cout << setw(7) << kNSC_ratio[i] << " +- ";
-    cout << setw(7) << kNSC_ratio_err[i] << " | ";
-    cout << setw(7) << kNSC_diff[i]  << " +- ";
-    cout << setw(7) << kNSC_diff_err[i]  << " | ";
-    cout << setw(7) << kNSC_reso[i]  << " +- ";
-    cout << setw(7) << kNSC_reso_err[i]  << endl;
-  }
-
-  vector<vector<double>> values = {kNS_values, kC_values, kNSC_diff,     kNSC_ratio,     kNSC_reso};
-  vector<vector<double>> errors = {kNS_errors, kC_errors, kNSC_diff_err, kNSC_ratio_err, kNSC_reso_err};
-
-  // cout << "Start Showning Number Values: " << endl;
-  for(auto value: values)
-  {
-    cout << value.size() << endl;
-  }
-
-  for(unsigned int j=0; j<values.size(); j++)
-  {
-    // cout << "In for Loop: " << hists_name[j] << " (j=" << j << ")" << endl;
-    TGraphErrors *gr = new TGraphErrors(values[j].size(), &(eta_bin_center[0]), &(values[j][0]), &(eta_bin_width[0]), &(errors[j][0]));
-    double min = gr->GetHistogram()->GetMinimum();
-    double max = gr->GetHistogram()->GetMaximum();
-    TCanvas* canv = tdrCanvas(hists_name[j], 0, 5, min-1.5, max+1.5, "#eta", hists_title[j]);
-    canv->SetTickx(0);
-    canv->SetTicky(0);
-    tdrDraw(gr, "P", kFullDotLarge);
-    canv -> Print(outdir+"pdfy/kValues/"+hists_name[j]+"_"+corr+"_"+method+".pdf","pdf");
-  }
-}
-
-void PLOT_NCS(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vector< TH1F* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE, bool isCorr) {
+void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vector< TH1F* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE, bool isCorr) {
 
   int color_data  = kBlue;
   int color_MC    = kRed;
   int color_NSC   = kGreen+2;
 
-  vector<double> kNS_values = {};
-  vector<double> kC_values  = {};
-  vector<double> kNS_errors = {};
-  vector<double> kC_errors  = {};
+  TString method, corr;
+  if(isFE) method = "FE";
+  else     method = "SM";
+  if(isCorr) corr = "correlated";
+  else       corr = "uncorrelated";
+  ofstream output_fit;
+  output_fit.open(outdir+"pdfy/kValues/"+corr+"_"+method+".txt");
+
+  output_fit << right;
+  output_fit << setw(7) << "eta[" << " " << setw(7) << "eta]" << " ";
+  output_fit << setw(7) << "N"    << " " << setw(7) << "Nerr" << " " << setw(7) << "S"   << " " << setw(7) << "Serr"   << " ";
+  output_fit << setw(7) << "C"    << " " << setw(7) << "Cerr" << " " << setw(7) << "kNS" << " " << setw(7) << "kNSerr" << " ";
+  output_fit << setw(7) << "kC"   << " " << setw(8) << "kCerr\n";
 
   for( unsigned int m = 0; m < h_data.size(); m++ ){
     h_data.at(m)->SetStats(kFALSE);
@@ -577,10 +501,11 @@ void PLOT_NCS(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     TH1F* dtERR = (TH1F*)h_data.at(m)->Clone();
     MCFIT(h_MC.at(m), mcERR, N, S, C, Nerr, Serr, Cerr, mcChi, mcNDF);
     DTFIT(h_data.at(m), dtERR, N, S, C, kNS, kC, Nerr, Serr, Cerr, kNSerr, kCerr, dtChi, dtNDF, m, isFE);
-    kNS_values.push_back(kNS);
-    kC_values.push_back(kC);
-    kNS_errors.push_back(kNSerr);
-    kC_errors.push_back(kCerr);
+    output_fit     << fixed << setprecision(5);
+    output_fit     << setw(7) << eta_bins[m] << " " << setw(7) << eta_bins[m+1] << " ";
+    output_fit     << setw(7) << N           << " " << setw(7) << Nerr          << " " << setw(7) << S    << " " << setw(7) << Serr   << " ";
+    output_fit     << setw(7) << C           << " " << setw(7) << Cerr          << " " << setw(7) << kNS  << " " << setw(7) << kNSerr << " ";
+    output_fit     << setw(7) << kC          << " " << setw(7) << kCerr         << "\n";
     if (h_data.at(m)-> GetFunction("dtFIT")!=0) h_data.at(m)-> GetFunction("dtFIT")->SetLineColor(color_data+2);
     if (h_MC.at(m)-> GetFunction("mcFIT")!=0) h_MC.at(m)-> GetFunction("mcFIT")->SetLineColor(color_MC+2);
     mcERR->SetFillColorAlpha(color_MC+2,0.35);
@@ -670,9 +595,6 @@ void PLOT_NCS(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     // canv -> Print(outdir+"pdfy/NSC_SFs/NSC"+canvName+".png","png");
     canv->Write();
   }
-
-  PLOT_kVALUES(outdir, eta_bins, kNS_values, kC_values, kNS_errors, kC_errors, isFE, isCorr);
-
 }
 
 // ------------------------------
@@ -1366,8 +1288,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
   fMCTruth.Close();
 
-  bool plot_all = true;
-  // bool plot_all = false;
+  // bool plot_all = true;
+  bool plot_all = false;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
