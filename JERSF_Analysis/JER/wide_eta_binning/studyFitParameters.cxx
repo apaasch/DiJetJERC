@@ -24,6 +24,9 @@ typedef std::map<TString, TString> MapTS;
 typedef std::map<TString, MapTS> MapDTS;
 
 TString lumiRunII = "137";
+VecD eta     = {0.6525, 0.957, 1.218, 1.5225, 1.835, 1.9865, 2.1825, 2.411, 2.575, 2.7515, 2.9085, 3.0515, 4.165};
+VecD eta_err = {0.1305, 0.174, 0.087, 0.2175, 0.095, 0.0565, 0.1395, 0.089, 0.075, 0.1015, 0.0555, 0.0875, 1.026};
+bool debug = true;
 
 // ---------------------------------------------------------------------------------
 MapVD GetFitParameters(TString path_, TString filename_) {
@@ -32,17 +35,18 @@ MapVD GetFitParameters(TString path_, TString filename_) {
   if (gSystem->AccessPathName(filename)) throw runtime_error("check: "+filename);
 
   MapVD parameters;
-  for(const auto& mode: {"eta_center","eta_err","N","Nerr","S","Serr","C","Cerr","kNS","kNSerr","kC","kCerr"}) {parameters[mode] = {}; parameters[mode].clear();}
+  for(const auto& mode: {"eta","eta_err","N","Nerr","S","Serr","C","Cerr","kNS","kNSerr","kC","kCerr"}) {parameters[mode] = {}; parameters[mode].clear();}
 
   string line;
   ifstream myfile(filename, ios::in);
   while (!myfile.eof()) {
     std::getline(myfile, line);
+    if(debug) cout << line << endl;
     if (line.length()==0) continue;
     if (line.find("kNS")!=std::string::npos) continue; // skip first line
     VecD values; TString tok; int from = 0;
     while (((TString)line).Tokenize(tok, from, " ")) {values.push_back(tok.Atof());} // cuts string
-    parameters["eta_center"].push_back((values[1]+values[0])/2);
+    parameters["eta"].push_back((values[1]+values[0])/2);
     parameters["eta_err"].push_back((values[1]-values[0])/2);
     parameters["N"].push_back(values[2]);
     parameters["Nerr"].push_back(values[3]);
@@ -62,9 +66,7 @@ MapVD GetFitParameters(TString path_, TString filename_) {
 // ---------------------------------------------------------------------------------
 MapVDD GetPtStudies(MapVDD parameters) {
 
-  MapVD  single_studies;
-  MapVDD all_studies;
-
+  MapVDD studies;
   for(map<TString,MapVD>::iterator year = parameters.begin(); year != parameters.end(); ++year)
   {
     TString key_year = year->first;
@@ -74,22 +76,26 @@ MapVDD GetPtStudies(MapVDD parameters) {
     VecD vCerr  = year->second["kCerr"];
 
     for(unsigned int value=0; value<vNS.size(); value++){
-      single_studies["Ratio"].push_back(vNS[value]/vC[value]);
-      single_studies["RatioErr"].push_back(sqrt(pow(vNSerr[value]/vNS[value],2)+pow(vCerr[value]/vC[value],2)));
+      studies[key_year]["Ratio"].push_back(vNS[value]/vC[value]);
+      studies[key_year]["Ratioerr"].push_back(sqrt(pow(vNSerr[value]/vNS[value],2)+pow(vCerr[value]/vC[value],2)));
 
-      single_studies["Difference"].push_back(vNS[value]-vC[value]);
-      single_studies["DifferenceErr"].push_back(sqrt(pow(vNSerr[value],2)+pow(vCerr[value],2)));
+      studies[key_year]["Diff"].push_back(vNS[value]-vC[value]);
+      studies[key_year]["Differr"].push_back(sqrt(pow(vNSerr[value],2)+pow(vCerr[value],2)));
     }
-
-    all_studies[key_year] = single_studies;
   }
+  return studies;
+}
 
-  return all_studies;
+
+// ---------------------------------------------------------------------------------
+void printVector(VecD vector) {
+  cout << "\nSize: " << vector.size() << endl;
+  for(double value: vector) cout << value << endl;
+  cout << endl;
 }
 
 // ---------------------------------------------------------------------------------
-void PlotValue(TString yname, TString year, TString method, TString corr, TString save, VecD eta, VecD eta_err, VecD values, VecD values_err, double eta_max = 5.2, double ymin = 0.5, double ymax = 1.5) {
-  setTDRStyle();
+void PlotValue(TString yname, TString year, TString method, TString save, VecD eta, VecD eta_err, VecD values, VecD values_err, double ymin = 0.5, double ymax = 1.5, double eta_max = 5.2) {
   // int W = (square ? 600 : 800); int H = (square ? 600 : 600);
   // int W = 600; int H = 600;
   // TCanvas *canv = new TCanvas(canvName,canvName,50,50,W,H);
@@ -97,14 +103,24 @@ void PlotValue(TString yname, TString year, TString method, TString corr, TStrin
   // float T = 0.08*H_ref; float B = 0.12*H_ref; float L = 0.12*W_ref; float R = 0.04*W_ref;
   // canv->SetFillColor(0); canv->SetBorderMode(0); canv->SetFrameFillStyle(0); canv->SetFrameBorderMode(0);
   // canv->SetLeftMargin( L/W ); canv->SetRightMargin( R/W ); canv->SetTopMargin( T/H ); canv->SetBottomMargin( B/H );
-
   TGraphErrors *gr = new TGraphErrors(eta.size(), &(eta[0]), &(values[0]), &(eta_err[0]), &(values_err[0]));
 
   TCanvas* canv = tdrCanvas(yname+year, 0, eta_max, ymin, ymax, "#eta", yname);
   canv->SetTickx(0);
   canv->SetTicky(0);
   tdrDraw(gr, "P", kFullDotLarge);
-  canv -> Print(save+"/"+yname+"_"+corr+"_"+method+".pdf","pdf");
+  canv->Print(save+"/"+yname+"_"+method+".pdf","pdf");
+}
+
+// ---------------------------------------------------------------------------------
+void PlotValue(TString study, TString year, TString method, MapTS save, MapVDD map, double ymin = 0.5, double ymax = 1.5, double eta_max = 5.2) {
+
+  TGraphErrors *gr = new TGraphErrors(eta.size(), &(map[year]["eta"][0]), &(map[year][study][0]), &(map[year]["eta_err"][0]), &(map[year][study+"err"][0]));
+  TCanvas* canv = tdrCanvas(study+year, 0, eta_max, ymin, ymax, "#eta", study);
+  canv->SetTickx(0);
+  canv->SetTicky(0);
+  tdrDraw(gr, "P", kFullDotLarge);
+  canv->Print(save[year]+"/"+study+"_"+method+".pdf","pdf");
 }
 
 // ---------------------------------------------------------------------------------
@@ -122,13 +138,22 @@ void studyFitParameters(){
   lumi_sqrtS = "13 TeV";
   lumi_13TeV = "RunII Legacy, "+lumiRunII+" fb^{-1}";
 
-  MapVDD map_FIT;
-  map_FIT["UL16preVFP"]  = GetFitParameters(path_+"eta_JER/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/", "correlated_FE");
-  map_FIT["UL16postVFP"] = GetFitParameters(path_+"eta_JER/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/", "correlated_FE");
-  map_FIT["UL17"]        = GetFitParameters(path_+"eta_JER/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/", "correlated_FE");
-  map_FIT["UL18"]        = GetFitParameters(path_+"eta_JER/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/", "correlated_FE");
+  if(debug) cout << "Getting Parameters for FE correlated ..." << endl;
+  MapVDD map_FIT_FE_corr;
+  map_FIT_FE_corr["UL16preVFP"]  = GetFitParameters(path_+"eta_JER/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/", "correlated_FE");
+  map_FIT_FE_corr["UL16postVFP"] = GetFitParameters(path_+"eta_JER/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/", "correlated_FE");
+  map_FIT_FE_corr["UL17"]        = GetFitParameters(path_+"eta_JER/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/", "correlated_FE");
+  map_FIT_FE_corr["UL18"]        = GetFitParameters(path_+"eta_JER/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/", "correlated_FE");
 
-  MapVDD map_PtStudies = GetPtStudies(map_FIT);
+  if(debug) cout << "Getting Parameters for SM correlated ..." << endl;
+  MapVDD map_FIT_SM_corr;
+  map_FIT_SM_corr["UL16preVFP"]  = GetFitParameters(path_+"eta_JER/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/", "correlated_SM");
+  map_FIT_SM_corr["UL16postVFP"] = GetFitParameters(path_+"eta_JER/UL16postVFP/Summer19UL16_V2/AK4CHS/standard/QCDHT/RunFGH/", "correlated_SM");
+  map_FIT_SM_corr["UL17"]        = GetFitParameters(path_+"eta_JER/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/", "correlated_SM");
+  map_FIT_SM_corr["UL18"]        = GetFitParameters(path_+"eta_JER/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/", "correlated_SM");
+
+  MapVDD map_PtStudies_FE_corr = GetPtStudies(map_FIT_FE_corr);
+  MapVDD map_PtStudies_SM_corr = GetPtStudies(map_FIT_SM_corr);
 
   MapTS map_SAVE;
   map_SAVE["UL16preVFP"]  = path_+"eta_JER/UL16preVFP/Summer19UL16APV_V3/AK4CHS/standard/QCDHT/RunBCDEF/pdfy/kValues";
@@ -136,6 +161,65 @@ void studyFitParameters(){
   map_SAVE["UL17"]        = path_+"eta_JER/UL17/Summer19UL17_V5/AK4CHS/standard/QCDHT/RunBCDEF/pdfy/kValues";
   map_SAVE["UL18"]        = path_+"eta_JER/UL18/Summer19UL18_V5/AK4CHS/standard/QCDHT/RunABCD/pdfy/kValues";
 
-  PlotValue("Ratio", "UL18", "FE", "correlated", map_SAVE["UL18"], map_FIT["UL18"]["eta_center"], map_FIT["UL18"]["eta_err"], map_PtStudies["UL18"]["Ratio"], map_PtStudies["UL18"]["RatioErr"]);
+  cout << "Starting with UL16preVFP ... " << endl;
+  PlotValue("Ratio", "UL16preVFP", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
+  PlotValue("N",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
+  PlotValue("C",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
 
+  PlotValue("Ratio", "UL16preVFP", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75);
+  PlotValue("N",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50);
+  PlotValue("C",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00);
+
+  cout << "Starting with UL16postVFP ... " << endl;
+  PlotValue("Ratio", "UL16postVFP", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
+  PlotValue("N",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
+  PlotValue("C",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+
+  PlotValue("Ratio", "UL16postVFP", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75);
+  PlotValue("N",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50);
+  PlotValue("C",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00);
+
+  cout << "Starting with UL17 ... " << endl;
+  PlotValue("Ratio", "UL17", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
+  PlotValue("N",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
+  PlotValue("C",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+
+  PlotValue("Ratio", "UL17", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75);
+  PlotValue("N",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50);
+  PlotValue("C",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00);
+
+  cout << "Starting with UL18 ... " << endl;
+  PlotValue("Ratio", "UL18", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
+  PlotValue("N",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
+  PlotValue("C",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+
+  PlotValue("Ratio", "UL18", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75);
+  PlotValue("N",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50);
+  PlotValue("S",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50);
+  PlotValue("C",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16);
+  PlotValue("kNS",   "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50);
+  PlotValue("kC",    "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00);
+
+  printVector(map_PtStudies_SM_corr["UL18"]["Ratio"]);
 }
