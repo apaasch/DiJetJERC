@@ -21,7 +21,9 @@
 #include "functions.C"
 #include "tdrstyle_all.h"
 
-double min_fit = 100.;
+// double min_fit = 100.;
+// double max_fit = 1200.;
+double min_fit = 70.;
 double max_fit = 1200.;
 
 // Code by Andrea Malara
