@@ -76,6 +76,8 @@ struct fit_data{
 
 fit_data data_;
 
+TString dtos(double number, int precision);
+void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info);
 void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBins, int AlphaBins, int etaShift);
 void histMeanPt( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths );
 void histWidthAsym_old( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry , std::vector<std::vector<std::vector<double> > > &Widths, std::vector<std::vector<std::vector<double> > > &WidthsError , bool fill_all );
@@ -101,6 +103,24 @@ void fitLin( TH1F &hist, double &width, double &error );
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 bool removePointsforFit(bool isFE, int m, int p);
 void chi2_calculation(Double_t& fval, Double_t* p);
+
+TString dtos(double number, int precision)
+{
+  stringstream stream;
+  stream << std::fixed << std::setprecision(precision) << number;
+  return stream.str();
+}
+
+void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
+  FitPar << info << "\n";
+  FitPar << "N = " << setw(8) << fit->GetParameter(0) << " \u00B1 " << setw(8) << fit->GetParError(0) << "\n";
+  FitPar << "S = " << setw(8) << fit->GetParameter(1) << " \u00B1 " << setw(8) << fit->GetParError(1) << "\n";
+  FitPar << "C = " << setw(8) << fit->GetParameter(2) << " \u00B1 " << setw(8) << fit->GetParError(2) << "\n";
+  if(info.Contains("NSxPC")) FitPar << "P = " << setw(8) << fit->GetParameter(3) << " \u00B1 " << setw(8) << fit->GetParError(3) << "\n";
+  FitPar << "\u03A7 = " << setw(8) << fit->GetChisquare() << "\n";
+  FitPar << "NDF = " << setw(3) << fit->GetNDF() << "\n";
+  FitPar << "\n";
+}
 
 void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBins, int AlphaBins, int etaShift) {
   for( int m = etaShift; m < etaBins+etaShift; m++ ) {
