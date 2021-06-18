@@ -147,7 +147,7 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 changes.append(["user", "amalara", "amalara", os.environ["USER"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
-                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*0.9*time))+'"'])
+                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(40))+'"']) # newNumber[process]*0.9*time
                 changes.append(["<!ENTITY", 'LUMI_FILE', 'lumifile.root', lumi_file[year]])
                 changes.append(["<!ENTITY", "YEAR", "year", year])
                 changes.append(["<Cycle", "TargetLumi", "defaultValue", TargetLumi[year]])
@@ -175,8 +175,9 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                     changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
                 if "AK8" in newJetLabel:
                     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
-                    changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8Puppi"'])
                     changes.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"slimmedGenJetsAK8"'])
+                    if "Puppi" in newJetLabel: changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8Puppi"'])
+                    if "CHS" in newJetLabel: changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8CHS"'])
                 # if "QCD" in process:
                 #     changes.append(["<!ENTITY", "PILEUP_DIRECTORY ", "MyMCPileupHistogram" , "MyMCPileupHistogram_"+process])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
