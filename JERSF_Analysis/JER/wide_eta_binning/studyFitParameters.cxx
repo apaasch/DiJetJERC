@@ -90,29 +90,39 @@ MapVD GetFitParameters(TString path_, TString filename_) {
   if (gSystem->AccessPathName(filename)) throw runtime_error("check: "+filename);
 
   MapVD parameters;
-  for(const auto& mode: {"eta","eta_err","N","Nerr","S","Serr","C","Cerr","kNS","kNSerr","kC","kCerr"}) {parameters[mode] = {}; parameters[mode].clear();}
+  for(const auto& mode: {"eta","eta_err","N","Nerr","S","Serr","C","Cerr","P","Perr","kNS","kNSerr","kC","kCerr"}) {parameters[mode] = {}; parameters[mode].clear();}
 
   string line;
   ifstream myfile(filename, ios::in);
+  int i = 0;
+  bool isP = false;
   while (!myfile.eof()) {
+    i++;
     std::getline(myfile, line);
-    if(debug) cout << line << endl;
     if (line.length()==0) continue;
+    if(debug) cout << i << "    " << line << endl;
+    if (i==1&&line.find("P")!=std::string::npos) isP=true; // skip first line
     if (line.find("kNS")!=std::string::npos) continue; // skip first line
+    if(debug) cout << "is NSxPC: " << isP << endl;
     VecD values; TString tok; int from = 0;
     while (((TString)line).Tokenize(tok, from, " ")) {values.push_back(tok.Atof());} // cuts string
-    parameters["eta"].push_back((values[1]+values[0])/2);
-    parameters["eta_err"].push_back((values[1]-values[0])/2);
-    parameters["N"].push_back(values[2]);
-    parameters["Nerr"].push_back(values[3]);
-    parameters["S"].push_back(values[4]);
-    parameters["Serr"].push_back(values[5]);
-    parameters["C"].push_back(values[6]);
-    parameters["Cerr"].push_back(values[7]);
-    parameters["kNS"].push_back(values[8]);
-    parameters["kNSerr"].push_back(values[9]);
-    parameters["kC"].push_back(values[10]);
-    parameters["kCerr"].push_back(values[11]);
+    int i = 1; // Necessary for isP
+    parameters["eta"].push_back((values[i]+values[i-1])/2);
+    parameters["eta_err"].push_back((values[i]-values[i-1])/2); i++;
+    parameters["N"].push_back(values[i]); i++;
+    parameters["Nerr"].push_back(values[i]); i++;
+    parameters["S"].push_back(values[i]); i++;
+    parameters["Serr"].push_back(values[i]); i++;
+    parameters["C"].push_back(values[i]); i++;
+    parameters["Cerr"].push_back(values[i]); i++;
+    if(isP){
+      parameters["P"].push_back(values[i]); i++;
+      parameters["Perr"].push_back(values[i]); i++;
+    }
+    parameters["kNS"].push_back(values[i]); i++;
+    parameters["kNSerr"].push_back(values[i]); i++;
+    parameters["kC"].push_back(values[i]); i++;
+    parameters["kCerr"].push_back(values[i]);
   }
   myfile.close();
   return parameters;
@@ -146,12 +156,21 @@ MapVDD GetPtStudies(MapVDD parameters) {
 }
 
 // =======================================================================================================
-void PlotValue(TString study, TString year, TString method, MapTS save, MapVDD map, double ymin = 0.5, double ymax = 1.5, double eta_max = 5.2) {
+void AddReference(MapVD reference, TString study){
+  TGraphErrors *add = new TGraphErrors(reference[study].size(), &(reference["eta"][0]), &(reference[study][0]), &(reference["dummy"][0]), &(reference["dummy"][0]));
+  add->SetMarkerStyle(kFullDotLarge);
+  add->SetMarkerColor(kRed);
+  add->Draw("P SAME");
+}
+
+// =======================================================================================================
+void PlotValue(TString study, TString year, TString method, MapTS save, MapVDD map, MapVD reference, double ymin = 0.5, double ymax = 1.5, double eta_max = 5.2) {
   TGraphErrors *gr = new TGraphErrors(map[year]["eta"].size(), &(map[year]["eta"][0]), &(map[year][study][0]), &(map[year]["eta_err"][0]), &(map[year][study+"err"][0]));
   TCanvas* canv = tdrCanvas(study+year, 0, eta_max, ymin, ymax, "#eta", study);
   canv->SetTickx(0);
   canv->SetTicky(0);
   tdrDraw(gr, "P", kFullDotLarge);
+  if(reference.size()!=0) AddReference(reference, study);
   canv->Print(save[year]+"/pdfy/kValues/"+study+"_"+method+".pdf","pdf");
 }
 
@@ -287,7 +306,6 @@ void FitGaussian(TH1F* hist, double left, double right){
   TF1 *gauss = new TF1("gauss","gaus",left,right);
   gauss->SetParameters(hist->GetMaximum(), hist->GetMean(), hist->GetRMS() );
   hist->Fit("gauss", "RMQ+");
-  cout << left << " " << right << endl;
 }
 
 // =======================================================================================================
@@ -353,6 +371,23 @@ void PlotUncert(MapH hists, TString path, MapD settings, TString uncert) {
 
 void studyFitParameters(){
 
+  MapVD referenceUL18, refDummy;
+  referenceUL18["N_ref"]={   1.769,   2.738,   3.152,   3.531,   3.589,   3.705,   3.989,   5.831,     6.041,     9.419,    10.52,   9.814,    5.616};
+  referenceUL18["S_ref"]={   1.034,  0.8313,  0.8212,  0.9372,   1.327,   1.324,   1.427,  0.9054,     1.288,    0.2345,   0.1805, 0.00034,   0.2159};
+  referenceUL18["C_ref"]={ 0.04242, 0.04231, 0.04697, 0.05745, 0.06284, 0.05218, 0.05677, 0.05601,   0.05329, 4.562e-07, 5.12e-06,  0.1636,  0.05147};
+  referenceUL18["P_ref"]={  -1.016, -0.9279, -0.8962, -0.9065,   -1.05,  -1.051,  -1.084,  -0.887,     -1.07,   -0.4472,  -0.1993,  -1.239,  -0.3009};
+  referenceUL18["eta_ref"]={  0.25,    0.65,    0.95,     1.2,     1.5,     1.8,     2.0,     2.2,       2.4,      2.65,      2.9,     3.1,     3.95};
+  //                       0.0|     0.5|     0.8|     1.1|     1.3|     1.7|     1.9|     2.1|       2.3|       2.5|      2.8|     3.0|      3.2|
+  //                             /        /       /        /        /        /        /        /          /     |          |        |       |
+  //                            /        /       /        /        /        /        /        /          /      |          |        |       |
+  //                           /        /       /        /        /        /        /        /          /       |          |        |       |
+  referenceUL18["N"]={       2.738,   3.152,   3.531,   3.589,   3.705,   3.989,   5.831,   6.041,     9.419,     9.419,    10.52,    9.814,   5.616};
+  referenceUL18["S"]={      0.8313,  0.8212,  0.9372,   1.327,   1.324,   1.427,  0.9054,   1.288,    0.2345,    0.2345,   0.1805,  0.00034,  0.2159};
+  referenceUL18["C"]={     0.04231, 0.04697, 0.05745, 0.06284, 0.05218, 0.05677, 0.05601, 0.05329, 4.562e-07, 4.562e-07, 5.12e-06,   0.1636, 0.05147};
+  referenceUL18["P"]={     -0.9279, -0.8962, -0.9065,   -1.05,  -1.051,  -1.084,  -0.887,   -1.07,   -0.4472,   -0.4472,  -0.1993,   -1.239, -0.3009};
+  referenceUL18["eta"]={    0.6525,   0.957,   1.218,  1.5225,   1.835,  1.9865,  2.1825,   2.411,     2.575,    2.7515,   2.9085,   3.0515,   4.165};
+  referenceUL18["dummy"]={       0,       0,       0,       0,       0,       0,       0,       0,         0,         0,        0,        0,       0};
+
   ////////////////////////////////////////////////////////////////////////////
   //    I load all parameters I will need                                   //
   ////////////////////////////////////////////////////////////////////////////
@@ -394,64 +429,65 @@ void studyFitParameters(){
   ////////////////////////////////////////////////////////////////////////////
 
   cout << "Starting with UL16preVFP ... " << endl;
-  PlotValue("Ratio", "UL16preVFP", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
-  PlotValue("N",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
-  PlotValue("S",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
-  PlotValue("C",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
-  PlotValue("kNS",   "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
-  PlotValue("kC",    "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+  PlotValue("Ratio", "UL16preVFP", "correlated_FE", map_SAVE, map_PtStudies_FE_corr, refDummy,   0.25,  1.75);
+  PlotValue("N",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy, -20.00, 20.00);
+  PlotValue("S",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   0.50,  6.00);
+  PlotValue("C",     "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,  -0.05,  0.16);
+  PlotValue("kNS",   "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   1.00,  1.50);
+  PlotValue("kC",    "UL16preVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   0.70,  2.00);
 
-  PlotValue("Ratio", "UL16preVFP", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75, 2.322);
-  PlotValue("N",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50, 2.322);
-  PlotValue("S",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50, 2.322);
-  PlotValue("C",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16, 2.322);
-  PlotValue("kNS",   "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50, 2.322);
-  PlotValue("kC",    "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00, 2.322);
+  PlotValue("Ratio", "UL16preVFP", "correlated_SM", map_SAVE, map_PtStudies_SM_corr, refDummy,   0.25,  1.75, 2.322);
+  PlotValue("N",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy, -20.00, 20.00, 2.322);
+  PlotValue("S",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.50,  6.00, 2.322);
+  PlotValue("C",     "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,  -0.05,  0.16, 2.322);
+  PlotValue("kNS",   "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   1.00,  1.50, 2.322);
+  PlotValue("kC",    "UL16preVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.70,  2.00, 2.322);
 
   cout << "Starting with UL16postVFP ... " << endl;
-  PlotValue("Ratio", "UL16postVFP", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
-  PlotValue("N",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
-  PlotValue("S",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
-  PlotValue("C",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
-  PlotValue("kNS",   "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
-  PlotValue("kC",    "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+  PlotValue("Ratio", "UL16postVFP", "correlated_FE", map_SAVE, map_PtStudies_FE_corr, refDummy,   0.25,  1.75);
+  PlotValue("N",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy, -20.00, 20.00);
+  PlotValue("S",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   0.50,  6.00);
+  PlotValue("C",     "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,  -0.05,  0.16);
+  PlotValue("kNS",   "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   1.00,  1.50);
+  PlotValue("kC",    "UL16postVFP", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   0.70,  2.00);
 
-  PlotValue("Ratio", "UL16postVFP", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75, 2.322);
-  PlotValue("N",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50, 2.322);
-  PlotValue("S",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50, 2.322);
-  PlotValue("C",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16, 2.322);
-  PlotValue("kNS",   "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50, 2.322);
-  PlotValue("kC",    "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00, 2.322);
+  PlotValue("Ratio", "UL16postVFP", "correlated_SM", map_SAVE, map_PtStudies_SM_corr, refDummy,   0.25,  1.75, 2.322);
+  PlotValue("N",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy, -20.00, 20.00, 2.322);
+  PlotValue("S",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.50,  6.00, 2.322);
+  PlotValue("C",     "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,  -0.05,  0.16, 2.322);
+  PlotValue("kNS",   "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   1.00,  1.50, 2.322);
+  PlotValue("kC",    "UL16postVFP", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.70,  2.00, 2.322);
 
   cout << "Starting with UL17 ... " << endl;
-  PlotValue("Ratio", "UL17", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
-  PlotValue("N",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
-  PlotValue("S",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
-  PlotValue("C",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
-  PlotValue("kNS",   "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
-  PlotValue("kC",    "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+  PlotValue("Ratio", "UL17", "correlated_FE", map_SAVE, map_PtStudies_FE_corr, refDummy,   0.25,  1.75);
+  PlotValue("N",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy, -20.00, 20.00);
+  PlotValue("S",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   0.50,  6.00);
+  PlotValue("C",     "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,  -0.05,  0.16);
+  PlotValue("kNS",   "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   1.00,  1.50);
+  PlotValue("kC",    "UL17", "correlated_FE", map_SAVE, map_FIT_FE_corr,       refDummy,   0.70,  2.00);
 
-  PlotValue("Ratio", "UL17", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75, 2.322);
-  PlotValue("N",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50, 2.322);
-  PlotValue("S",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50, 2.322);
-  PlotValue("C",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16, 2.322);
-  PlotValue("kNS",   "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50, 2.322);
-  PlotValue("kC",    "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00, 2.322);
+  PlotValue("Ratio", "UL17", "correlated_SM", map_SAVE, map_PtStudies_SM_corr, refDummy,   0.25,  1.75, 2.322);
+  PlotValue("N",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy, -20.00, 20.00, 2.322);
+  PlotValue("S",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.50,  6.00, 2.322);
+  PlotValue("C",     "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,  -0.05,  0.16, 2.322);
+  PlotValue("kNS",   "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   1.00,  1.50, 2.322);
+  PlotValue("kC",    "UL17", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.70,  2.00, 2.322);
 
   cout << "Starting with UL18 ... " << endl;
-  PlotValue("Ratio", "UL18", "correlated_FE", map_SAVE, map_PtStudies_FE_corr,   0.25,  1.75);
-  PlotValue("N",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       -10.00, 10.50);
-  PlotValue("S",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.50,  1.50);
-  PlotValue("C",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,        -0.05,  0.16);
-  PlotValue("kNS",   "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,         1.00,  1.50);
-  PlotValue("kC",    "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,         0.70,  2.00);
+  PlotValue("Ratio", "UL18", "correlated_FE", map_SAVE, map_PtStudies_FE_corr, referenceUL18,   0.03,  3.00);
+  PlotValue("N",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       referenceUL18, -20.00, 20.00);
+  PlotValue("S",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       referenceUL18,   0.50,  2.50);
+  PlotValue("C",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       referenceUL18,  -0.05,  0.16);
+  PlotValue("P",     "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       referenceUL18,  -2.00, -0.00);
+  PlotValue("kNS",   "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       referenceUL18,   1.00,  1.50);
+  PlotValue("kC",    "UL18", "correlated_FE", map_SAVE, map_FIT_FE_corr,       referenceUL18,   0.70,  2.00);
 
-  PlotValue("Ratio", "UL18", "correlated_SM", map_SAVE, map_PtStudies_SM_corr,   0.25,  1.75, 2.322);
-  PlotValue("N",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       -10.00, 10.50, 2.322);
-  PlotValue("S",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.50,  1.50, 2.322);
-  PlotValue("C",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,        -0.05,  0.16, 2.322);
-  PlotValue("kNS",   "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,         1.00,  1.50, 2.322);
-  PlotValue("kC",    "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,         0.70,  2.00, 2.322);
+  PlotValue("Ratio", "UL18", "correlated_SM", map_SAVE, map_PtStudies_SM_corr, refDummy,   0.25,  1.75, 2.322);
+  PlotValue("N",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy, -20.00, 20.00, 2.322);
+  PlotValue("S",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.50,  6.00, 2.322);
+  PlotValue("C",     "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,  -0.05,  0.16, 2.322);
+  PlotValue("kNS",   "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   1.00,  1.50, 2.322);
+  PlotValue("kC",    "UL18", "correlated_SM", map_SAVE, map_FIT_SM_corr,       refDummy,   0.70,  2.00, 2.322);
 
   ////////////////////////////////////////////////////////////////////////////
   //    I load all values for the Error studies                             //
