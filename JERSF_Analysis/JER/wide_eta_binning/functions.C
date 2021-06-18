@@ -31,6 +31,12 @@ TString labeldata = "Data";
 //TString labeldata = "Smeared MC";
 TString sep = "|";
 
+// Functions
+TString fNSC      = "TMath::Sqrt( ([0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )";
+TString fNSCsign  = "TMath::Sqrt( (TMath::Sign(1, [0])*[0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )";
+TString fNSxPC    = "TMath::Sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[3])+[2]*[2])";
+TString fNSxPCdiv = "TMath::Sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[3])+[2]*[2]/100)";
+
 struct fit_data{
   // x, y values:
   std::vector<double> x_val, y_val;
@@ -77,7 +83,9 @@ struct fit_data{
 fit_data data_;
 
 TString dtos(double number, int precision);
+void SetBinsToZero(TGraphErrors* graph, double bin);
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info);
+void RemoveAsymBinsFromJER(TH1F* hist, double bin);
 void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBins, int AlphaBins, int etaShift);
 void histMeanPt( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths );
 void histWidthAsym_old( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry , std::vector<std::vector<std::vector<double> > > &Widths, std::vector<std::vector<std::vector<double> > > &WidthsError , bool fill_all );
@@ -104,11 +112,61 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 bool removePointsforFit(bool isFE, int m, int p);
 void chi2_calculation(Double_t& fval, Double_t* p);
 
+TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
+TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize);
+TF1* GetFitsRatio(TF1* fit1, TF1* fit2, double ptmin, int color, TString func);
+
 TString dtos(double number, int precision)
 {
   stringstream stream;
   stream << std::fixed << std::setprecision(precision) << number;
   return stream.str();
+}
+
+TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err){
+  vector<double> xvalues = {};
+  vector<double> yvalues = {};
+  vector<double> yerrors = {};
+  vector<double> dummy = {};
+  for(unsigned int i=1; i<=hist->GetNbinsX(); i ++){
+    if(hist->GetBinContent(i)==0) continue;
+    // cout << hist->GetTitle() << "   " << hist->GetBinContent(i) << endl;
+    xvalues.push_back(hist->GetXaxis()->GetBinCenter(i));
+    yvalues.push_back(hist->GetBinContent(i));
+    yerrors.push_back(hist->GetBinError(i)+extend_err);
+    dummy.push_back(0);
+  }
+  // cout << " " << xvalues.size() << " " << yvalues.size() << " " << yerrors.size() << " " << dummy.size() << endl;
+  TGraphErrors* MC_graph = new TGraphErrors(xvalues.size(), &xvalues[0], &yvalues[0], &dummy[0], &yerrors[0]);
+  return MC_graph;
+}
+
+TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize = 1){
+  TH1F* h_ratio = (TH1F*) hist->Clone();
+  // delete h_ratio->GetListOfFunctions()->FindObject("mcFIT");
+  // delete h_ratio->GetFunction("mcFIT");
+  for(unsigned int bin = 1; bin <= hist->GetNbinsX(); bin++){
+    double pt    = hist->GetXaxis()->GetBinCenter(bin);
+    double width = hist->GetBinContent(bin);
+    double value = fit->Eval(pt);
+    double ratio = width/value;
+    h_ratio->SetBinContent(bin, ratio);
+  }
+  h_ratio->SetMarkerSize(MarkerSize);
+  h_ratio->SetMarkerStyle(kFullCircle);
+
+  return h_ratio;
+}
+
+void RemoveAsymBinsFromJER(TH1F* hist, double bin){
+  int count_bins = 0;
+  for(unsigned int i=0; i<hist->GetNbinsX(); i++)
+  {
+    if(hist->GetBinContent(i)==0) continue;
+    // cout << i << " " << hist->GetXaxis()->GetBinCenter(i) << endl;
+    count_bins++;
+  }
+  // cout << count_bins << endl;
 }
 
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
@@ -975,4 +1033,31 @@ TH2Poly* fill_2Dhist( TString name1, std::vector< std::vector< double > > SFs, s
   }
   //    cout<<"END pof 2D fill"<<endl;
   return h2;
+}
+
+
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
+TF1* GetFitsRatio(TF1* fit1, TF1* fit2, double ptmin, int color, TString func){
+  bool isPOW = func.EqualTo(fNSxPC);
+  bool isSIG = func.EqualTo(fNSCsign);
+  TString f1 = "TMath::Sqrt( [0]*[0]/(x*x)+[1]*[1]/x+[2]*[2] )";
+  TString f2 = "TMath::Sqrt( [3]*[3]/(x*x)+[4]*[4]/x+[5]*[5] )";
+  if(isSIG) f1 = "TMath::Sqrt( TMath::Sign(1, [0])*[0]*[0]/(x*x)+[1]*[1]/x+[2]*[2] )";
+  if(isPOW) f1 = "TMath::Sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[6])+[2]*[2])";
+
+  TF1* ratio = new TF1("ratio_", f1+"/"+f2, ptmin, 1200);
+  ratio->SetParameter(0, fit1->GetParameter(0));
+  ratio->SetParameter(1, fit1->GetParameter(1));
+  ratio->SetParameter(2, fit1->GetParameter(2));
+  ratio->SetParameter(3, fit2->GetParameter(0));
+  ratio->SetParameter(4, fit2->GetParameter(1));
+  ratio->SetParameter(5, fit2->GetParameter(2));
+  if(isPOW) ratio->SetParameter(6, fit1->GetParameter(3));
+  ratio->SetLineColor(color);
+
+  return ratio;
 }

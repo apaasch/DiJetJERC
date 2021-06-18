@@ -13,9 +13,13 @@
 #include <TMath.h>
 #include <TLegend.h>
 #include <TPaveStats.h>
+#include <TGraphErrors.h>
 #include <TGraphAsymmErrors.h>
 #include <TFrame.h>
 #include <TString.h>
+
+#include "TMinuit.h"
+#include "TFitter.h"
 
 #include "constants.h"
 #include "functions.C"
@@ -25,7 +29,10 @@
 // double max_fit = 1200.;
 double min_fit = 70.;
 double max_fit = 1200.;
-bool onlyFEcorr = true; // rewrite
+bool useP = true; // decides if default is NSC or NSxPC
+
+double min_fit_lin = 170.;
+double max_fit_lin = 790.;
 
 // bool debug = true;
 bool debug = false;
@@ -33,45 +40,9 @@ bool debug = false;
 // Code by Andrea Malara
 // Based on code by Marek Niedziela, Matthias Schröder, Kristin Goebel
 
-TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize = 1){
-  TH1F* h_ratio = (TH1F*) hist->Clone();
-  // delete h_ratio->GetListOfFunctions()->FindObject("mcFIT");
-  // delete h_ratio->GetFunction("mcFIT");
-  for(unsigned int bin = 1; bin <= hist->GetNbinsX(); bin++){
-    double pt    = hist->GetXaxis()->GetBinCenter(bin);
-    double width = hist->GetBinContent(bin);
-    double value = fit->Eval(pt);
-    double ratio = width/value;
-    h_ratio->SetBinContent(bin, ratio);
-  }
-  h_ratio->SetMarkerSize(MarkerSize);
-  h_ratio->SetMarkerStyle(kFullCircle);
-
-  return h_ratio;
-}
-
-TF1* GetFitsRatio(TF1* fit1, TF1* fit2, double ptmin, int color, TString func = ""){
-  bool isPOW = func.EqualTo("pow");
-  bool isSIG = func.EqualTo("sign");
-  TString f1 = "TMath::Sqrt( [0]*[0]/(x*x)+[1]*[1]/x+[2]*[2] )";
-  TString f2 = "TMath::Sqrt( [3]*[3]/(x*x)+[4]*[4]/x+[5]*[5] )";
-  if(isSIG) f1 = "TMath::Sqrt( TMath::Sign(1, [0])*[0]*[0]/(x*x)+[1]*[1]/x+[2]*[2] )";
-  if(isPOW) f1 = "TMath::Sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[6])+[2]*[2])";
-
-  TF1* ratio = new TF1("ratio_", f1+"/"+f2, ptmin, 1200);
-  ratio->SetParameter(0, fit1->GetParameter(0));
-  ratio->SetParameter(1, fit1->GetParameter(1));
-  ratio->SetParameter(2, fit1->GetParameter(2));
-  ratio->SetParameter(3, fit2->GetParameter(0));
-  ratio->SetParameter(4, fit2->GetParameter(1));
-  ratio->SetParameter(5, fit2->GetParameter(2));
-  if(isPOW) ratio->SetParameter(6, fit1->GetParameter(3));
-  ratio->SetLineColor(color);
-
-  return ratio;
-}
-
-
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void setParameters(TF1* func, std::vector<double> initial, std::vector<double> N, std::vector<double> S,std::vector<double> C,std::vector<double> P={0,0}){
   if(initial.size()==3){
     func->SetParameters(initial[0], initial[1], initial[2]);
@@ -88,59 +59,112 @@ void setParameters(TF1* func, std::vector<double> initial, std::vector<double> N
   }
 }
 
-void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &Nerr, double &Serr, double &Cerr, double &mcChi, int &mcNDF, double eta) {
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+void DrawComparison(double eta, bool inRatio = false){
+  TString name = to_string(eta);
+  TF1* func = new TF1( "Comparison"+name, fNSxPC, 70, 1200);
+  if(eta==0.6525) func->SetParameters(2.738, 0.8313, 0.04231, -0.9279);
+  if(eta==0.957)  func->SetParameters(3.152, 0.8212, 0.04697, -0.8962);
+  if(eta==1.218)  func->SetParameters(3.531, 0.9372, 0.05745, -0.9065);
+  if(eta==1.5225) func->SetParameters(3.589, 1.327, 0.06284, -1.05);
+  if(eta==1.835)  func->SetParameters(3.705, 1.324, 0.05218, -1.051);
+  if(eta==1.9865) func->SetParameters(3.989, 1.427, 0.05677, -1.084);
+  if(eta==2.1825) func->SetParameters(5.831, 0.9054, 0.05601, -0.887);
+  if(eta==2.411)  func->SetParameters(6.041, 1.288, 0.05329, -1.07);
+  if(eta==2.575)  func->SetParameters(9.419, 0.2345, 4.562e-07, -0.4472);
+  if(eta==2.7515) func->SetParameters(9.419, 0.2345, 4.562e-07, -0.4472);
+  if(eta==2.9085) func->SetParameters(10.52, 0.1805, 5.12e-06, -0.1993);
+  if(eta==3.0515) func->SetParameters(9.814, 0.00034, 0.1636, -1.239);
+  if(eta==4.165)  func->SetParameters(5.616, 0.2159, 0.05147, -0.3009);
+  func->SetLineColor(kGreen+2);
+  func->Draw("SAME");
 
-  /*
-  ToDo fits:
-  1) sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[3])+[2]*[2]) - pow parameter! and extract parameters on Di!
-  2) Check eta Ranges
-  3) include single points
-  4) test simplified leg function for ratio plot DrawLegFit()
-  */
+  char line[100];
+  TLegend *legend;
+  legend = tdrLeg(0.30,0.55,0.50,0.7, 0.025, 42, kGreen+2);
+  legend->AddEntry((TObject*)0, "Mesurement", "");
+  sprintf(line, "N = %.5f", func->GetParameter(0));  legend->AddEntry((TObject*)0, line, "");
+  sprintf(line, "S = %.5f", func->GetParameter(1));  legend->AddEntry((TObject*)0, line, "");
+  sprintf(line, "C = %.5f", func->GetParameter(2));  legend->AddEntry((TObject*)0, line, "");
+  if(useP){ sprintf(line, "P = %.5f", func->GetParameter(3));  legend->AddEntry((TObject*)0, line, ""); }
+  legend->Draw("same");
+}
 
-  TF1* mcFIT       = new TF1( "mcFIT",       "TMath::Sqrt( ([0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )",                      70, 1200);
-  TF1* mcFIT200    = new TF1( "mcFIT200",    "TMath::Sqrt( ([0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )",                     200, 1200);
-  TF1* mcFITsig    = new TF1( "mcFITsig",    "TMath::Sqrt( (TMath::Sign(1, [0])*[0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )",  70, 1200);
-  TF1* mcFITpowPos = new TF1( "mcFITpowPos", "TMath::Sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[3])+[2]*[2])",            70, 1200);
-  TF1* mcFITpowNeg = new TF1( "mcFITpowNeg", "TMath::Sqrt([0]*abs([0])/(x*x)+[1]*[1]*pow(x,[3])+[2]*[2])",            70, 1200);
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, double &Nerr, double &Serr, double &Cerr, double& Perr, double &mcChi, int &mcNDF, double eta) {
 
-  setParameters(mcFIT,       {0.00015, 0.8, 0.04},       {0.,10.}, {0.,2.}, {0.,1.});
-  setParameters(mcFIT200,    {0.00015, 0.8, 0.04},       {0.,10.}, {0.,2.}, {0.,1.});
-  setParameters(mcFITsig,    {0.00015, 0.8, 0.04},     {-10.,10.}, {0.,2.}, {0.,1.});
-  setParameters(mcFITpowPos, {0.00015, 0.8, 0.04, 1},  {-10.,10.}, {0.,2.}, {0.,1.}, {0.,2.});
-  setParameters(mcFITpowNeg, {0.00015, 0.8, 0.04, -1}, {-10.,10.}, {0.,2.}, {0.,1.}, {-3.,0.});
+  TF1* mcFIT;
+  if(useP)
+  {
+    mcFIT = new TF1( "mcFIT", fNSxPC, 70, 1200);
+    if(eta==2.7515) mcFIT = new TF1( "mcFIT", fNSxPC, 70, 430); // exclude last point
+    if(eta==2.9085) mcFIT = new TF1( "mcFIT", fNSxPC, 110, 1200); // exclude first point
 
-  hist-> Fit("mcFIT200",    "0RMQ+");
-  hist-> Fit("mcFITsig",    "0RMQ+");
-  hist-> Fit("mcFITpowNeg", "0RMQ+");
-  hist-> Fit("mcFITpowPos", "0RMQ+");
-  hist-> Fit("mcFIT",        "RMQ+"); // at last for CL/mcERR
+    setParameters(mcFIT, {5, 1, 0.05,-0.8}, {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
+    if(eta>2.5) setParameters(mcFIT, {5, 1, 0.05,-0.8}, {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
+  }
+  else{
+    mcFIT = new TF1( "mcFIT", fNSC, 70, 1200);
+    if(eta==2.7515) mcFIT = new TF1( "mcFIT", fNSC, 70, 430); // exclude last point
+    if(eta==2.9085) mcFIT = new TF1( "mcFIT", fNSC, 110, 1200); // exclude first point
+
+    setParameters(mcFIT, {0.00015, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.015,1.});
+    if(eta>2.5) setParameters(mcFIT, {0.00015, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.,1.});
+
+  }
+
+  hist-> Fit("mcFIT", "RMQ+"); // at last for CL/mcERR
+  (TVirtualFitter::GetFitter())->GetConfidenceIntervals(mcERR,0.68);
 
   N = mcFIT -> GetParameter( 0 );
   S = mcFIT -> GetParameter( 1 );
   C = mcFIT -> GetParameter( 2 );
+  if(useP) P = mcFIT -> GetParameter( 3 );
   Nerr = mcFIT -> GetParError( 0 );
   Serr = mcFIT -> GetParError( 1 );
   Cerr = mcFIT -> GetParError( 2 );
+  if(useP) Perr = mcFIT -> GetParError( 3 );
   mcChi = mcFIT->GetChisquare();
   mcNDF = mcFIT->GetNDF();
   mcFIT->SetLineColor(kBlue+2);
-  (TVirtualFitter::GetFitter())->GetConfidenceIntervals(mcERR,0.68);
   mcERR->SetStats(kFALSE);
   mcERR->GetXaxis()->SetRange(min_fit,max_fit);
 
 }
 
-
-void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &kNS, double &kC, double &Nerr, double &Serr, double &Cerr, double &kNSerr, double &kCerr, double &dtChi, int &dtNDF, int m, bool isFE) {
-  TF1 * dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", min_fit, max_fit);
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &P, double &kNS, double &kC, double &Nerr, double &Serr, double &Cerr, double& Perr, double &kNSerr, double &kCerr, double &dtChi, int &dtNDF, double eta, int m, bool isFE) {
+  double min=70; double max=1200;
+  if(eta==2.7515) max=430;
+  if(eta==2.9085) min=110;
+  TF1 * dtFIT;
+  if(useP)
+  {
+    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 70, 1200);
+    if(eta==2.7515) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 70, 430); // exclude last point
+    if(eta==2.9085) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 110, 1200); // exclude first point
+  }
+  else
+  {
+    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, 1200);
+    if(eta==2.7515) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, 430); // exclude last point
+    if(eta==2.9085) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 110, 1200); // exclude first point
+  }
+  // TF1 * dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", min_fit, max_fit);
   dtFIT -> FixParameter(0, N);
   dtFIT -> FixParameter(1, S);
   dtFIT -> FixParameter(2, C);
+  if(useP) dtFIT -> FixParameter(5, P);
   dtFIT -> SetParameter(3, 1.2);
   dtFIT -> SetParameter(4, 1.2);
-  dtFIT -> SetParLimits(3, 0.9, 3);
-  dtFIT -> SetParLimits(4, 0.9, 3);
+  dtFIT -> SetParLimits(3, 0.5, 3);
+  dtFIT -> SetParLimits(4, 0.5, 3);
   // if (!isFE && m == 3) { dtFIT -> SetParLimits(3, 0.0, 15); dtFIT -> SetParLimits(4, 0.0, 15); }
   // if (!isFE && m == 3) { dtFIT -> SetParameter(0, N); dtFIT -> SetParameter(1, S); dtFIT -> SetParameter(2, C); dtFIT -> FixParameter(3,1); dtFIT -> FixParameter(4, 1); }
   if (hist->GetEntries() != 0) hist -> Fit("dtFIT", "RMQ+");
@@ -158,6 +182,9 @@ void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &kNS,
   dtERR->GetXaxis()->SetRange(min_fit,max_fit);
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void PLOT_ALLWIDTHS(std::vector< std::vector< TH1F* > > h_data, std::vector< std::vector< TH1F* > > h_MC, std::vector< std::vector< TH1F* > > h_gen, TString outdir) {
   int color_data = kBlue;
   int color_MC = kRed;
@@ -186,6 +213,9 @@ void PLOT_ALLWIDTHS(std::vector< std::vector< TH1F* > > h_data, std::vector< std
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void PLOT_MCT(std::vector< TH1F* > h_MCTruth, std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vector< TH1F* > h_015 , TString outdir, std::vector<double> eta_bins, bool isFE) {
   int MCTruth      = kMagenta;
   int color_uncor  = kRed;
@@ -232,6 +262,9 @@ void PLOT_MCT(std::vector< TH1F* > h_MCTruth, std::vector< TH1F* > h_uncor, std:
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void PLOT_ASY(std::vector< std::vector< std::vector< TH1F* > > > h_data, std::vector< std::vector< std::vector< TH1F* > > > h_MC, std::vector< std::vector< std::vector< TH1F* > > > h_gen, std::vector< std::vector< std::vector< double > > > h_data_width, std::vector< std::vector< std::vector< double > > > h_MC_width, std::vector< std::vector< std::vector< double > > > h_gen_width, std::vector< std::vector< std::vector< double > > > h_data_width_err, std::vector< std::vector< std::vector< double > > > h_MC_width_err, std::vector< std::vector< std::vector< double > > > h_gen_width_err, TString outdir, std::vector<double> eta_bins, std::vector<double> Pt_bins_Central, std::vector<double> Pt_bins_HF, std::vector<double> alpha, std::vector< std::vector< std::vector< double > > > lower_x_data, std::vector< std::vector< std::vector< double > > > upper_x_data, std::vector< std::vector< std::vector< double > > > lower_x, std::vector< std::vector< std::vector< double > > > upper_x, std::vector< std::vector< std::vector< double > > > gen_lower_x, std::vector< std::vector< std::vector< double > > > gen_upper_x) {
   int color_data = kBlue;
   int color_MC = kRed;
@@ -294,6 +327,9 @@ void PLOT_ASY(std::vector< std::vector< std::vector< TH1F* > > > h_data, std::ve
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void PLOT_WIDTH(std::vector< std::vector< TH1F* > > h_data, std::vector< std::vector< TH1F* > > h_MC, std::vector< std::vector< TH1F* > > h_gen, TString outdir, std::vector<double> eta_bins, std::vector<double> Pt_bins_Central, std::vector<double> Pt_bins_HF) {
   int color_data = kBlue;
   int color_MC = kRed;
@@ -368,8 +404,9 @@ void PLOT_WIDTH(std::vector< std::vector< TH1F* > > h_data, std::vector< std::ve
   }
 }
 
-
-
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vector< std::vector< TGraphErrors* > > h_MC, std::vector< std::vector< TGraphErrors* > > h_gen, TString outdir, std::vector<double> eta_bins, std::vector<double> Pt_bins_Central, std::vector<double> Pt_bins_HF, bool isFE) {
   int color_data = kBlue;
   int color_MC = kRed;
@@ -461,6 +498,9 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void SFtoTXT(std::ofstream& texfile, std::vector< TH1F* > h_JER, std::vector< std::vector< std::vector< double > > > width_pt, std::vector<double> &SF, std::vector<double> &SF_err, std::vector<double> &SF_ptdep_min, std::vector<double> &SF_ptdep_max, std::vector<double> &eta_bin_center, std::vector<double> &eta_bin_err, std::vector<double> eta_bins, int shift, bool isFE, bool isCorr ) {
   for( unsigned int m = 0; m < h_JER.size(); m++ ){
     TF1 * constfit = h_JER.at(m) -> GetFunction("constfit");
@@ -483,6 +523,9 @@ void SFtoTXT(std::ofstream& texfile, std::vector< TH1F* > h_JER, std::vector< st
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void SIGtoTXT(std::vector< TH1F* > h_MC, std::vector<double> eta_bins, TString outdir, TString name){
   ofstream output_values;
   output_values.open(outdir+"pdfy/JERs/values_"+name+".txt");
@@ -501,13 +544,16 @@ void SIGtoTXT(std::vector< TH1F* > h_MC, std::vector<double> eta_bins, TString o
   }
 }
 
-void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vector< TH1F* > h_015, TString outdir, std::vector<double> eta_bins, bool isFE) {
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vector< TH1F* > h_015, TString outdir, std::vector<double> eta_bins, bool isFE, std::vector< TH1F* > h_JER_corr_NSC) {
   int color_uncor = kBlue;
   int color_cor   = kRed;
   int color_015   = kGreen+2;
   for( unsigned int m = 0; m < h_uncor.size(); m++ ){
     TString canvName  = h_uncor.at(m)->GetTitle();
-    TString nameXaxis = "p_{T} [GeV]";
+    TString nameXaxis = "p_{T}^{avg} [GeV]";
     TString nameYaxis = h_uncor.at(m)->GetYaxis()->GetTitle();
     std::vector<TH1*> vec;
     vec.push_back(h_uncor.at(m));
@@ -515,6 +561,8 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     vec.push_back(h_015.at(m));
     double x_min, x_max, y_min, y_max;
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
+    extraText3.clear();
+    extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
     TCanvas* canv = tdrCanvas(canvName, x_min, x_max, 0, 3, nameXaxis, nameYaxis);
     canv->SetTickx(0);
     canv->SetTicky(0);
@@ -527,37 +575,49 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     TLegend *legend;
 
     if(h_uncor.at(m)->GetFunction("constfit")){
-      f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);
-      legend = tdrLeg(0.30,0.70,0.50,0.90, 0.025, 42, color_uncor);
-      tdrHeader(legend,"JER", 22);
-      sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      legend->Draw("same");
+      f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);f->SetLineWidth(2);f->Draw("same");
+      f->SetParameter(0,f->GetParameter(0)-0.002);
+      // legend = tdrLeg(0.30,0.70,0.50,0.90, 0.025, 42, color_uncor);
+      // tdrHeader(legend,"JER", 22);
+      // sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
+      // sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
+      // legend->Draw("same");
     } else { std::cout << "Fit uncor function at bin " << m << " was not found" << std::endl; }
 
     if(h_cor.at(m)->GetFunction("constfit")){
-      f = h_cor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_cor);
-      legend = tdrLeg(0.50,0.70,0.70,0.90, 0.025, 42, color_cor);
-      tdrHeader(legend,"JER cor", 22);
-      sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      legend->Draw("same");
+      f = h_cor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_cor);f->SetLineWidth(2);f->Draw("same");
+      // legend = tdrLeg(0.50,0.70,0.70,0.90, 0.025, 42, color_cor);
+      // tdrHeader(legend,"JER cor", 22);
+      // sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
+      // sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
+      // legend->Draw("same");
     } else { std::cout << "Fit cor function at bin " << m << " was not found" << std::endl; }
 
-    if(h_015.at(m)->GetFunction("constfit")){
-      f = h_015.at(m) -> GetFunction("constfit"); f->SetLineColor(color_015);
-      legend = tdrLeg(0.70,0.70,0.90,0.90, 0.025, 42, color_uncor);
-      tdrHeader(legend,"JER 0.15", 22);
-      sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      legend->Draw("same");
-    } else { /*std::cout << "Fit 015 function at bin " << m << " was not found" << std::endl;*/ }
+    f = new TF1( "constfit", "pol0", min_fit_lin, max_fit_lin );
+    f->SetParameter(0,1);
+    if (h_015.at(m)->GetEntries() > 1) h_015.at(m) -> Fit("constfit","RMQ+");
+    else h_015.at(m)->GetListOfFunctions()->Add(f);
+    if (h_015.at(m) -> GetFunction("constfit")==0) h_015.at(m)->GetListOfFunctions()->Add(f);
+    f->SetLineColor(color_015); f->SetLineWidth(2);f->Draw("same");
+
+    f = h_JER_corr_NSC.at(m) -> GetFunction("NSC_ratio");
+    f->SetLineColor(kOrange+1); f->SetLineWidth(2); f->Draw("same");
+
+    // if(h_015.at(m)->GetFunction("constfit")){
+    //   f = h_015.at(m) -> GetFunction("constfit"); f->SetLineColor(color_015);
+    //   legend = tdrLeg(0.70,0.70,0.90,0.90, 0.025, 42, color_uncor);
+    //   tdrHeader(legend,"JER 0.15", 22);
+    //   sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
+    //   sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
+    //   legend->Draw("same");
+    // } else { /*std::cout << "Fit 015 function at bin " << m << " was not found" << std::endl;*/ }
 
 
-    TLegend *leg = tdrLeg(0.6,0.15,0.9,0.35, 0.04, 42, kBlack);
+    // TLegend *leg = tdrLeg(0.6,0.15,0.9,0.35, 0.04, 42, kBlack);
+    TLegend *leg = tdrLeg(0.55,0.55,0.9,0.85, 0.04, 42, kBlack);
     tdrHeader(leg, Form("#eta #in [%.3f,%.3f]", eta_bins[m], eta_bins[m+1]));
-    leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC}","lep");
-    leg->AddEntry(h_cor.at(m),    "#sigma_{JER}^{data}/#sigma_{JER}^{MC} correlated","lep");
+    leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC} correlated","lep");
+    leg->AddEntry(h_cor.at(m),    "#sigma_{JER}^{data}/#sigma_{JER}^{MC} cunorrelated","lep");
     leg->AddEntry(h_015.at(m),    "#sigma_{0.15}^{data}/#sigma_{0.15}^{MC}","lep");
     leg->Draw("same");
 
@@ -571,12 +631,30 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+void PrintFitInfo(TF1* fit, TString function, std::vector<double> range,  std::vector<double> initial, std::vector<double> N, std::vector<double> S, std::vector<double> C, std::vector<double> P={0,0}, TString addition=""){
+  cout << "Draw " << addition << function << " in [" << setw(4) << dtos(range[0], 0) << ", " << setw(4) << dtos(range[1], 0) << "] with ";
+  cout << "N in [" << setw(5) << dtos(N[0], 2) << ", " << setw(4) << dtos(N[1], 2) << "] (N0: " << setw(4) << dtos(initial[0], 2) << ") " << "and ";
+  cout << "S in [" << setw(5) << dtos(S[0], 2) << ", " << setw(4) << dtos(S[1], 2) << "] (S0: " << setw(4) << dtos(initial[1], 2) << ") " << "and ";
+  cout << "C in [" << setw(5) << dtos(C[0], 2) << ", " << setw(4) << dtos(C[1], 2) << "] (C0: " << setw(4) << dtos(initial[2], 2) << ") ";
+  if(function.Contains("NSxPC")) cout << "and P in [" << setw(5) << dtos(P[0], 2) << ", " << setw(4) << dtos(P[1], 2) << "] (P0: " << setw(4) << dtos(initial[3], 2) << ") ";
+  cout << endl;
+}
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void DrawLegFit(TF1* fit, TLegend* leg, double vN, double vNerr, double vS, double vSerr, double vC, double vCerr, double vCh, int vNDF, int color, TString line1, TString line2, int place){
   char line[100];
+  if(place<0 || 5<place) cerr << "You selected the wrong legend position for the ratio plots" << endl;
+  if(place==0) leg = tdrLeg(0.30,0.65,0.45,0.8,  0.025, 42, color);
   if(place==1) leg = tdrLeg(0.45,0.65,0.65,0.8,  0.025, 42, color);
-  if(place==2) leg = tdrLeg(0.65,0.65,0.8,0.8,   0.025, 42, color);
+  if(place==2) leg = tdrLeg(0.65,0.65,0.80,0.8,  0.025, 42, color);
   if(place==3) leg = tdrLeg(0.45,0.47,0.65,0.62, 0.025, 42, color);
-  if(place==4) leg = tdrLeg(0.65,0.47,0.8,0.62,  0.025, 42, color);
+  if(place==4) leg = tdrLeg(0.65,0.47,0.80,0.62, 0.025, 42, color);
+  if(place==5) leg = tdrLeg(0.30,0.47,0.45,0.62, 0.025, 42, color);
   leg->AddEntry((TObject*)0, line1, "");
   leg->AddEntry((TObject*)0, line2, "");
   vN  = fit->GetParameter(0); vNerr = fit->GetParError(0);
@@ -589,8 +667,63 @@ void DrawLegFit(TF1* fit, TLegend* leg, double vN, double vNerr, double vS, doub
   sprintf(line, "C = %.5f #pm %.5f", vC, vCerr);     leg->AddEntry((TObject*)0, line, "");
   if(line1.Contains("NSxPC")){sprintf(line, "P = %.5f #pm %.5f", fit->GetParameter(3), fit->GetParError(3)); leg->AddEntry((TObject*)0, line, "");}
   leg->Draw("same");
+
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
+void AddFit(bool draw, int color, int place, TCanvas* canv, TString name, TString function, TString info1,  TString info2,TH1F* hist, double r1, double r2, std::vector<double> initial, std::vector<double> N, std::vector<double> S,std::vector<double> C,std::vector<double> P={0,0}){
+  TF1* fit= new TF1( name, function, r1, r2);
+  setParameters(fit, initial, N, S, C, P);
+  hist->Fit(name, "0RMQ+");
+
+  if(draw)
+  {
+    canv->cd(1);
+    TF1* func = hist->GetFunction(name);
+    func->SetLineColor(color);
+    func->Draw("same");
+
+    double vN, vNerr, vS, vSerr, vC, vCerr, vCh;
+    int vNDF;
+    char line[100];
+    TLegend *rleg;
+    DrawLegFit(func, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color, info1, info2, place); // Place==0 for default value
+
+    canv->cd(2);
+
+    TF1* ratio = GetFitsRatio(func, hist->GetFunction("mcFIT"), r1, color, function);
+    ratio->Draw("SAME");
+  }
+}
+
+void AddFit(bool draw, int color, int place, TCanvas* canv, TString name, TString function, TString info1,  TString info2, TGraphErrors* hist, TF1* func2, double r1, double r2, std::vector<double> initial, std::vector<double> N, std::vector<double> S,std::vector<double> C,std::vector<double> P={0,0}){
+  TF1* fit= new TF1( name, function, r1, r2);
+  setParameters(fit, initial, N, S, C, P);
+  hist->Fit(name, "0RMQ+");
+
+  if(draw)
+  {
+    canv->cd(1);
+    TF1* func = hist->GetFunction(name);
+    func->SetLineColor(color);
+    func->Draw("same");
+    double vN, vNerr, vS, vSerr, vC, vCerr, vCh;
+    int vNDF;
+    char line[100];
+    TLegend *rleg;
+    DrawLegFit(func, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color, info1, info2, place); // Place==0 for default value
+    canv->cd(2);
+    TF1* ratio = GetFitsRatio(func, func2, r1, color, function);
+    ratio->Draw("SAME");
+  }
+}
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vector< TH1F* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE, bool isCorr) {
 
   int color_data  = kBlue;
@@ -607,32 +740,36 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
   output_fit << right;
   output_fit << setw(7) << "eta[" << " " << setw(7) << "eta]" << " ";
-  output_fit << setw(7) << "N"    << " " << setw(7) << "Nerr" << " " << setw(7) << "S"   << " " << setw(7) << "Serr"   << " ";
-  output_fit << setw(7) << "C"    << " " << setw(7) << "Cerr" << " " << setw(7) << "kNS" << " " << setw(7) << "kNSerr" << " ";
-  output_fit << setw(7) << "kC"   << " " << setw(8) << "kCerr\n";
+  output_fit << setw(7) << "N" << " " << setw(7) << "Nerr" << " " << setw(7) << "S" << " " << setw(7) << "Serr" << " ";
+  output_fit << setw(7) << "C" << " " << setw(7) << "Cerr" << " ";
+  if(useP) output_fit << setw(7) << "P" << " " << setw(7) << "Perr" << " ";
+  output_fit << setw(7) << "kNS"  << " " << setw(7) << "kNSerr" << " " << setw(7) << "kC" << " " << setw(8) << "kCerr\n";
 
   ofstream FitPar;
   FitPar.open(outdir+"pdfy/kValues/MultipleFitPar.txt");
   FitPar << fixed << setprecision(5) << right;
 
   for( unsigned int m = 0; m < h_data.size(); m++ ){
+    double eta = (eta_bins[m]+eta_bins[m+1])/2;
+    if(debug) cout << "Start Fit in eta bin " << eta << endl;
+
+    // if(m==1) RemoveAsymBinsFromJER(h_MC.at(m), 5);
     h_data.at(m)->SetStats(kFALSE);
     h_MC.at(m)->SetStats(kFALSE);
-    double N, S, C, kNS, kC, Nerr, Serr, Cerr, kNSerr, kCerr, mcChi, dtChi;
+    double N, S, C, P, kNS, kC, Nerr, Serr, Cerr, Perr, kNSerr, kCerr, mcChi, dtChi;
     int mcNDF, dtNDF;
 
     TH1F* mcERR = (TH1F*)h_data.at(m)->Clone();
-    TH1F* mcERRext = (TH1F*) h_data.at(m)->Clone();
-    // TH1F* mcERR = (TH1F*)h_MC.at(m)->Clone();
     TH1F* dtERR = (TH1F*)h_data.at(m)->Clone();
-    MCFIT(h_MC.at(m), mcERR, N, S, C, Nerr, Serr, Cerr, mcChi, mcNDF, (eta_bins[m]+eta_bins[m+1])/2);
-    DTFIT(h_data.at(m), dtERR, N, S, C, kNS, kC, Nerr, Serr, Cerr, kNSerr, kCerr, dtChi, dtNDF, m, isFE);
+    MCFIT(h_MC.at(m), mcERR, N, S, C, P, Nerr, Serr, Cerr, Perr, mcChi, mcNDF, eta);
+    DTFIT(h_data.at(m), dtERR, N, S, C, P, kNS, kC, Nerr, Serr, Cerr, Perr, kNSerr, kCerr, dtChi, dtNDF, eta, m, isFE);
 
     output_fit << fixed << setprecision(5);
     output_fit << setw(7) << eta_bins[m] << " " << setw(7) << eta_bins[m+1] << " ";
-    output_fit << setw(7) << N           << " " << setw(7) << Nerr          << " " << setw(7) << S    << " " << setw(7) << Serr   << " ";
-    output_fit << setw(7) << C           << " " << setw(7) << Cerr          << " " << setw(7) << kNS  << " " << setw(7) << kNSerr << " ";
-    output_fit << setw(7) << kC          << " " << setw(7) << kCerr         << "\n";
+    output_fit << setw(7) << N << " " << setw(7) << Nerr << " " << setw(7) << S    << " " << setw(7) << Serr   << " ";
+    output_fit << setw(7) << C << " " << setw(7) << Cerr << " ";
+    if(useP) output_fit << setw(7) << P << " " << setw(7) << Perr << " ";
+    output_fit << setw(7) << kNS  << " " << setw(7) << kNSerr << " " << setw(7) << kC          << " " << setw(7) << kCerr         << "\n";
 
     if (h_data.at(m)-> GetFunction("dtFIT")!=0) h_data.at(m)-> GetFunction("dtFIT")->SetLineColor(color_data+2);
     if (h_MC.at(m)-> GetFunction("mcFIT")!=0) h_MC.at(m)-> GetFunction("mcFIT")->SetLineColor(color_MC+2);
@@ -649,6 +786,7 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
     double x_min, x_max, y_min, y_max;
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
+    // cout << x_min << " " << x_min << " " << x_max << " " << y_min << " " << y_max << endl;
 
     TCanvas* canv = tdrCanvas(canvName, x_min, x_max, y_min, y_max, nameXaxis, nameYaxis);
     canv->SetTickx(0);
@@ -659,7 +797,7 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     tdrDraw(h_MC.at(m), "", kFullCircle, color_MC );
     TLegend *leg = tdrLeg(0.6,0.7,0.9,0.9);
     char legTitle[100];
-    sprintf(legTitle,     "#eta #in [%.3f,%.3f]", eta_bins[m], eta_bins[m+1]);
+    sprintf(legTitle, "#eta #in [%.3f,%.3f]", eta_bins[m], eta_bins[m+1]);
     tdrHeader(leg,legTitle);
     leg->AddEntry(h_data.at(m),"data","lep");
     leg->AddEntry(h_MC.at(m),"MC","lep");
@@ -671,6 +809,7 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     sprintf(line, "N = %.5f #pm %.5f", N, Nerr);  legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "S = %.5f #pm %.5f", S, Serr);  legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "C = %.5f #pm %.5f", C, Cerr);  legend->AddEntry((TObject*)0, line, "");
+    if(useP){ sprintf(line, "P = %.5f #pm %.5f", P, Perr);  legend->AddEntry((TObject*)0, line, ""); }
     legend->Draw("same");
     legend = tdrLeg(0.70,0.55,0.85,0.7, 0.025, 42, color_data);
     legend->AddEntry((TObject*)0, "data", "");
@@ -684,56 +823,52 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
       else canvName = canvName(0, canvName.Length()-2);
       canvName += (m+2);
     }
+    // if(isFE&&isCorr) DrawComparison(eta);
     canv -> Print(outdir+"pdfy/JERs/"+canvName+".pdf","pdf");
     // canv -> Print(outdir+"pdfy/JERs/"+canvName+".png","png");
     // canv -> Print(outdir+"pdfy/JERs/"+canvName+".root","root");
 
     if(isFE&&isCorr){
       if(debug) cout << "Start comparing plots" << endl;
-      TH1F* hist_ext = (TH1F*) h_MC.at(m)->Clone();
 
-      vector<double> xvalues = {};
-      vector<double> yvalues = {};
-      vector<double> yerrors = {};
-      for(unsigned int i=0; i<h_MC.at(m)->GetNbinsX(); i ++){
-        if(h_MC.at(m)->GetBinContent(i)==0) continue;
-        xvalues.push_back(h_MC.at(m)->GetXaxis()->GetBinCenter(i));
-        yvalues.push_back(h_MC.at(m)->GetBinContent(i));
-        yerrors.push_back(h_MC.at(m)->GetBinError(i)+h_MC.at(m)->GetBinError(i)+((eta_bins[m+1]>2.5)?0.01:0.005));
-        // cout << m << " " << i << " " << h_MC.at(m)->GetXaxis()->GetBinCenter(i) << " " << h_MC.at(m)->GetBinContent(i) << " " << h_MC.at(m)->GetBinError(i) << " " << h_MC.at(m)->GetBinError(i)+((eta_bins[m+1]>2.5)?0.01:0.005) << endl;
-      }
-      std::vector<double> dummy(h_MC.at(m)->GetNbinsX(), 0);
+      TF1* mcFIT = h_MC.at(m)->GetFunction("mcFIT"); mcFIT->SetLineColor(color_MC+2);
 
-      TGraphErrors* error_ext = new TGraphErrors(xvalues.size(), &xvalues[0], &yvalues[0], &dummy[0], &yerrors[0]);
-      TF1* mcFIText = new TF1( "mcFIText", "TMath::Sqrt( ([0]*[0]/(x*x))+[1]*[1]/x+[2]*[2] )", 70, 1200);
-      setParameters(mcFIText, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
-      error_ext-> Fit("mcFIText", "RMQ+");
+      bool drawEXT = true; int colorEXT = kGray+2;
+      bool drawIND = false; int colorIND = kCyan+1;
 
-      int color200 = kGreen+2; int colorSIG = kBlue+2; int colorPOWNeg = kOrange+2; int colorPOWPos = kMagenta+2; int colorEXT = kGray+2;
-      TCanvas*               canv2 = tdrDiCanvas2(canvName, x_min, x_max, 0., 0.2, 0.85, 1.15, nameXaxis, nameYaxis,"Ratio", false, 4, 11);
-      if(eta_bins[m]==2.964) canv2 = tdrDiCanvas2(canvName, x_min, x_max, 0., 0.3, 0.85, 1.15, nameXaxis, nameYaxis,"Ratio", false, 4, 11);
+      TGraphErrors* MC_graph = TH1toTGraphError(h_MC.at(m), 0);
+      MC_graph->GetListOfFunctions()->Add(mcFIT);
+      MC_graph->SetMarkerColor(colorIND);
+      MC_graph->SetLineColor(colorIND);
+
+      TGraphErrors* error_ext = TH1toTGraphError(h_MC.at(m), ((eta_bins[m+1]>2.5)?0.001:0.001));
+      MC_graph->GetListOfFunctions()->Add(mcFIT);
+      error_ext->SetLineColor(colorEXT);
+
+      // Exclude points in eta/pt-bins: 5/2 6/2 7/2 8/2,6 10/11 11/9 12/2,3 | Bin starts at 0 for TGraph
+      // Bins are inserted by Hand. Way to do it automatically?
+      double x,y; MC_graph->GetPoint(0, x, y);
+      if(m==8||m==9||m==10) MC_graph->RemovePoint(0);// For bin 10-13
+      if(m==3)  MC_graph->RemovePoint(1);
+      if(m==4)  MC_graph->RemovePoint(1);
+      if(m==5)  MC_graph->RemovePoint(1);
+      if(m==6){ MC_graph->RemovePoint(1); MC_graph->RemovePoint(4);}
+      if(m==8)  MC_graph->RemovePoint(10);
+      if(m==9)  MC_graph->RemovePoint(9);
+      if(m==10) MC_graph->RemovePoint(0);
+
+      TCanvas*               canv2 = tdrDiCanvas2(canvName, x_min, x_max, 0., 0.2, 0.85, 1.15, "p_{T} [GeV]", nameYaxis,"Ratio", false, 4, 11);
+      if(eta_bins[m]==2.964) canv2 = tdrDiCanvas2(canvName, x_min, x_max, 0., 0.3, 0.85, 1.15, "p_{T} [GeV]", nameYaxis,"Ratio", false, 4, 11);
       canv2->SetTickx(0);
       canv2->SetTicky(0);
-      canv2->cd(1);
+      canv2->cd(1); // JER
       tdrDraw(h_MC.at(m), "", kFullCircle, color_MC );
       mcERR->Draw("E4 same");
-      TF1* mcFIT       = h_MC.at(m)->GetFunction("mcFIT");       mcFIT->SetLineColor(color_MC+2);
-      TF1* mcFIT200    = h_MC.at(m)->GetFunction("mcFIT200");    mcFIT200->SetLineColor(color200);
-      TF1* mcFITsig    = h_MC.at(m)->GetFunction("mcFITsig");    mcFITsig->SetLineColor(colorSIG);
-      TF1* mcFITpowPos = h_MC.at(m)->GetFunction("mcFITpowPos"); mcFITpowPos->SetLineColor(colorPOWPos);
-      TF1* mcFITpowNeg = h_MC.at(m)->GetFunction("mcFITpowNeg"); mcFITpowNeg->SetLineColor(colorPOWNeg);
-      mcFIText = error_ext->GetFunction("mcFIText");             mcFIText->SetLineColor(colorEXT);
-      mcFITpowPos->Draw("SAME");
-      mcFITpowNeg->Draw("SAME");
-      mcFIText->Draw("SAME");
-      // mcFIT200->Draw("SAME");
-      // mcFITsig->Draw("SAME");
-      mcFIT->Draw("SAME");
+      // mcFIT->Draw("SAME");
 
-      error_ext->SetMarkerColor(colorEXT);
-      error_ext->SetLineColor(colorEXT);
-      error_ext->Draw("P SAME");
-      h_MC.at(m)->Draw("P SAME");
+      if(drawEXT) error_ext->Draw("ERROR SAME");
+      if(drawEXT) h_MC.at(m)->Draw("ERROR SAME");
+      if(drawIND) MC_graph->Draw("P SAME");
 
       if(debug) cout << "Start Legend for Ratio" << endl;
       double vN, vNerr, vS, vSerr, vC, vCerr, vCh;
@@ -743,25 +878,14 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
       rleg = tdrLeg(0.45,0.8,0.65,0.9);
       sprintf(line, "#eta #in [%.3f,%.3f]", eta_bins[m], eta_bins[m+1]); rleg->AddEntry((TObject*)0, line, "");
       rleg->Draw("same");
+      if(useP) DrawLegFit(mcFIT, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color_MC, "Default; NSC", "pT in [70, 1200] GeV",  1); // Place==0 for default value
+      else  DrawLegFit(mcFIT, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color_MC, "Default; NSC", "pT in [70, 1200] GeV",  1); // Place==0 for default value
 
-      DrawLegFit(mcFIT,    rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color_MC,       "Default; NSC", "pT in [70, 1200] GeV",  1);
-      DrawLegFit(mcFITpowPos, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, colorPOWPos, "NSxPC Pos", "pT in [70, 1200] GeV",  2);
-      DrawLegFit(mcFITpowNeg, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, colorPOWNeg, "NSxPC Neg", "pT in [70, 1200] GeV",  3);
-      DrawLegFit(mcFIText, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, colorEXT,       "Default; NSC", (TString) "syst. error = "+((eta_bins[m+1]>2.5)?"0.01":"0.005"), 4);
-      // DrawLegFit(mcFIT200, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color200,       "Default; NSC", "pT in [200, 1200] GeV", 2);
-      // DrawLegFit(mcFITsig, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, colorSIG,       "sign(N)NSC",   "pT in [70, 1200] GeV",  3);
-
-      canv2->cd(2);
-
-      TH1F* ratio_MC     = GetMCFitRatio(h_MC.at(m), mcFIT, color_MC);
-      TF1*  ratio200     = GetFitsRatio(mcFIT200, mcFIT,    200, color200,    "NSC");
-      TF1*  ratioPowPos  = GetFitsRatio(mcFITpowPos, mcFIT,  70, colorPOWPos, "pow");
-      TF1*  ratioPowNeg  = GetFitsRatio(mcFITpowNeg, mcFIT,  70, colorPOWNeg, "pow");
-      TF1*  ratioSign    = GetFitsRatio(mcFITsig, mcFIT,     70, colorSIG,    "sign");
-      TF1*  ratioExt     = GetFitsRatio(mcFIText, mcFIT,     70, colorEXT,    "NSC");
-
+      canv2->cd(2); // Ratio Plots
+      TH1F* ratio_MC  = GetMCFitRatio(h_MC.at(m), mcFIT, color_MC, 1);
       TLine* fit_default = new TLine(0, 1, 1100, 1);
       TH1F* ratio_err = (TH1F*) mcERR->Clone();
+
       for(unsigned int i=1; i<=mcERR->GetNbinsX(); i++){
         double bin_content = ratio_err->GetBinContent(i);
         double bin_error = ratio_err->GetBinError(i);
@@ -771,30 +895,48 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
       }
       ratio_err->SetMarkerSize(0);
 
+      // add_function
       fit_default->SetLineColor(color_MC+2);
       fit_default->Draw();
       ratio_err->Draw("E4 SAME");
       ratio_MC->Draw("P SAME");
-      ratioPowPos->Draw("SAME");
-      ratioPowNeg->Draw("SAME");
-      ratioExt->Draw("SAME");
-      // ratio200->Draw("SAME");
-      // ratioSign->Draw("SAME");
+
+      // void AddFit(bool draw, color, place, canv, TString name, TString function, info1,  info2, hist, r1, r2, initial, N, S, C, P={0,0}){
+      AddFit(false, kOrange+2, 1, canv2, "mcFITold", fNSC, "NSC; old", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
+      AddFit(true, kGreen+2, 3, canv2, "mcFIT100", fNSC, "NSC; ", "pT in [100, 1200] GeV", h_MC.at(m), 100, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
+      AddFit(false, kGreen+2, 3, canv2, "mcFIT200", fNSC, "NSC; ", "pT in [200, 1200] GeV", h_MC.at(m), 200, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
+      AddFit(false, kGray+2, 4, canv2, "mcFITv1", fNSC, "NSC; v1", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {5, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.02,1.});
+      AddFit(false, kBlue+2, 9, canv2, "mcFITsig", fNSCsign, "sign(N)NSC; ", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {0.00015, 0.8, 0.04}, {-10.,10.}, {0.,2.}, {0.,1.});
+      AddFit(false, kMagenta+2, 9, canv2, "mcFITpowCut", fNSxPC, "NSxPC; ", "pT in [110, 1200] GeV", h_MC.at(m), 110, 1200, {0.00015, 0.8, 0.06,-1}, {-20.,20.}, {0.,2.}, {0.02,1.}, {-3.,0.});
+      AddFit(true, kOrange+2, 2, canv2, "mcFITpow", fNSxPC, "NSxPC; ", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {0.00015, 0.8, 0.06,-1}, {-20.,20.}, {0.,6.}, {0.015,1.}, {-3.,0.});
+      AddFit(false, kOrange+2, 3, canv2, "mcFITpowV1", fNSxPC, "NSxPC; new initial", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {5, 1, 0.05,-0.8}, {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
+      AddFit(false, kCyan+2, 1, canv2, "mcFITpowdiv", fNSxPCdiv, "NSxPC; C*C/100", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {5, 1, 5,-0.8}, {-20.,20.}, {0.,2.}, {0.015,10.}, {-3.,0.});
+
+      // void AddFit(bool draw, color, place, canv, TString name, TString function, info1,  info2, graph, ratio, r1, r2, initial, N, S, C, P={0,0}){
+      AddFit(drawIND, kCyan+1, 1, canv2, "mcFITind", fNSC, "NSC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.02,1.});
+      AddFit(drawIND, kBlue+2, 2, canv2, "mcFITindpow", fNSxPC, "NSxPC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.5, 0.8, 0.04, -1}, {-20.,20.}, {0.,2.}, {0.02,1.}, {-3.,0.});
+      AddFit(drawEXT, colorEXT, 4, canv2, "mcFIText", fNSC, "NSC; ", (TString) "syst. error = "+((eta_bins[m+1]>2.5)?"0.001":"0.001"), error_ext, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
+
 
       canv2 -> cd(0);
       canv2 -> Print(outdir+"pdfy/JERs/ratio_"+canvName+".pdf","pdf");
 
-      if(isFE&&isCorr){
+      if(isFE&&isCorr){ // add_function
         if(debug) cout << "Start extracting FitParameters" << endl;
         FitPar << "====================\n";
         FitPar << "eta in ["+dtos(eta_bins[m],3)+","+dtos(eta_bins[m+1],3)+"]\n";
         FitPar << "====================\n";
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT"),       "NSC; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT200"),    "NSC; 200-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITsig"),    "sign(N)NSC; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpowPos"), "NSxPC Pos; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpowNeg"), "NSxPC Neg; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, error_ext->GetFunction("mcFIText"),     "NSC; 70-1200 GeV; large errors");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT"), "NSC; 70-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITv1"), "NSC; v1; 70-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT200"), "NSC; 200-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT100"), "NSC; 100-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITsig"), "sign(N)NSC; 70-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITold"), "NSC; old; 70-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpow"), "NSxPC; 70-1200 GeV ");
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpowCut"), "NSxPC; 100-1200 GeV ");
+        ExtractFitParameters(FitPar, MC_graph->GetFunction("mcFITind"), "NSC; Individual ");
+        ExtractFitParameters(FitPar, MC_graph->GetFunction("mcFITindpow"), "NSxPC; Individual ");
+        ExtractFitParameters(FitPar, error_ext->GetFunction("mcFIText"), "NSC; 70-1200 GeV; large errors");
       }
     }
 
@@ -1703,8 +1845,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //////////////////////////////////////////////////////////////////////////////////////////
   TFile SFsoverlayed(outdir+"output/SFsoverlayed.root","RECREATE");
 
-  PLOT_SF(JER_uncorrelated_scale_hist_SM, JER_correlated_scale_hist_SM, JER015_scale_hist_SM, outdir+"pdfy/SFs/", eta_bins_edge_SM, false);
-  PLOT_SF(JER_uncorrelated_scale_hist_FE, JER_correlated_scale_hist_FE, JER015_scale_hist_FE, outdir+"pdfy/SFs/", eta_bins_edge_FE, true);
+  PLOT_SF(JER_uncorrelated_scale_hist_SM, JER_correlated_scale_hist_SM, JER015_scale_hist_SM, outdir+"pdfy/SFs/", eta_bins_edge_SM, false, JER_correlated_scale_hist_SM);
+  PLOT_SF(JER_uncorrelated_scale_hist_FE, JER_correlated_scale_hist_FE, JER015_scale_hist_FE, outdir+"pdfy/SFs/", eta_bins_edge_FE, true, JER_correlated_scale_hist_FE);
 
   SFsoverlayed.Close();
 
