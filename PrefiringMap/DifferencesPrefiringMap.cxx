@@ -91,6 +91,17 @@ void print_vector(VecD vec, TString name="", int space=12){
 }
 
 // =======================================================================================================
+void set_bin_content(TH2F* hist, MapiVD content, MapVD eta_bins, VecD pt_UL){
+  for(unsigned int x=0; x<eta_bins["UL"].size(); x++) // size of binEOY and binsUL equal
+  {
+    for(unsigned int y=1; y<=pt_UL.size(); y++)
+    {
+      hist->SetBinContent(eta_bins["UL"][x], y, content[eta_bins["UL"][x]][y-1]);
+    }
+  }
+}
+
+// =======================================================================================================
 void draw_map(TH2F* map, TString name, TString ztitle="weight", double ymin=0, double ymax=500, double zmin=0, double zmax=1){
   gStyle->SetOptStat(0);
   map->GetXaxis()->SetRangeUser(-4, 4);
@@ -164,17 +175,6 @@ bool within_uncertainties(double contentEOY, double contentUL, double uncert){
 }
 
 // =======================================================================================================
-void set_bin_content(TH2F* hist, MapiVD content, MapVD eta_bins, VecD pt_UL){
-  for(unsigned int x=0; x<eta_bins["UL"].size(); x++) // size of binEOY and binsUL equal
-  {
-    for(unsigned int y=1; y<=pt_UL.size(); y++)
-    {
-      hist->SetBinContent(eta_bins["UL"][x], y, content[eta_bins["UL"][x]][y-1]);
-    }
-  }
-}
-
-// =======================================================================================================
 MapMiVD get_bin_content(MapH2 hists, MapVD eta_bins, VecD pt_EOY, VecD pt_UL, TString name, bool isPhoton=false){
 
   int all       = 0;
@@ -214,17 +214,17 @@ MapMiVD get_bin_content(MapH2 hists, MapVD eta_bins, VecD pt_EOY, VecD pt_UL, TS
       output << setw(10) << wanted_eta[x] << setw(10) << pt_UL[y-1] << setw(10) << contentEOY << setw(10) << contentUL << setw(10) << diff << setw(10) << ratio << "\n";
 
       // count bins
-      bool withinUncert = within_uncertainties(contentEOY, contentUL, 0.25);
+      bool withinUncert = within_uncertainties(contentEOY, contentUL, 0.2);
       bool below100     = hists["UL"]->GetYaxis()->GetBinCenter(yUL)<100;
-      bool both      = !withinUncert&&below100;
-      bool checkboth = withinUncert&&below100;
+      // bool both         = !withinUncert&&below100;
+      // bool checkboth    = withinUncert&&below100;
       all++;
       if(withinUncert) inUncert++;
-      if(checkboth)    outUncert++;
-      if(both)         inUncertlow++;
+      // if(checkboth)    outUncert++;
+      // if(both)         inUncertlow++;
     }
   }
-  cout << setprecision(3) << "number bins: " << setw(4) << all << " | within Uncert: " << setw(3) << inUncert << " (" << inUncert/(double)all*100 << "%)" << endl;;
+  cout << setprecision(3) << "number bins: " << setw(4) << all << " | within Uncert: " << setw(3) << inUncert << " (" << inUncert/(double)all*100 << "%)" << endl;
   return bin_content;
 }
 
@@ -358,7 +358,7 @@ void DifferencesPrefiringMap(){
   draw_map(hists["jetem"]["UL"], "jetemptvseta_UL",  20);
   draw_map(hists["photon"]["UL"],"photonptvseta_UL", 20);
 
-  if(debug) cout << "\nIn draw_map() with Diff" << endl;
+  // if(debug) cout << "\nIn draw_map() with Diff" << endl;
   // draw_map(hists["jet"]["diff"],    "jetptvseta_diff",    "|EOY-UL|", 20, 500, 0, 0.07);
   // draw_map(hists["jetem"]["diff"],  "jetemptvseta_diff",  "|EOY-UL|", 20, 500, 0, 0.2);
   // draw_map(hists["photon"]["diff"], "photonptvseta_diff", "|EOY-UL|", 20, 500, 0, 0.35);
