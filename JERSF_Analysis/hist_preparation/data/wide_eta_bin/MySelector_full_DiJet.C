@@ -34,7 +34,6 @@
 #include "MySelector.h"
 #include "constants.h"
 
-
 bool JetInRange(double jet_eta, double min, double max) {
   return (TMath::Abs(jet_eta) > min && TMath::Abs(jet_eta) < max);
 }
@@ -50,6 +49,7 @@ asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                    
 asymmetries_pt_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                       \
 asymmetries_rho_##region.at(r).at(k).at(m)->Fill( rho, weight);                                         \
 asymmetries_pt3_##region.at(r).at(k).at(m)->Fill( jet3_pt, weight);                                     \
+pt_spectrum_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                          \
 if ( m == AlphaBins-1 ) {                                                                               \
   h_JetAvePt_##method->Fill( pt_ave, weight);                                                           \
   h_Jet1Pt_##method->Fill( barreljet_pt, weight);                                                       \
@@ -78,6 +78,7 @@ for( int m = 0; m < EtaBins_##region; m++ ) {                   \
   f->cd();                                                      \
   asymmetries_##region.at(m).at(p).at(r)->Write();              \
   asymmetries_pt_##region.at(m).at(p).at(r)->Write();           \
+  pt_spectrum_##region.at(m).at(p).at(r)->Write();              \
   f1->cd();                                                     \
   asymmetries_rho_##region.at(m).at(p).at(r)->Write();          \
   asymmetries_pt3_##region.at(m).at(p).at(r)->Write();          \
@@ -85,12 +86,12 @@ for( int m = 0; m < EtaBins_##region; m++ ) {                   \
   alpha_spectrum_##region.at(m).at(p)->Write();                 \
 }                                                               \
 
-void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetries, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_pt, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_rho, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_pt3, std::vector< std::vector< TH1F* > > &alpha_spectrum, TString text, TString extraText, int etaBins, int ptBins, int AlphaBins, int etaShift, int ptShift, int alphaShift) {
+void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetries, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_pt, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_rho, std::vector< std::vector< std::vector< TH1F* > > > &asymmetries_pt3, std::vector< std::vector< std::vector< TH1F* > > > &pt_spectrum, std::vector< std::vector< TH1F* > > &alpha_spectrum, TString text, TString extraText, int etaBins, int ptBins, int AlphaBins, int etaShift, int ptShift, int alphaShift) {
   for( int m = etaShift; m < etaBins+etaShift; m++ ) {
-    std::vector< std::vector< TH1F* > > temp2, temp2pt, temp2rho, temp2pt3;
+    std::vector< std::vector< TH1F* > > temp2, temp2pt, temp2rho, temp2pt3, temp2pts;
     std::vector< TH1F* > alpha_temp2;
     for( int p = 0; p < ptBins; p++ ) {
-      std::vector< TH1F* > temp1, temp1pt, temp1rho, temp1pt3;
+      std::vector< TH1F* > temp1, temp1pt, temp1rho, temp1pt3, temp1pts;
       TString name_alpha = "alpha"; name_alpha += extraText; name_alpha += "_eta"; name_alpha += m+1; name_alpha += "_pt"; name_alpha += p+1;
       TH1F *h1_alpha = new TH1F( name_alpha, name_alpha, 80, 0., 0.8); h1_alpha->SetXTitle("Alpha"); h1_alpha->SetYTitle("a.u.");  h1_alpha->Sumw2();  alpha_temp2.push_back(h1_alpha);
       for( int r = 0; r < AlphaBins; r++ ) {
@@ -98,14 +99,16 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
         TString name_pt  = text+"pt";   name_pt  += extraText; name_pt  += "_eta"; name_pt  += m+1; name_pt  += "_pt"; name_pt  += p+1; name_pt  += "_alpha"; name_pt  += r+1;
         TString name_rho = text+"rho";  name_rho += extraText; name_rho += "_eta"; name_rho += m+1; name_rho += "_pt"; name_rho += p+1; name_rho += "_alpha"; name_rho += r+1;
         TString name_pt3 = text+"pt3";  name_pt3 += extraText; name_pt3 += "_eta"; name_pt3 += m+1; name_pt3 += "_pt"; name_pt3 += p+1; name_pt3 += "_alpha"; name_pt3 += r+1;
+        TString name_pts = text+"ptspectrum";   name_pts += extraText; name_pts += "_eta"; name_pts += m+1; name_pts += "_pt"; name_pts += p+1; name_pts += "_alpha"; name_pts += r+1;
         TH1F *h1 = new TH1F(name,     name,     160,-0.8, 0.8);   h1->SetXTitle("Asymmetry"); h1->SetYTitle("a.u.");  h1->Sumw2();  temp1.push_back(h1);
         TH1F *h2 = new TH1F(name_pt,  name_pt,  50,   0,  1500);  h2->SetXTitle("Pt[GeV]");   h2->SetYTitle("a.u.");  h2->Sumw2();  temp1pt.push_back(h2);
         TH1F *h3 = new TH1F(name_rho, name_rho, 100,  0,  100);   h3->SetXTitle("rho");       h3->SetYTitle("a.u.");  h3->Sumw2();  temp1rho.push_back(h3);
         TH1F *h4 = new TH1F(name_pt3, name_pt3, 50,   0,  1500);  h4->SetXTitle("Pt[GeV]");   h4->SetYTitle("a.u.");  h4->Sumw2();  temp1pt3.push_back(h4);
+        TH1F *h5 = new TH1F(name_pts, name_pts, 1500,   0,  1500);  h5->SetXTitle("Pt[GeV]");   h5->SetYTitle("a.u.");  h5->Sumw2();  temp1pts.push_back(h5);
       }
-      temp2.push_back(temp1); temp2pt.push_back(temp1pt); temp2rho.push_back(temp1rho);  temp2pt3.push_back(temp1pt3);
+      temp2.push_back(temp1); temp2pt.push_back(temp1pt); temp2rho.push_back(temp1rho);  temp2pt3.push_back(temp1pt3);  temp2pts.push_back(temp1pts);
     }
-    asymmetries.push_back(temp2); asymmetries_pt.push_back(temp2pt); asymmetries_rho.push_back(temp2rho); asymmetries_pt3.push_back(temp2pt3);
+    asymmetries.push_back(temp2); asymmetries_pt.push_back(temp2pt); asymmetries_rho.push_back(temp2rho); asymmetries_pt3.push_back(temp2pt3); pt_spectrum.push_back(temp2pts);
     alpha_spectrum.push_back(alpha_temp2);
   }
 }
@@ -131,6 +134,7 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   if (study=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
   else if (study=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (study=="eta_common") eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
   else if (study=="eta_L2R")    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
   else                          eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
 
@@ -156,7 +160,7 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   std::string triggerName = isAK8? "SingleJet" : "DiJet";
   std::string name_pt_bin = triggerName+"_central_";
-  if (isAK8) name_pt_bin += "AK8_"; 
+  if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
@@ -196,10 +200,10 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
     std::cout << "\n" << std::endl;
   }
 
-
+  int neta = (int) eta_bins.size();
   for ( int k = 0 ; k < PtBins_Central ; k++ ) {
     std::vector< std::vector< double > >  temp;
-    for (int r = 0; r < 14; r++) {
+    for (int r = 0; r < neta; r++) {
       std::vector< double >  temp2;
       for (int m = 0; m < AlphaBins; m++) temp2.push_back(0);
       temp.push_back(temp2);
@@ -209,7 +213,7 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   for ( int k = 0 ; k < PtBins_HF ; k++ ) {
     std::vector< std::vector< double > >  temp;
-    for (int r = 0; r < 14; r++) {
+    for (int r = 0; r < neta; r++) {
       std::vector< double >  temp2;
       for (int m = 0; m < AlphaBins; m++) temp2.push_back(0);
       temp.push_back(temp2);
@@ -217,11 +221,11 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
     nevents_HF.push_back(temp);
   }
 
-  MakeHistograms(asymmetries_SM,            asymmetries_pt_SM,            asymmetries_rho_SM,            asymmetries_pt3_SM,            alpha_spectrum_SM,            "asymm", "_SM",            EtaBins_SM,            PtBins_Central, AlphaBins, etaShift_SM,            0, 0);
-  MakeHistograms(asymmetries_SM_control,    asymmetries_pt_SM_control,    asymmetries_rho_SM_control,    asymmetries_pt3_SM_control,    alpha_spectrum_SM_control,    "asymm", "_SM_control",    EtaBins_SM_control,    PtBins_HF,      AlphaBins, etaShift_SM_control,    0, 0);
-  MakeHistograms(asymmetries_FE_reference,  asymmetries_pt_FE_reference,  asymmetries_rho_FE_reference,  asymmetries_pt3_FE_reference,  alpha_spectrum_FE_reference,  "asymm", "_FE_reference",  EtaBins_FE_reference,  PtBins_Central, AlphaBins, etaShift_FE_reference,  0, 0);
-  MakeHistograms(asymmetries_FE_control,    asymmetries_pt_FE_control,    asymmetries_rho_FE_control,    asymmetries_pt3_FE_control,    alpha_spectrum_FE_control,    "asymm", "_FE_control",    EtaBins_FE_control,    PtBins_Central, AlphaBins, etaShift_FE_control,    0, 0);
-  MakeHistograms(asymmetries_FE,            asymmetries_pt_FE,            asymmetries_rho_FE,            asymmetries_pt3_FE,            alpha_spectrum_FE,            "asymm", "_FE",            EtaBins_FE,            PtBins_HF,      AlphaBins, etaShift_FE,            0, 0);
+  MakeHistograms(asymmetries_SM,            asymmetries_pt_SM,            asymmetries_rho_SM,            asymmetries_pt3_SM,            pt_spectrum_SM,           alpha_spectrum_SM,           "asymm", "_SM",            EtaBins_SM,            PtBins_Central, AlphaBins, etaShift_SM,            0, 0);
+  MakeHistograms(asymmetries_SM_control,    asymmetries_pt_SM_control,    asymmetries_rho_SM_control,    asymmetries_pt3_SM_control,    pt_spectrum_SM_control,   alpha_spectrum_SM_control,   "asymm", "_SM_control",    EtaBins_SM_control,    PtBins_HF,      AlphaBins, etaShift_SM_control,    0, 0);
+  MakeHistograms(asymmetries_FE_reference,  asymmetries_pt_FE_reference,  asymmetries_rho_FE_reference,  asymmetries_pt3_FE_reference,  pt_spectrum_FE_reference, alpha_spectrum_FE_reference, "asymm", "_FE_reference",  EtaBins_FE_reference,  PtBins_Central, AlphaBins, etaShift_FE_reference,  0, 0);
+  MakeHistograms(asymmetries_FE_control,    asymmetries_pt_FE_control,    asymmetries_rho_FE_control,    asymmetries_pt3_FE_control,    pt_spectrum_FE_control,   alpha_spectrum_FE_control,   "asymm", "_FE_control",    EtaBins_FE_control,    PtBins_Central, AlphaBins, etaShift_FE_control,    0, 0);
+  MakeHistograms(asymmetries_FE,            asymmetries_pt_FE,            asymmetries_rho_FE,            asymmetries_pt3_FE,            pt_spectrum_FE,           alpha_spectrum_FE,           "asymm", "_FE",            EtaBins_FE,            PtBins_HF,      AlphaBins, etaShift_FE,            0, 0);
 
 }
 
@@ -241,7 +245,6 @@ bool MySelector::Process(Long64_t entry) {
 
   // Below I choose what kind of asymmetries I want to study! excl_bin = true for exclusive bins
   bool excl_bin = false; // inclusive
-
   if (njet<2) return kTRUE;
   if (barreljet_pt < jet_thr && probejet_pt < jet_thr) return kTRUE;
   if ( TMath::Abs(TVector2::Phi_mpi_pi((probejet_phi - barreljet_phi))) < s_delta_phi ) { std::cout << "Jets are not back to back" << std::endl; return kTRUE;}
@@ -253,7 +256,6 @@ bool MySelector::Process(Long64_t entry) {
   h_alpha_raw->Fill(alpha_raw, 1);
 
   bool dofill; int shift;
-  // bool isHF = probejet_eta>eta_cut? true : false;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
   if (!isHF) {
