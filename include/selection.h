@@ -121,24 +121,3 @@ namespace uhh2DiJetJERC {
   };
 
 }
-
-//////////////////////////////////////////////////////////////////////////////////////
-// Treatment of HEM 15/16 issue
-
-class BadHCALSelection: public uhh2::Selection {
-  public:
-    BadHCALSelection(uhh2::Context &ctx, long int seed = 123456789);
-    virtual bool passes(const uhh2::Event &event) override;
-
-  private:
-    TRandom *m_rng;
-    long int m_seed;
-    Year year;
-    int m_runnumber = 319077;
-    double m_lumi_ratio = 0.64844705699; // (Run 319077(17.370008 pb-1) + Run C + Run D) / all 2018
-
-    double m_interval_eta = -1.3;
-    double m_interval_phi_low = -1.57;
-    double m_interval_phi_high = -0.87;
-
-  };

@@ -9,6 +9,7 @@
 #include "UHH2/core/include/L1Jet.h"
 #include "UHH2/core/include/Utils.h"
 #include "UHH2/common/include/CommonModules.h"
+#include "UHH2/common/include/DetectorCleaning.h"
 #include "UHH2/common/include/MCWeight.h"
 #include "UHH2/common/include/JetCorrections.h"
 #include "UHH2/common/include/LumiSelection.h"
@@ -206,7 +207,7 @@ protected:
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
   std::unique_ptr<JECCrossCheckHists> h_input,h_lumisel, h_beforeCleaner,h_afterCleaner,h_2jets,h_beforeJEC,h_afterJEC,h_afterJER,h_afterMET,h_beforeTriggerData,h_afterTriggerData,h_beforeFlatFwd,h_afterFlatFwd,h_afterPtEtaReweight,h_afterLumiReweight,h_afterUnflat,h_afternVts;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
-  std::unique_ptr<Selection> sel_badhcal;
+  std::unique_ptr<Selection> HEMEventCleaner_Selection;
 
 
   //useful booleans
@@ -550,11 +551,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   sel.reset(new uhh2DiJetJERC::Selection(ctx));
-  sel_badhcal.reset(new BadHCALSelection(ctx));
-  // cout << "start" << endl;
-  // for(auto & kv : ctx.get_all()){
-  //   cout << " " << kv.first << " = " << kv.second << endl;
-  // }
+
+  // TODO: Implement for other jet collections
+  HEMEventCleaner_Selection.reset(new HEMCleanerSelection(ctx, "jets", true, true, true));
 
   no_genp = true;
   dataset_version = ctx.get("dataset_version");
@@ -698,11 +697,6 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
       for (size_t i = 0; i < pt_indexes.at(triggerModeName).size() ; i++) {
         std::string trg_xml = PtBinsTrigger+"_"+pt_indexes.at(triggerModeName)[i];
         if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) trg_xml = TString(trg_xml).ReplaceAll("550","500");
-        if (isUL16_fortrigger && isAK8 && (mode.compare("forward") == 0))
-        { // HLT_AK8PFJetFwd do not exist for 2016
-          cout << "Consider UL16 trigger" << endl;
-          trg_xml = TString(trg_xml).ReplaceAll("_HFJEC","");
-        }
         if (isAK8) trg_xml += "_AK8";
         if ((is2017 || isUL17) && ((dataset_version.find("RunB") != std::string::npos) || (dataset_version.find("RunC") != std::string::npos))){
           trg_xml = TString(trg_xml).ReplaceAll("DiJet","SingleJet");
@@ -848,6 +842,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // Do pileup reweighting
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
 
+  // HEM 15/16 issue
+  if(!HEMEventCleaner_Selection->passes(event)) return false;
+
   //Dump Input
   h_input->fill(event);
   //LEPTON selection
@@ -871,9 +868,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     if(!lumi_sel->passes(event)) return false;
     else h_lumisel->fill(event);
   }
-
-  // HEM 15/16 issue
-  if(!sel_badhcal->passes(event)) return false;
 
   // MET filters
   if(!metfilters_sel->passes(event)) return false;
@@ -1214,7 +1208,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
         double pt_min = trg_thresh[trg_xml];
         double pt_max = ((i+1)<pt_indexes.at(PtBinsTrigger+"_central").size()) ? trg_thresh[pt_indexes.at(PtBinsTrigger+"_central")[i+1]]: PT_trigger_max;
         if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) {
-          if ((trg_xml.find("trigger500")!= std::string::npos) || trg_xml.find("trigger550")!= std::string::npos) pt_max = PT_trigger_max;
+          if ((trg_xml.find("trigger500")!= std::string::npos) || trg_xml.find("trigger550")!= std::string::npos)
           pt_max = PT_trigger_max;
         }
         pass_trigger[trg_xml] = trigger_sel[i]->passes(event) && pt_ave>pt_min && pt_ave<pt_max;
