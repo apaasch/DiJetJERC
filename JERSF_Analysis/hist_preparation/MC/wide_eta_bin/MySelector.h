@@ -139,7 +139,7 @@ public:
 
   int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE;
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
-  int PtBins_Central, PtBins_HF;
+  int PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins;
 
   std::vector<int> Pt_bins_Central;
@@ -155,11 +155,11 @@ public:
 
   std::vector< std::vector< std::vector< double > > > nevents_central,nevents_HF;
 
-  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM, 						asymmetries_pt_SM,						asymmetries_rho_SM,						asymmetries_pt3_SM,						asymmetries_dR1_SM,						asymmetries_dR2_SM;
-  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM_control, 		asymmetries_pt_SM_control,		asymmetries_rho_SM_control,		asymmetries_pt3_SM_control,		asymmetries_dR1_SM_control,		asymmetries_dR2_SM_control;
-  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_FE_reference, 	asymmetries_pt_FE_reference,	asymmetries_rho_FE_reference,	asymmetries_pt3_FE_reference,	asymmetries_dR1_FE_reference,	asymmetries_dR2_FE_reference;
-  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_FE_control, 		asymmetries_pt_FE_control,		asymmetries_rho_FE_control,		asymmetries_pt3_FE_control,		asymmetries_dR1_FE_control,		asymmetries_dR2_FE_control;
-  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_FE, 						asymmetries_pt_FE,						asymmetries_rho_FE,						asymmetries_pt3_FE,						asymmetries_dR1_FE,						asymmetries_dR2_FE;
+  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM, 						asymmetries_pt_SM,						asymmetries_rho_SM,						asymmetries_ptf_SM,						asymmetries_pt3_SM,						asymmetries_dR1_SM,						asymmetries_dR2_SM;
+  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM_control, 		asymmetries_pt_SM_control,		asymmetries_rho_SM_control,		asymmetries_ptf_SM_control,		asymmetries_pt3_SM_control,		asymmetries_dR1_SM_control,		asymmetries_dR2_SM_control;
+  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_FE_reference, 	asymmetries_pt_FE_reference,	asymmetries_rho_FE_reference,	asymmetries_ptf_FE_reference,	asymmetries_pt3_FE_reference,	asymmetries_dR1_FE_reference,	asymmetries_dR2_FE_reference;
+  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_FE_control, 		asymmetries_pt_FE_control,		asymmetries_rho_FE_control,		asymmetries_ptf_FE_control,		asymmetries_pt3_FE_control,		asymmetries_dR1_FE_control,		asymmetries_dR2_FE_control;
+  std::vector< std::vector< std::vector< TH1F* > > > asymmetries_FE, 						asymmetries_pt_FE,						asymmetries_rho_FE,						asymmetries_ptf_FE,						asymmetries_pt3_FE,						asymmetries_dR1_FE,						asymmetries_dR2_FE;
 
 
   std::vector< std::vector< std::vector< TH1F* > > > gen_asymmetries_SM, 						gen_asymmetries_pt_SM,						gen_asymmetries_rho_SM,						gen_asymmetries_pt3_SM;
