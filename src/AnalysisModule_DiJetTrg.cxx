@@ -9,6 +9,7 @@
 #include "UHH2/core/include/L1Jet.h"
 #include "UHH2/core/include/Utils.h"
 #include "UHH2/common/include/CommonModules.h"
+#include "UHH2/common/include/DetectorCleaning.h"
 #include "UHH2/common/include/MCWeight.h"
 #include "UHH2/common/include/JetCorrections.h"
 #include "UHH2/common/include/LumiSelection.h"
@@ -206,6 +207,8 @@ protected:
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
   std::unique_ptr<JECCrossCheckHists> h_input,h_lumisel, h_beforeCleaner,h_afterCleaner,h_2jets,h_beforeJEC,h_afterJEC,h_afterJER,h_afterMET,h_beforeTriggerData,h_afterTriggerData,h_beforeFlatFwd,h_afterFlatFwd,h_afterPtEtaReweight,h_afterLumiReweight,h_afterUnflat,h_afternVts;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
+  std::unique_ptr<Selection> HEMEventCleaner_Selection;
+
 
   //useful booleans
   bool debug, no_genp;
@@ -219,7 +222,7 @@ protected:
   bool ts;
   string SysType_PU;
   string dataset_version, jetLabel;
-  string JEC_Version, jecTag, jecVer, JEC_Level, jet_coll;
+  string JEC_Version, jecTag, jecVer, JEC_Level, jet_coll, jecVar;
   string Study;
   JetId Jet_PFID;
   int n_evt;
@@ -548,10 +551,9 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   sel.reset(new uhh2DiJetJERC::Selection(ctx));
-  // cout << "start" << endl;
-  // for(auto & kv : ctx.get_all()){
-  //   cout << " " << kv.first << " = " << kv.second << endl;
-  // }
+
+  // TODO: Implement for other jet collections
+  HEMEventCleaner_Selection.reset(new HEMCleanerSelection(ctx, "jets", true, true, true));
 
   no_genp = true;
   dataset_version = ctx.get("dataset_version");
@@ -564,6 +566,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   jecTag = JEC_Version.substr(0,JEC_Version.find("_V"));
   jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
   JEC_Level = ctx.get("JEC_Level", "L1L2L3Residual");
+  jecVar = ctx.get("jecsmear_direction");
 
   Study = ctx.get("Study", "default");
 
@@ -658,6 +661,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
       else throw std::invalid_argument(JEC_Level+" is not implemented");
     }
   }
+
   // if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
   // else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
   if (apply_EtaPhi_cut) {
@@ -677,7 +681,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //Lepton cleaner
   const     MuonId muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
-  const ElectronId eleSR(AndId<Electron>(ElectronID_MVA_Fall17_loose_noIso , PtEtaSCCut(15, 2.4)));
+  const ElectronId eleSR(AndId<Electron>(ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wpLoose), PtEtaSCCut(15, 2.4)));
   muoSR_cleaner.reset(new     MuonCleaner(muoSR));
   eleSR_cleaner.reset(new ElectronCleaner(eleSR));
 
@@ -686,7 +690,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   trigger_fwd     = (ctx.get("Trigger_FWD") == "true");
   //    ts  = (ctx.get("Trigger_Single") == "true"); //if true use single jet trigger, if false di jet trigger TODO collapse the SiJet and DiJEt AnalysisModules into one?
 
-
+  bool isUL16_fortrigger = (isUL16preVFP || isUL16postVFP);
   if(!isMC){
     for (std::string mode: {"central", "forward"}) {
       std::string triggerModeName = PtBinsTrigger+"_"+mode;
@@ -718,8 +722,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //JER Smearing for corresponding JEC-Version
   if(JERClosureTest && isMC) {
-    if(isUL16preVFP)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL16_JRV1_MC/Summer19UL16_JRV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"));
-    if(isUL16postVFP)         jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL16_JRV1_MC/Summer19UL16_JRV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL16preVFP)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt"));
+    if(isUL16postVFP)         jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV2_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt"));
     if(isUL17)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL17_JRV3_MC/Summer19UL17_JRV3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL17_JRV3_MC/Summer19UL17_JRV3_MC_PtResolution_AK4PFchs.txt"));
     if(isUL18)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"));
     if(is2018)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));
@@ -803,6 +807,12 @@ AnalysisModule_DiJetTrg::~AnalysisModule_DiJetTrg() {
 
 bool AnalysisModule_DiJetTrg::process(Event & event) {
 
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  if (event.year=="2017UL") event.year=year; // --- TODO !!!! ------------------
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+
   //###############################################################
   //
   //Selection Module for DiJetJERC Calculation
@@ -819,7 +829,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   n_evt++;
   if(debug){
     cout << endl << "++++++++++ NEW EVENT +++++++++" << endl << endl;
-    cout << " Evt# "<<event.event<<" Run: "<<event.run<<" " << endl;
+    cout << " Evt# "<<event.event<<" Run: "<<event.run<<" Year: " << event.year << endl;
     //      cout << "pfparticles.size() = " <<event.pfparticles->size()<<endl;
   }
 
@@ -831,6 +841,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   // Do pileup reweighting
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
+
+  // HEM 15/16 issue
+  if(!HEMEventCleaner_Selection->passes(event)) return false;
 
   //Dump Input
   h_input->fill(event);
@@ -888,6 +901,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   //JetID
   int jet_n = ak4jets->size();
   if(jet_n<2) return false;
+  if(debug) cout<<"#jets starting process "<<n_jets_beforeCleaner<<endl;
 
   jetID->process(event); //TODO FixME: make sure JetID works for AK8
   if(debug) cout<<"after jet ID"<<endl;
@@ -1079,7 +1093,17 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   bool isJER_SM = false;
   Jet* jet_barrel = jet1;
   Jet* jet_probe = jet2;
+  int runNum_uint = static_cast<int>(event.run);
+  int lumiNum_uint = static_cast<int>(event.luminosityBlock);
+  int evNum_uint = static_cast<int>(event.event);
+  // unsigned int jet0eta = uint32_t(jets.empty() ? 0 : jets[0].eta() / 0.01);
+  int m_nomVar = 0;
+  if(jecVar == "up" || SysType_PU == "up") m_nomVar = 1;
+  else if(jecVar == "down" || SysType_PU == "down") m_nomVar = -1;
+  std::uint32_t seed =  m_nomVar + (lumiNum_uint << 10) + (runNum_uint << 20) + evNum_uint;
+  srand(seed);
   int numb = (rand() % 2)+1;
+  if(debug) cout << evNum_uint << "\t" << runNum_uint << "\t" << lumiNum_uint << "\t" << m_nomVar << "\t" << (lumiNum_uint << 10) << "\t" << (runNum_uint << 20) << "\t" << seed << "\t" << numb << endl;
 
   // std::cout << "RANDOMIZE " << numb << '\n';
   // std::cout << jet_barrel->pt() << " " << jet_barrel->eta() << " " << (fabs(jet1->eta())<s_eta_barr) << " " << '\n';
@@ -1106,6 +1130,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   if (Study=="eta_narrow")      eta_bins = vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
   else if (Study=="eta_simple") eta_bins = vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (Study=="eta_common") eta_bins = vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
   else if (Study=="eta_L2R")    eta_bins = vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
   else                          eta_bins = vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
 
