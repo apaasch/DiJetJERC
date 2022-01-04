@@ -94,7 +94,7 @@ lumi_file = {
     "UL16preVFP":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL16preVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16preVFP_normtag.root",
     "UL16postVFP":  os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL16postVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16postVFP_normtag.root",
     "UL17":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root",
-    "UL18":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON_normtag.root",
+    "UL18":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON_normtag.root",
 }
 
 TargetLumi = {

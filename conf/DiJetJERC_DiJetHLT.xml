@@ -34,10 +34,10 @@
 <!-- MC PuReweighting -->
 <!ENTITY DO_PU_REWEIGHTING          "true">     <!-- true, false -->
 <!ENTITY SYSTYPE_PU                 "central">  <!-- central, up, down -->
-<!ENTITY PILEUP_DIRECTORY           "CMSSW_BASE/src/UHH2/common/data/&YEAR;/MyMCPileupHistogram_&YEAR;.root">
-<!ENTITY PILEUP_DIRECTORY_DATA      "CMSSW_BASE/src/UHH2/common/data/&YEAR;/MyDataPileupHistogram_&YEAR;.root">
-<!ENTITY PILEUP_DIRECTORY_DATA_UP   "CMSSW_BASE/src/UHH2/common/data/&YEAR;/MyDataPileupHistogram_&YEAR;_72383.root">
-<!ENTITY PILEUP_DIRECTORY_DATA_DOWN "CMSSW_BASE/src/UHH2/common/data/&YEAR;/MyDataPileupHistogram_&YEAR;_66017.root">
+<!ENTITY PILEUP_DIRECTORY           "CMSSW_BASE/src/UHH2/common/UHH2-data/&YEAR;/MyMCPileupHistogram_&YEAR;.root">
+<!ENTITY PILEUP_DIRECTORY_DATA      "CMSSW_BASE/src/UHH2/common/UHH2-data/&YEAR;/MyDataPileupHistogram_&YEAR;.root">
+<!ENTITY PILEUP_DIRECTORY_DATA_UP   "CMSSW_BASE/src/UHH2/common/UHH2-data/&YEAR;/MyDataPileupHistogram_&YEAR;_72383.root">
+<!ENTITY PILEUP_DIRECTORY_DATA_DOWN "CMSSW_BASE/src/UHH2/common/UHH2-data/&YEAR;/MyDataPileupHistogram_&YEAR;_66017.root">
 <!ENTITY LUMI_FILE                  "lumifile.root">
 
 <!-- MC Samples -->
