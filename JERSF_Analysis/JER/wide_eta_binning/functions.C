@@ -704,6 +704,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
 
 
   for( unsigned int m = shift; m < Input.size() ; m++ ) {
+    vector<double> pTbins = (m<11)?usedPtTrigger_central:usedPtTrigger_forward;
     std::vector< double > temp2;
     std::vector< double > temp_error2;
 
