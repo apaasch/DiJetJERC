@@ -22,6 +22,14 @@
 #include <TMatrixD.h>
 #include "constants.h"
 
+#include <bits/stdc++.h>
+
+bool debug = false;
+bool alpha_new = true;
+
+static std::vector<double> usedPtTrigger_central; // Set in mainRun.cxx
+static std::vector<double> usedPtTrigger_forward; // Set in mainRun.cxx
+
 // Code of Andrea Malara
 // Based on code by Marek Niedziela, Matthias Schröder, Kristin Goebel
 
@@ -58,7 +66,6 @@ struct fit_data{
     int j = 0;
 
     for(unsigned int i = 0; i < y_val.size(); i++) {
-      //         std::cout << "i: " << i << "   j: " << j << std::endl;
       if ( y_val.at(i) == 0) {
         x_val.erase(x_val.begin()+i);
         y_val.erase(y_val.begin()+i);
@@ -116,12 +123,20 @@ TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
 TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize);
 TF1* GetFitsRatio(TF1* fit1, TF1* fit2, double ptmin, int color, TString func);
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 TString dtos(double number, int precision)
 {
   stringstream stream;
   stream << std::fixed << std::setprecision(precision) << number;
   return stream.str();
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err){
   vector<double> xvalues = {};
@@ -141,6 +156,10 @@ TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err){
   return MC_graph;
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize = 1){
   TH1F* h_ratio = (TH1F*) hist->Clone();
   // delete h_ratio->GetListOfFunctions()->FindObject("mcFIT");
@@ -158,6 +177,10 @@ TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize = 1){
   return h_ratio;
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 void RemoveAsymBinsFromJER(TH1F* hist, double bin){
   int count_bins = 0;
   for(unsigned int i=0; i<hist->GetNbinsX(); i++)
@@ -169,6 +192,10 @@ void RemoveAsymBinsFromJER(TH1F* hist, double bin){
   // cout << count_bins << endl;
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
   FitPar << info << "\n";
   FitPar << "N = " << setw(8) << fit->GetParameter(0) << " \u00B1 " << setw(8) << fit->GetParError(0) << "\n";
@@ -179,6 +206,10 @@ void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
   FitPar << "NDF = " << setw(3) << fit->GetNDF() << "\n";
   FitPar << "\n";
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBins, int AlphaBins, int etaShift) {
   for( int m = etaShift; m < etaBins+etaShift; m++ ) {
@@ -194,8 +225,7 @@ void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< 
         if (h) h->Rebin(2);
         temp1.push_back(h);
         if (( TH1F* )f.Get( name ) == 0) {
-          std::cout << "ERROR" << std::endl;
-          std::cout << name << std::endl;
+          std::cout << "[ERROR] " << name << std::endl;
         }
         if ( data == false ) {
           TH1F* h_gen = (TH1F*)f.Get(namegen);
@@ -211,6 +241,10 @@ void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< 
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 
 void histMeanPt( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths ) {
   for( unsigned int m = 0; m < Asymmetry.size(); m++ ) {
@@ -225,6 +259,10 @@ void histMeanPt( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry ,
     Widths.push_back(temp1);
   }
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths, std::vector< std::vector< std::vector< double > > > &WidthsError , bool fill_all, double alpha, bool isFE, std::vector< std::vector< std::vector< double > > > &lower_x, std::vector< std::vector< std::vector< double > > > &upper_x, std::vector <double> eta_bins, std::vector <double> alpha_bins) {
   double asym;
@@ -260,7 +298,7 @@ void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetr
         } else { asym = 0.; asymerr = 0.; low = 10.0; up = 10.0;};
 
         if (!fill_all) {
-          if (alpha_bins.at(r)<removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1)) { asym = 0.; asymerr = 0.; };
+          if (alpha_bins.at(r)<removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1)) {asym = 0.; asymerr = 0.;}
         }
         temp1.push_back( asym );
         temp_error1.push_back( asymerr );
@@ -278,6 +316,10 @@ void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetr
     upper_x.push_back(temp2_upper_x);
   }
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void histWidthMCTruth( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry , std::vector<std::vector<std::vector<double> > > &Widths, std::vector<std::vector<std::vector<double> > > &WidthsError ) {
   double asym;
@@ -302,6 +344,10 @@ void histWidthMCTruth( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry
     WidthsError.push_back(temp_error2);
   }
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void fill_widths_hists( TString name1, std::vector< std::vector< TH1F* > > &widths , std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError) {
   double aMax[] = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3 };
@@ -328,6 +374,10 @@ void fill_widths_hists( TString name1, std::vector< std::vector< TH1F* > > &widt
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 void histLinFit( std::vector< std::vector< TH1F* > > widths_hist_all , std::vector< std::vector< double > > &Widths, std::vector< std::vector< double > > &WidthsError, bool isFE ) {
   for( unsigned int m = 0; m < widths_hist_all.size(); m++ ) {
     std::vector<double> temp2;
@@ -351,12 +401,86 @@ void histLinFit( std::vector< std::vector< TH1F* > > widths_hist_all , std::vect
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
+void createCov( std::vector< double > Widths, std::vector< double > WidthsError, std::vector<float> alpha, TMatrixD &y_cov_mc){
+  for(unsigned int ialpha=0; ialpha < alpha.size(); ++ialpha) {
+    for (unsigned int jalpha =0; jalpha < alpha.size(); jalpha++) {
+      if ( ialpha <= jalpha ) {
+        double n1_mc = pow(Widths.at(ialpha),2)/(2*pow(WidthsError.at(ialpha),2));
+        double n2_mc = pow(Widths.at(jalpha),2)/(2*pow(WidthsError.at(jalpha),2));
+        y_cov_mc(ialpha, jalpha) = pow(WidthsError.at(ialpha),2) * pow((n1_mc/n2_mc),2)*
+        (Widths.at(ialpha)/Widths.at(jalpha));
+      } else {
+        double n1_mc = pow(Widths.at(jalpha),2)/(2*pow(WidthsError.at(jalpha),2));
+        double n2_mc = pow(Widths.at(ialpha),2)/(2*pow(WidthsError.at(ialpha),2));
+        y_cov_mc(ialpha, jalpha) = pow(WidthsError.at(jalpha),2) * pow((n1_mc/n2_mc),2)*
+        (Widths.at(jalpha)/Widths.at(ialpha));
+      }
+    }
+  }
+}
+
+int CheckNumberAlphaPoints( std::vector< double > Widths){
+  int length = 0;
+  for(auto a: Widths) length = length+((a==0)?0:1);
+  return length;
+}
+
+bool IsGreaterZero(double i){
+  return 0.<i;
+}
+
+void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *lin_extrapol, int m, int p, bool isFE, bool isMC){
+  data_.reset();
+  data_.x_val = alpha;
+  data_.y_val = Widths;
+  data_.y_cov.ResizeTo(alpha.size(), alpha.size());
+  data_.y_cov = y_cov_;
+  data_.CheckPoints();
+  // choose start values for the fit
+  // double slope = (Widths.at(Widths.size()-1) - Widths.at(Widths.size()-3))/(x.at(x.size()-1) - x.at(x.size()-3));
+  // double offset = Widths.at(Widths.size()-1) - (slope*x.at(x.size()-1));
+  double chi2 = -10.0;
+  int ndf = Widths.size()-2;
+  double slope  = 0.15;
+  double offset = 0.05;
+  double d_slope = slope;
+  double d_offset = offset;
+  double min_slope = 0.05;
+  double max_slope = 0.5;
+  double min_offset = 0.001;
+  double max_offset = 0.15;
+  if ( !isFE && m == 7 && p == 2) { min_slope = 0.15; max_offset = 0.08;}
+  if ( !isFE && m == 7 && p == 6) { min_slope = 0.01; max_offset = 0.08;}
+  if ( !isFE && m == 8 && p == 6) { min_slope = 0.09; max_offset = 0.045;}
+  if ( !isFE && m >= 10&& p == 2) { max_offset = 0.4;}
+  if (isFE&&isMC&&m==10&& p == 6) { min_slope = 0.13; max_offset = 0.06;}
+  if (!isFE&&isMC&&m==7&& p == 6) { min_slope = 0.01; max_offset = 0.08; min_offset = 0.04;}
+  if (!isFE&&isMC&&m==7&& p == 2) { min_slope = 0.15; max_offset = 0.08; min_offset = 0.06;}
+
+  //         std::cout << "eta: " << m <<  ", p_T: " << p << std::endl;
+  //         std::cout << "fit start values: " << "slope: " << slope << " offset: " << offset << std::endl;
+  make_lin_fit(slope, d_slope, offset, d_offset, min_slope, max_slope, min_offset, max_offset, chi2);
+  //         std::cout << "fit values: " << "slope: " << slope << " offset: " << offset << std::endl;
+  // if(isFE&&isMC) cout << "During: " << offset << endl;
+  lin_extrapol->SetParameter(0, offset);
+  lin_extrapol->SetParError(0, d_offset);
+  lin_extrapol->SetParameter(1, slope);
+  lin_extrapol->SetParError(1, d_slope);
+  lin_extrapol->SetChisquare(chi2);//TODO: set the correct chi/2
+  lin_extrapol->SetNDF(ndf);
+}
+
 void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< TGraphErrors* > > &output_graph, std::vector< std::vector< double > > &output, std::vector< std::vector< double > > &output_error, bool isFE, bool isMC, TH1F* h_chi2_tot) {
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
     // eta loop
     std::vector<TGraphErrors*> temp2_graph;
     std::vector<double> temp2;
     std::vector<double> temp_error2;
+
     for( unsigned int p = 0; p < Widths.at(m).size(); p++ ) {
       // p_T loop
       std::vector<float> alpha;
@@ -368,21 +492,25 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       }
       TMatrixD y_cov_mc;
       y_cov_mc.ResizeTo(alpha.size(), alpha.size());
-      for(unsigned int ialpha=0; ialpha < alpha.size(); ++ialpha) {
-        for (unsigned int jalpha =0; jalpha < alpha.size(); jalpha++) {
-          if ( ialpha <= jalpha ) {
-            double n1_mc = pow(Widths.at(m).at(p).at(ialpha),2)/(2*pow(WidthsError.at(m).at(p).at(ialpha),2));
-            double n2_mc = pow(Widths.at(m).at(p).at(jalpha),2)/(2*pow(WidthsError.at(m).at(p).at(jalpha),2));
-            y_cov_mc(ialpha, jalpha) = pow(WidthsError.at(m).at(p).at(ialpha),2) * pow((n1_mc/n2_mc),2)*
-            (Widths.at(m).at(p).at(ialpha)/Widths.at(m).at(p).at(jalpha));
-          } else {
-            double n1_mc = pow(Widths.at(m).at(p).at(jalpha),2)/(2*pow(WidthsError.at(m).at(p).at(jalpha),2));
-            double n2_mc = pow(Widths.at(m).at(p).at(ialpha),2)/(2*pow(WidthsError.at(m).at(p).at(ialpha),2));
-            y_cov_mc(ialpha, jalpha) = pow(WidthsError.at(m).at(p).at(jalpha),2) * pow((n1_mc/n2_mc),2)*
-            (Widths.at(m).at(p).at(jalpha)/Widths.at(m).at(p).at(ialpha));
-          }
-        }
+      TMatrixD y_cov_mc_first;
+      vector<double> widths_first = Widths.at(m).at(p); vector<double> widths_first_err = WidthsError.at(m).at(p);
+      if(3<CheckNumberAlphaPoints(widths_first)){
+        vector<double>::iterator it = std::find_if(widths_first.begin(), widths_first.end(), IsGreaterZero);
+        int index = it-widths_first.begin();
+        widths_first[index] = 0.; widths_first_err[index] = 0.;
       }
+      y_cov_mc_first.ResizeTo(alpha.size(), alpha.size());
+
+      TMatrixD y_cov_mc_last;
+      vector<float> alpha_last = alpha; vector<double> x_last = x;
+      vector<double> widths_last = Widths.at(m).at(p); vector<double> widths_last_err = WidthsError.at(m).at(p);
+      if(3<CheckNumberAlphaPoints(widths_last)){ widths_last.pop_back(); widths_last_err.pop_back(); alpha_last.pop_back(); x_last.pop_back();}
+      y_cov_mc_last.ResizeTo(alpha_last.size(), alpha_last.size());
+
+      createCov(Widths.at(m).at(p), WidthsError.at(m).at(p), alpha, y_cov_mc);
+      createCov(widths_first, widths_first_err, alpha, y_cov_mc_first);
+      createCov(widths_last, widths_last_err, alpha_last, y_cov_mc_last);
+
 
       //create TGraphErrors from previously defined vectors
       TGraphErrors* extrapol_MC = new TGraphErrors(alpha.size(),&x[0],&Widths.at(m).at(p).at(0),&x_e[0],&WidthsError.at(m).at(p).at(0));
@@ -393,52 +521,41 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
 
       // fit linear extrapolation function
       TF1 *lin_extrapol_mc = new TF1("lin_extrapol_mc","[0]+[1]*x",0,alpha.back()+0.05);
+      TF1 *lin_extrapol_mc_first = new TF1("lin_extrapol_mc_first","[0]+[1]*x",0,alpha.back()+0.05);
+      TF1 *lin_extrapol_mc_last = new TF1("lin_extrapol_mc_last","[0]+[1]*x",0,alpha.back()+0.05);
 
-      // fit
-      data_.reset();
-      data_.x_val = x;
-      data_.y_val = Widths.at(m).at(p);
-      data_.y_cov.ResizeTo(alpha.size(), alpha.size());
-      data_.y_cov = y_cov_mc;
-      data_.CheckPoints();
-      // choose start values for the fit
-      // double slope = (Widths.at(m).at(p).at(Widths.at(m).at(p).size()-1) - Widths.at(m).at(p).at(Widths.at(m).at(p).size()-3))/(x.at(x.size()-1) - x.at(x.size()-3));
-      // double offset = Widths.at(m).at(p).at(Widths.at(m).at(p).size()-1) - (slope*x.at(x.size()-1));
-      double chi2 = -10.0;
-      int ndf = Widths.at(m).at(p).size()-2;
-      double slope  = 0.15;
-      double offset = 0.05;
-      double d_slope = slope;
-      double d_offset = offset;
-      double min_slope = 0.05;
-      double max_slope = 0.5;
-      double min_offset = 0.001;
-      double max_offset = 0.15;
-      if ( !isFE && m == 7 && p == 2) { min_slope = 0.15; max_offset = 0.08;}
-      if ( !isFE && m == 7 && p == 6) { min_slope = 0.01; max_offset = 0.08;}
-      if ( !isFE && m == 8 && p == 6) { min_slope = 0.09; max_offset = 0.045;}
-      if ( !isFE && m >= 10&& p == 2) { max_offset = 0.4;}
-      if (isFE&&isMC&&m==10&& p == 6) { min_slope = 0.13; max_offset = 0.06;}
-      if (!isFE&&isMC&&m==7&& p == 6) { min_slope = 0.01; max_offset = 0.08; min_offset = 0.04;}
-      if (!isFE&&isMC&&m==7&& p == 2) { min_slope = 0.15; max_offset = 0.08; min_offset = 0.06;}
+      // void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *lin_extrapol, int m, int p, bool isFE, bool isMC){
+      SetFit(Widths.at(m).at(p), x, y_cov_mc, lin_extrapol_mc, m, p, isFE, isMC);
+      SetFit(widths_first, x, y_cov_mc_first, lin_extrapol_mc_first, m, p, isFE, isMC);
+      SetFit(widths_last, x_last, y_cov_mc_last, lin_extrapol_mc_last, m, p, isFE, isMC);
 
-      //         std::cout << "eta: " << m <<  ", p_T: " << p << std::endl;
-      //         std::cout << "fit start values: " << "slope: " << slope << " offset: " << offset << std::endl;
-      make_lin_fit(slope, d_slope, offset, d_offset, min_slope, max_slope, min_offset, max_offset, chi2);
-      //         std::cout << "fit values: " << "slope: " << slope << " offset: " << offset << std::endl;
-      lin_extrapol_mc->SetParameter(0, offset);
-      lin_extrapol_mc->SetParError(0, d_offset);
-      lin_extrapol_mc->SetParameter(1, slope);
-      lin_extrapol_mc->SetParError(1, d_slope);
-      lin_extrapol_mc->SetChisquare(chi2);//TODO: set the correct chi/2
-      lin_extrapol_mc->SetNDF(ndf);
       extrapol_MC->GetListOfFunctions()->Add(lin_extrapol_mc);
-      // if (removePointsforFit(isFE, m, p)) {offset = 0; d_offset = 0; chi2 = -10; }
 
-      h_chi2_tot->Fill(chi2/ndf);
+      double offset_nom = lin_extrapol_mc->GetParameter(0);
+      double offset_first = lin_extrapol_mc_first->GetParameter(0);
+      double offset_last = lin_extrapol_mc_last->GetParameter(0);
+      double offset = ( offset_nom + offset_first + offset_last)/3;
 
-      temp2.push_back(offset);
-      temp_error2.push_back(d_offset);
+      double diff_nom = abs(offset-offset_nom);
+      double diff_first = abs(offset-offset_first);
+      double diff_last = abs(offset-offset_last);
+
+      double offset_err = 0.;
+      if(diff_nom<diff_first && diff_last<diff_first) offset_err = diff_first;
+      else if(diff_first<diff_nom && diff_last<diff_nom) offset_err = diff_nom;
+      else if(diff_nom<diff_last && diff_first<diff_last) offset_err = diff_last;
+      else offset_err = lin_extrapol_mc->GetParError(0);
+
+      h_chi2_tot->Fill(lin_extrapol_mc->GetChisquare()/lin_extrapol_mc->GetNDF()); // TODO for new method
+
+      if(alpha_new)
+      {
+        extrapol_MC->GetListOfFunctions()->Add(lin_extrapol_mc_first);
+        extrapol_MC->GetListOfFunctions()->Add(lin_extrapol_mc_last);
+      }
+
+      temp2.push_back(alpha_new?offset:offset_nom);
+      temp_error2.push_back(alpha_new?offset_err:lin_extrapol_mc->GetParError(0));
       temp2_graph.push_back(extrapol_MC);
     }
     output.push_back(temp2);
@@ -446,6 +563,10 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
     output_graph.push_back(temp2_graph);
   }
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void widths_015_ratios( TString name1, std::vector<TH1F*> &widths, std::vector<std::vector<std::vector<double> > > Widths, std::vector<std::vector<std::vector<double> > > WidthsError, std::vector<std::vector<std::vector<double> > > WidthsTwo, std::vector<std::vector<std::vector<double> > > WidthsTwoError, std::vector<std::vector<std::vector<double> > > forward_width_pt ) {
   double temp, tempError;
@@ -468,6 +589,10 @@ void widths_015_ratios( TString name1, std::vector<TH1F*> &widths, std::vector<s
     widths.push_back(hist);
   }
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void correctJERwithPLI(std::vector< std::vector< double > > &Output, std::vector< std::vector< double > > &OutputError, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< double > > PLI, std::vector< std::vector< double > > PLIError, float shift) {
   for( unsigned int i = 0; i < Widths.size(); i++ ) {
@@ -494,6 +619,10 @@ void correctJERwithPLI(std::vector< std::vector< double > > &Output, std::vector
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 void correctJERwithPLI015(std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<std::vector<double> > > Widths, std::vector<std::vector<std::vector<double> > > WidthsError, std::vector<std::vector<std::vector<double> > > PLI, std::vector<std::vector< std::vector< double > > > PLIError, float shift) {
   for( unsigned int i = 0; i < Widths.size(); i++ ) {
     std::vector< double > temp2;
@@ -514,6 +643,10 @@ void correctJERwithPLI015(std::vector<std::vector<double> > &Output, std::vector
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 // void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
 void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<double> > Input2, std::vector<std::vector<double> > InputError2, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
   double Ref, Probe, RefError, ProbeError, pT;
@@ -532,7 +665,6 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
       temp_error += InputError2.at(i).at(p)/shift;
     }
     if ( temp != 0 && !(TMath::IsNaN(temp))) {
-      // pT = width_pt.at(0).at(p).at(5) ;
       pT = (double)(*std::max_element(width_pt.at(0).at(p).begin(),width_pt.at(0).at(p).end()));
       hist->SetBinContent(hist->FindBin(pT), temp);
       hist->SetBinError(  hist->FindBin(pT), temp_error );
@@ -553,8 +685,8 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
       double temp_error;
 
       if ( Input.at(m).at(p) != 0. ) {
-        // pT = width_pt.at(m).at(p).at(5) ;
         pT = (double)(*std::max_element(width_pt.at(0).at(p).begin(),width_pt.at(0).at(p).end()));
+        // Other pT value ? average? minimum? ...
 
         temp = Input.at(m).at(p);
         temp_error = InputError.at(m).at(p);
@@ -572,6 +704,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
 
 
   for( unsigned int m = shift; m < Input.size() ; m++ ) {
+    vector<double> pTbins = (m<11)?usedPtTrigger_central:usedPtTrigger_forward;
     std::vector< double > temp2;
     std::vector< double > temp_error2;
 
@@ -581,7 +714,12 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
 
       if ( Input.at(m).at(p) != 0. ) {
         // pT = width_pt.at(m).at(p).at(5) ;
-        pT = (double)(*std::max_element(width_pt.at(0).at(p).begin(),width_pt.at(0).at(p).end()));
+        int index_p = -1; // In order to throw break
+        double ptvalue = (pTbins[p]+pTbins[p+1])/2; // 1st: Get mid of pT bin of HF bins
+        for(unsigned int z=0; z<usedPtTrigger_central.size(); z++){
+          if(usedPtTrigger_central[z]<ptvalue&&ptvalue<usedPtTrigger_central[z+1]){index_p = z; break;}
+        }
+        pT = (double)(*std::max_element(width_pt.at(0).at(index_p).begin(),width_pt.at(0).at(index_p).end()));
 
         Ref = hist->GetBinContent(hist->FindBin(pT));
         RefError = hist->GetBinError(hist->FindBin(pT));
@@ -604,8 +742,9 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
   delete canv;
 }
 
-
-
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void makeScales( std::vector< std::vector< double > > &Output, std::vector< std::vector< double > > &OutputError, std::vector< std::vector< double > > Input1, std::vector< std::vector< double > > Input1Error, std::vector< std::vector< double > > Input2, std::vector< std::vector< double > > Input2Error ) {
   for( unsigned int i = 0; i < Input1.size(); i++ ) {
@@ -630,6 +769,9 @@ void makeScales( std::vector< std::vector< double > > &Output, std::vector< std:
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void fill_mctruth_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range) {
   for( unsigned int m = 0; m <  Widths.size(); m++ ) {
@@ -647,6 +789,9 @@ void fill_mctruth_hist( TString name1, std::vector< TH1F* > &output, std::vector
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range, int shift2) {
   // int shift = 0;
@@ -675,6 +820,9 @@ void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::v
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void Fill_Map3D(std::vector< std::vector < std::vector < TH1F* > > > &Asymmetry, std::vector < TH2F* > &Map, std::vector < double > &eta_bins, std::vector < double > &pt_bins ) {
   for (unsigned int r = 0; r < 6; r++) {
@@ -693,6 +841,9 @@ void Fill_Map3D(std::vector< std::vector < std::vector < TH1F* > > > &Asymmetry,
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void make_lin_fit(double & slope, double & d_slope, double & offset, double & d_offset, double min_slope, double max_slope, double min_offset, double max_offset, double & chi2) {
   TMinuit min;
@@ -712,6 +863,9 @@ void make_lin_fit(double & slope, double & d_slope, double & offset, double & d_
   chi2_calculation(chi2, par);
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void chi2_linear(Int_t& npar, Double_t* grad, Double_t& fval, Double_t* p, Int_t status) {
   if (data_.y_cov_inv.GetNcols()==0) {
@@ -737,6 +891,9 @@ void chi2_linear(Int_t& npar, Double_t* grad, Double_t& fval, Double_t* p, Int_t
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void chi2_calculation(Double_t& fval, Double_t* p) {
   if (data_.y_cov_inv.GetNcols()==0) {
@@ -762,11 +919,17 @@ void chi2_calculation(Double_t& fval, Double_t* p) {
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 double sumSquare(double a, double b) {
   return TMath::Sqrt(a*a + b*b);
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void findExtreme(std::vector<TH1*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
   std::vector<double> x;
@@ -797,7 +960,9 @@ void findExtreme(std::vector<TH1*> vec, double *x_min, double *x_max, double *y_
   }
 }
 
-
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void findExtreme2(std::vector<TH1*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
   std::vector<double> x;
@@ -828,6 +993,9 @@ void findExtreme2(std::vector<TH1*> vec, double *x_min, double *x_max, double *y
   }
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 void findExtreme2(std::vector<TGraphErrors*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
   std::vector<double> x;
@@ -866,7 +1034,9 @@ void findExtreme2(std::vector<TGraphErrors*> vec, double *x_min, double *x_max, 
   }
 }
 
-
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 template<typename TT>
 void findExtreme_gr(std::vector<TT*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
@@ -904,6 +1074,10 @@ void findExtreme_gr(std::vector<TT*> vec, double *x_min, double *x_max, double *
 
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin) {
   double min = 10000;
   double max = 0;
@@ -917,6 +1091,10 @@ if (isMin) return min;
 else return max;
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
 void fitLin( TH1F &hist, double &width, double &error ) {
   TF1 * linfit = new TF1( "linfit", "[0]+x*[1]", 0, 0.3 );
   linfit -> SetParameter( 0, 0.1 );
@@ -928,20 +1106,27 @@ void fitLin( TH1F &hist, double &width, double &error ) {
   delete linfit;
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
   // Cut to skip from fitting alpha point with not enough statistics due to pt_3 thr.
-  //PT is meant to be the bin as in the pdf! aka p+1.
+  // PT is meant to be the bin as in the pdf! aka p+1.
   // Values checked for UL
   double check = 0.;
   if (p==1) check = (eta>=eta_cut)? 0.15 : 0.20;
-  if (p==2) check = 0.20;
+  if (p==2) check = (eta>=eta_cut)? 0.15 : 0.20;
   if (p==3) check = 0.15;
   if (p>=4) check = 0.1;
-  if (p>=6) check = 0.05;
+  if (p>=6) check = (eta>=eta_cut)? 0.1 : 0.05;
 
   return check;
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 bool removePointsforFit(bool isFE, int m, int p) {
   bool check = false;
@@ -970,6 +1155,10 @@ bool removePointsforFit(bool isFE, int m, int p) {
   // if (  isFE && m==12 && p>=7 ) check = true;
   return check;
 }
+
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 
 bool removePointsforFit2(bool isFE, int m, int p) {
@@ -1034,8 +1223,6 @@ TH2Poly* fill_2Dhist( TString name1, std::vector< std::vector< double > > SFs, s
   //    cout<<"END pof 2D fill"<<endl;
   return h2;
 }
-
-
 
 // ======================================================================================================
 // ===                                                                                                ===

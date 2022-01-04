@@ -204,6 +204,8 @@ TString extraText   = "Preliminary";
 TString extraText2   = ""; // For Simulation Preliminary on two lines
 float extraTextFont = 52;  // default is helvetica-italics
 
+float extraTextFont3 = 42;
+std::vector<TString> extraText3 = {};
 // text sizes and text offsets with respect to the top frame
 // in unit of the top margin size
 float lumiTextSize     = 0.6;
@@ -218,7 +220,10 @@ float relExtraDY = 1.2;
 // ratio of "CMS" and extra text size
 float extraOverCmsTextSize  = 0.76;
 
-TString lumi_13TeV = "41.53 fb^{-1}";
+TString lumi_13TeV_16 = "35.87 fb^{-1}";
+TString lumi_13TeV_17 = "41.53 fb^{-1}";
+TString lumi_13TeV_18 = "59.74 fb^{-1}";
+TString lumi_13TeV  = "137.14 fb^{-1}";
 TString lumi_8TeV  = "19.7 fb^{-1}";
 TString lumi_7TeV  = "5.1 fb^{-1}";
 TString lumi_sqrtS = "";
@@ -234,8 +239,7 @@ void CMS_lumi( TPad* pad, int iPeriod=4, int iPosX=11 );
 
 //#include "CMS_lumi.h"
 
-void
-CMS_lumi( TPad* pad, int iPeriod, int iPosX ){
+void CMS_lumi( TPad* pad, int iPeriod, int iPosX ){
   bool outOfFrame    = false;
   if( iPosX/10==0 )outOfFrame = true;
   int alignY_=3;
@@ -261,36 +265,14 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX ){
   pad->cd();
 
   TString lumiText;
-  if( iPeriod==1 ){
-    lumiText += lumi_7TeV;
-    lumiText += " (7 TeV)";
+  if ( iPeriod==1 ){
+    lumiText += lumi_13TeV_16 + " (13 TeV)";
   } else if ( iPeriod==2 ){
-    lumiText += lumi_8TeV;
-    lumiText += " (8 TeV)";
-  } else if( iPeriod==3 ){
-    lumiText = lumi_8TeV;
-    lumiText += " (8 TeV)";
-    lumiText += " + ";
-    lumiText += lumi_7TeV;
-    lumiText += " (7 TeV)";
-  } else if ( iPeriod==4 ){
-    lumiText += lumi_13TeV;
-    lumiText += " (13 TeV)";
-  } else if ( iPeriod==7 ){
-    if( outOfFrame ) lumiText += "#scale[0.85]{";
-    lumiText += lumi_13TeV;
-    lumiText += " (13 TeV)";
-    lumiText += " + ";
-    lumiText += lumi_8TeV;
-    lumiText += " (8 TeV)";
-    lumiText += " + ";
-    lumiText += lumi_7TeV;
-    lumiText += " (7 TeV)";
-    if( outOfFrame) lumiText += "}";
-  } else if ( iPeriod==12 ){
-    lumiText += "8 TeV";
+    lumiText += lumi_13TeV_17 + " (13 TeV)";
+  } else if ( iPeriod==3 ){
+    lumiText += lumi_13TeV_18 + " (13 TeV)";
   } else if ( iPeriod==0 ){
-    lumiText += lumi_sqrtS;
+    lumiText += lumi_13TeV + " (13 TeV)";
   }
 
   // cout << lumiText << endl;
@@ -352,6 +334,14 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX ){
         latex.DrawLatex(posX_, posY_- relExtraDY*cmsTextSize*t, extraText);
         if (extraText2!="") // For Simulation Preliminary
         latex.DrawLatex(posX_, posY_-relExtraDY*cmsTextSize*t - relExtraDY*extraTextSize*t, extraText2);
+        if (extraText3.size()!=0) {
+          latex.SetTextSize(1.5*extraTextSize*t*TMath::Power((t*10),3));
+          latex.SetTextFont(extraTextFont3);
+          for (int ind=0; ind<extraText3.size(); ind++) {
+            TString tt = extraText3.at(ind);
+            latex.DrawLatex(posX_, posY_-relExtraDY*cmsTextSize*t - relExtraDY*extraTextSize*t*(1.3+1.1*ind), tt);
+          }
+        }
       }
     }
   } else if( writeExtraText ){
@@ -376,7 +366,7 @@ using namespace std;
 
 // Give the macro an empty histogram for h->Draw("AXIS");
 // Create h after calling setTDRStyle to get all the settings right
-TCanvas* tdrCanvas(const char* canvName, double x_min, double x_max, double y_min, double y_max, const char* nameXaxis, const char* nameYaxis, bool square = kRectangular, int iPeriod = 4, int iPos = 11) {
+TCanvas* tdrCanvas(const char* canvName, double x_min, double x_max, double y_min, double y_max, const char* nameXaxis, const char* nameYaxis, bool square = kRectangular, int iPeriod = 0, int iPos = 11, double YAoff = 0., double YPoff = 1.) {
 
   setTDRStyle();
 
@@ -416,7 +406,7 @@ TCanvas* tdrCanvas(const char* canvName, double x_min, double x_max, double y_mi
   // references for T, B, L, R
   float T = (square ? 0.07*H_ref : 0.08*H_ref);
   float B = (square ? 0.13*H_ref : 0.12*H_ref);
-  float L = (square ? 0.15*W_ref : 0.12*W_ref);
+  float L = (square ? 0.15*W_ref : 0.12*YPoff*W_ref);
   float R = (square ? 0.05*W_ref : 0.04*W_ref);
 
   TCanvas *canv = new TCanvas(canvName,canvName,50,50,W,H);
@@ -434,7 +424,7 @@ TCanvas* tdrCanvas(const char* canvName, double x_min, double x_max, double y_mi
 
   // assert(h);
   TH1F *h = canv->DrawFrame(x_min,y_min,x_max,y_max);
-  h->GetYaxis()->SetTitleOffset(square ? 1.25 : 1);
+  h->GetYaxis()->SetTitleOffset(square ? 1.25+YAoff : 1+YAoff);
   h->GetXaxis()->SetTitleOffset(square ? 1.0 : 0.9);
   h->GetXaxis()->SetTitle(nameXaxis);
   h->GetYaxis()->SetTitle(nameYaxis);
@@ -462,7 +452,7 @@ void tdrCanvasSetAxes(TCanvas *canv, double x_min, double x_max, double y_min, d
 // Create h after calling setTDRStyle to get all the settings right
 // Created by: Mikko Voutilainen (HIP)
 
-TCanvas* tdrDiCanvas(const char* canvName, double x_min, double x_max, double y_min, double y_max, double y_min2, double y_max2,  const char* nameXaxis, const char* nameYaxis, const char* nameYaxis2, bool square = kRectangular, int iPeriod = 4, int iPos = 11) {
+TCanvas* tdrDiCanvas2(const char* canvName, double x_min, double x_max, double y_min, double y_max, double y_min2, double y_max2,  const char* nameXaxis, const char* nameYaxis, const char* nameYaxis2, bool square = kRectangular, int iPeriod = 4, int iPos = 11) {
 
   setTDRStyle();
 
@@ -597,6 +587,12 @@ void tdrDraw(TGraph* g, string opt, int marker=kFullCircle, int mcolor = kBlack,
   g->SetFillColor(fcolor);
   if (alpha>0) g->SetFillColorAlpha(fcolor, alpha);
   g->Draw((opt+" SAME").c_str());
+}
+
+void tdrDraw(TLine* l, int lstyle=kSolid, int lcolor=kBlack) {
+  l->SetLineStyle(lstyle);
+  l->SetLineColor(lcolor);
+  l->Draw("SAME");
 }
 
 TLegend *tdrLeg(double x1, double y1, double x2, double y2, double textSize=0.045, int textFont=42, int textColor=kBlack){
