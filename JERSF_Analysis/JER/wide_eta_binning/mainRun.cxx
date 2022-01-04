@@ -35,9 +35,6 @@ bool useOriginal = false; // Fit before pt studies
 double min_fit_lin = 170.;
 double max_fit_lin = 790.;
 
-// bool debug = true;
-bool debug = false;
-
 // Code by Andrea Malara
 // Based on code by Marek Niedziela, Matthias Schröder, Kristin Goebel
 
