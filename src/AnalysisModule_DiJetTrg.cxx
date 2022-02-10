@@ -205,7 +205,7 @@ protected:
   std::unique_ptr<LuminosityHists> h_lumi_TrigHF40, h_lumi_TrigHF60, h_lumi_TrigHF80, h_lumi_TrigHF100, h_lumi_TrigHF140, h_lumi_TrigHF160, h_lumi_TrigHF200, h_lumi_TrigHF220, h_lumi_TrigHF260, h_lumi_TrigHF300, h_lumi_TrigHF320, h_lumi_TrigHF400;
   std::unique_ptr<LumiHists> h_monitoring_final;
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
-  std::unique_ptr<JECCrossCheckHists> h_input,h_lumisel, h_beforeCleaner,h_afterCleaner,h_2jets,h_beforeJEC,h_afterJEC,h_afterJER,h_afterMET,h_beforeTriggerData,h_afterTriggerData,h_beforeFlatFwd,h_afterFlatFwd,h_afterPtEtaReweight,h_afterLumiReweight,h_afterUnflat,h_afternVts;
+  std::unique_ptr<JECCrossCheckHists> h_input, h_lumisel, h_beforeCleaner, h_afterCleaner, h_afterHEM, h_2jets, h_beforeJEC, h_afterJEC, h_afterJER, h_afterMET, h_beforeTriggerData, h_afterTriggerData, h_beforeFlatFwd, h_afterFlatFwd, h_afterPtEtaReweight, h_afterLumiReweight, h_afterUnflat, h_afternVts;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
   std::unique_ptr<Selection> HEMEventCleaner_Selection;
 
@@ -423,6 +423,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
   h_lumisel.reset(new JECCrossCheckHists(ctx,"CrossCheck_lumisel"));
   h_beforeCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeCleaner"));
   h_afterCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterCleaner"));
+  h_afterHEM.reset(new JECCrossCheckHists(ctx,"CrossCheck_HEM"));
   h_2jets.reset(new JECCrossCheckHists(ctx,"CrossCheck_2jets"));
   h_beforeJEC.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeJEC"));
   h_afterJEC.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterJEC"));
@@ -718,8 +719,6 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
     }
   }
 
-
-
   //JER Smearing for corresponding JEC-Version
   if(JERClosureTest && isMC) {
     if(isUL16preVFP)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt"));
@@ -842,11 +841,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // Do pileup reweighting
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
 
-  // HEM 15/16 issue
-  if(!HEMEventCleaner_Selection->passes(event)) return false;
-
   //Dump Input
   h_input->fill(event);
+
   //LEPTON selection
   muoSR_cleaner->process(event);
   sort_by_pt<Muon>(*event.muons);
@@ -914,6 +911,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   jet_n = ak4jets->size();
   if(jet_n<2) return false;
 
+
   //discard events if not all jets fulfill JetID instead of just discarding single jets
   //    if (n_jets_beforeCleaner != n_jets_afterCleaner) return false;
   if(!isMC) h_afterCleaner->fill(event);
@@ -930,6 +928,11 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   //   if(apply_PUid)
   // 	if(ak4jets->at(2).get_tag(ak4jets->at(2).tagname2tag("pileup_tight"))<1) return false;//TEST
   // }
+
+  //############### HEM issue ############################################################
+
+  if(!HEMEventCleaner_Selection->passes(event)) return false;
+  if(!isMC) h_afterHEM->fill(event);
 
   //####################  Select and Apply proper JEC-Versions for every Run ##################
 
