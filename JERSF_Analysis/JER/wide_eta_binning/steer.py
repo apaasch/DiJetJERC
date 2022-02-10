@@ -9,19 +9,19 @@ from utils import *
 
 def getLabel(sample):
     if sample == "A":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018A 14.00 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018A 14.00 fb^{-1}"
     elif sample == "B":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018B 7.10 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018B 7.10 fb^{-1}"
     elif sample == "C":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018C 6.94 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018C 6.94 fb^{-1}"
     elif sample == "D":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018D 31.93 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018D 31.93 fb^{-1}"
     elif sample == "ABC":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018 28.04 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018 28.04 fb^{-1}"
     elif sample == "ABCD":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018 59.97 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018 59.97 fb^{-1}"
     else:
-        LABEL_LUMI_INV_FB = "[MC 102X] (2018)"
+        LABEL_LUMI_INV_FB = "[MC 106X] (2018)"
     return LABEL_LUMI_INV_FB
 
 
@@ -142,6 +142,7 @@ QCDSamples["UL17"] = ["QCDHT"]
 QCDSamples["UL18"] = ["QCDHT"]
 QCDSamples["Legacy"] = ["QCDHT"]
 
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
@@ -155,6 +156,7 @@ JECVersions["Legacy"] = ["Summer19Legacy"]
 JetLabels=["AK4CHS"]
 dirs = ["", "up", "down"]
 # systematics=["", "PU", "JEC", "alpha", "JER"]
+# systematics=["PU", "JEC", "alpha", "JER"]
 # systematics=["", "JER"]
 # systematics=["JER"]
 # systematics=["JEC"]
@@ -166,12 +168,19 @@ studies = []
 # studies.append("Standard")
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
-studies.append("eta_JER")
+# studies.append("eta_JER")
+# studies.append("eta_JER_fine")
+# studies.append("eta_JER_default")
+studies.append("eta_common_default")
+# studies.append("eta_common_fine")
 # studies.append("eta_simple")
 
 for extraText in [""]:
     for study in studies:
-        out_path  = common_path+"file/"+study+"/"+extraText
+        study_out = study
+        if len(sys.argv)==3:
+            study_out += '_'+sys.argv[2]
+        out_path  = common_path+"file/"+study_out+"/"+extraText
         for newJECVersion in JECVersions[year]:
             for newJetLabel in JetLabels:
                 for syst in systematics:
