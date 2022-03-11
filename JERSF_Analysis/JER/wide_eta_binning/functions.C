@@ -27,6 +27,11 @@
 bool debug = false;
 bool alpha_new = true;
 
+int binHF = 15;
+
+int printEta = 15;
+int printPt = 6;
+
 static std::vector<double> usedPtTrigger_central; // Set in mainRun.cxx
 static std::vector<double> usedPtTrigger_forward; // Set in mainRun.cxx
 
@@ -90,6 +95,7 @@ struct fit_data{
 fit_data data_;
 
 TString dtos(double number, int precision);
+
 void SetBinsToZero(TGraphErrors* graph, double bin);
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info);
 void RemoveAsymBinsFromJER(TH1F* hist, double bin);
@@ -198,6 +204,7 @@ void RemoveAsymBinsFromJER(TH1F* hist, double bin){
 
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
   FitPar << info << "\n";
+  if(fit==0) return;
   FitPar << "N = " << setw(8) << fit->GetParameter(0) << " \u00B1 " << setw(8) << fit->GetParError(0) << "\n";
   FitPar << "S = " << setw(8) << fit->GetParameter(1) << " \u00B1 " << setw(8) << fit->GetParError(1) << "\n";
   FitPar << "C = " << setw(8) << fit->GetParameter(2) << " \u00B1 " << setw(8) << fit->GetParError(2) << "\n";
@@ -595,6 +602,8 @@ void widths_015_ratios( TString name1, std::vector<TH1F*> &widths, std::vector<s
 // ======================================================================================================
 
 void correctJERwithPLI(std::vector< std::vector< double > > &Output, std::vector< std::vector< double > > &OutputError, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< double > > PLI, std::vector< std::vector< double > > PLIError, float shift) {
+
+
   for( unsigned int i = 0; i < Widths.size(); i++ ) {
     std::vector< double > temp2;
     std::vector< double > temp_error2;
@@ -611,6 +620,7 @@ void correctJERwithPLI(std::vector< std::vector< double > > &Output, std::vector
         temp_error = 0.;
       }
       if ( TMath::IsNaN(temp) ) { temp = 0. ; temp_error = 0.; }
+
       temp2.push_back(temp);
       temp_error2.push_back(temp_error);
     }
@@ -650,6 +660,7 @@ void correctJERwithPLI015(std::vector<std::vector<double> > &Output, std::vector
 // void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
 void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<double> > Input2, std::vector<std::vector<double> > InputError2, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
   double Ref, Probe, RefError, ProbeError, pT;
+  if(debug) cout << "In correctForRef with " << name1 << endl;
 
   TH1F *hist = new TH1F( name1+"_hist", name1+"_hist", 1100, 0, 1100 );
   hist ->GetYaxis()->SetTitle("#sigma_{A}");
@@ -671,6 +682,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
     }
   }
 
+  if(debug) cout << "In correctForRef | LINE " << __LINE__ << endl;
   TCanvas* canv = new TCanvas("nscplot","nscplot",50,50,800,600);
   hist -> Draw();
   canv -> Print(outdir+"pdfy/JERs/reference"+name1+".pdf","pdf");
@@ -683,7 +695,6 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
     for( unsigned int p = 0; p < Input.at(m).size(); p++ ) {
       double temp;
       double temp_error;
-
       if ( Input.at(m).at(p) != 0. ) {
         pT = (double)(*std::max_element(width_pt.at(0).at(p).begin(),width_pt.at(0).at(p).end()));
         // Other pT value ? average? minimum? ...
@@ -703,8 +714,10 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
   }
 
 
+  if(debug) cout << "In correctForRef | LINE " << __LINE__ << endl;
   for( unsigned int m = shift; m < Input.size() ; m++ ) {
-    vector<double> pTbins = (m<11)?usedPtTrigger_central:usedPtTrigger_forward;
+    vector<double> pTbinsValue = (m<binHF)?usedPtTrigger_central:usedPtTrigger_forward;
+    vector<double> pTbinsRef = usedPtTrigger_central;
     std::vector< double > temp2;
     std::vector< double > temp_error2;
 
@@ -715,9 +728,9 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
       if ( Input.at(m).at(p) != 0. ) {
         // pT = width_pt.at(m).at(p).at(5) ;
         int index_p = -1; // In order to throw break
-        double ptvalue = (pTbins[p]+pTbins[p+1])/2; // 1st: Get mid of pT bin of HF bins
-        for(unsigned int z=0; z<usedPtTrigger_central.size(); z++){
-          if(usedPtTrigger_central[z]<ptvalue&&ptvalue<usedPtTrigger_central[z+1]){index_p = z; break;}
+        double ptvalue = (pTbinsValue[p]+pTbinsValue[p+1])/2; // 1st: Get mid of pT bin of HF bins
+        for(unsigned int z=0; z<pTbinsRef.size()-1; z++){
+          if(pTbinsRef[z]<ptvalue&&ptvalue<pTbinsRef[z+1]){index_p = z; break;}
         }
         pT = (double)(*std::max_element(width_pt.at(0).at(index_p).begin(),width_pt.at(0).at(index_p).end()));
 
