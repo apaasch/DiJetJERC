@@ -29,7 +29,7 @@
 // double max_fit = 1200.;
 double min_fit = 70.;
 double max_fit = 1200.;
-bool useP = true; // decides if default is NSC or NSxPC
+bool useP = false; // decides if default is NSC or NSxPC
 bool useOriginal = false; // Fit before pt studies
 
 double min_fit_lin = 170.;
@@ -782,7 +782,6 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
   for( unsigned int m = 0; m < h_data.size(); m++ ){
     double eta = (eta_bins[m]+eta_bins[m+1])/2;
-    if(debug) cout << "Start Fit in eta bin " << eta << endl;
 
     // if(m==1) RemoveAsymBinsFromJER(h_MC.at(m), 5);
     h_data.at(m)->SetStats(kFALSE);
@@ -957,7 +956,8 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
         FitPar << "====================\n";
         FitPar << "eta in ["+dtos(eta_bins[m],3)+","+dtos(eta_bins[m+1],3)+"]\n";
         FitPar << "====================\n";
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT"), "NSC; 70-1200 GeV ");
+        TString info = useP?"NSxPC":"NSC";
+        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT"), info+"; 70-1200 GeV ");
         ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITv1"), "NSC; v1; 70-1200 GeV ");
         ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT200"), "NSC; 200-1200 GeV ");
         ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT100"), "NSC; 100-1200 GeV ");
@@ -1054,15 +1054,19 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //           bin values
   // ------------------------------
 
+  if(Trigger.Contains("eta_common")) ref_shift = 5;
+  if(debug) cout << "Reference shift is " << ref_shift << endl;
+
   bool isAK8 = outdir.Contains("AK8");
   if (debug) std::cout << outdir << "\t" << isAK8 << "\t" << year << "\n";
 
   std::vector<double> eta_bins;
 
-  if (Trigger=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
-  else if (Trigger=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
-  else if (Trigger=="eta_L2R")    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
-  else                            eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
+  if (Trigger.Contains("eta_narrow"))      {binHF=11; eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);}
+  else if (Trigger.Contains("eta_common")) {binHF=15; eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);}
+  else if (Trigger.Contains("eta_simple")) {binHF=11; eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);}
+  else if (Trigger.Contains("eta_L2R"))    {binHF=11; eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);}
+  else                                     {binHF=11; eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);}
 
   int n_eta_bins = eta_bins.size();
 
@@ -1104,6 +1108,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
+  if(Trigger.Contains("fine"))    name_pt_bin += "_fine";
+  if(Trigger.Contains("default")) name_pt_bin += "_default";
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
   Pt_bins_Central.push_back(1500);
@@ -1485,20 +1491,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if (debug) {
     std::cout << "JER_correlated_corrected_MC_SM " << JER_correlated_corrected_MC_SM.size() << '\n';
     std::cout << "JER_correlated_corrected_MC_FE_ref " << JER_correlated_corrected_MC_FE_ref.size() << '\n';
-    std::cout << "TEST" << '\n';
-    std::cout << JER_correlated_corrected_data_FE_ref.size() << " " << JER_correlated_corrected_data_FE_ref[0].size() << '\n';
-    std::cout << extrapolated_widths_correlated_data_FE.size() << " " << extrapolated_widths_correlated_data_FE[0].size() << '\n';
-    std::cout << extrapolated_gen_widths_correlated_FE.size() << " " << extrapolated_gen_widths_correlated_FE[0].size() << '\n';
-    for (size_t i = 0; i < JER_correlated_corrected_data_FE_ref.size(); i++) {
-      for (size_t j = 0; j < JER_correlated_corrected_data_FE_ref[i].size(); j++) {
-        std::cout << i << " " << j << " " << JER_correlated_corrected_data_FE_ref.at(i).at(j) << " " << extrapolated_widths_correlated_data_FE.at(i).at(j) << " " << extrapolated_gen_widths_correlated_FE.at(i).at(j) << " " << TMath::Sqrt(2)*TMath::Sqrt( extrapolated_widths_correlated_data_FE.at(i).at(j) * extrapolated_widths_correlated_data_FE.at(i).at(j) - extrapolated_gen_widths_correlated_FE.at(i).at(j) * extrapolated_gen_widths_correlated_FE.at(i).at(j) ) << '\n';
-      }
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
   //    I do the same for widths at alpha = 0.15                            //
   ////////////////////////////////////////////////////////////////////////////
+  if(debug) cout << "LINE " << __LINE__ << endl;
 
   std::vector< std::vector< double > > JER015_MC_SM, JER015_data_SM;
   std::vector< std::vector< double > > JER015_MC_SM_error, JER015_data_SM_error;
@@ -1529,11 +1527,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   //    I correct forward widths for Ref region.                            //
   ////////////////////////////////////////////////////////////////////////////
+  if(debug) cout << "LINE " << __LINE__ << endl;
 
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_FE, JER_uncorrelated_corrected_data_FE;
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_FE_error, JER_uncorrelated_corrected_data_FE_error;
 
-  correctForRef( "mccorrected", JER_uncorrelated_corrected_MC_FE, JER_uncorrelated_corrected_MC_FE_error, JER_uncorrelated_corrected_MC_FE_ref, JER_uncorrelated_corrected_MC_FE_ref_error, JER_uncorrelated_corrected_MC_SM, JER_uncorrelated_corrected_MC_SM_error, width_pt_FE, ref_shift, outdir);
+  correctForRef( "mccorrected", JER_uncorrelated_corrected_MC_FE,   JER_uncorrelated_corrected_MC_FE_error,   JER_uncorrelated_corrected_MC_FE_ref,   JER_uncorrelated_corrected_MC_FE_ref_error,   JER_uncorrelated_corrected_MC_SM,   JER_uncorrelated_corrected_MC_SM_error,   width_pt_FE, ref_shift, outdir);
   correctForRef( "datacorrect", JER_uncorrelated_corrected_data_FE, JER_uncorrelated_corrected_data_FE_error, JER_uncorrelated_corrected_data_FE_ref, JER_uncorrelated_corrected_data_FE_ref_error, JER_uncorrelated_corrected_data_SM, JER_uncorrelated_corrected_data_SM_error, width_pt_FE, ref_shift, outdir);
 
   if (debug) std::cout << "JER_uncorrelated_corrected_MC_FE " << JER_uncorrelated_corrected_MC_FE.size() << '\n';
@@ -1543,6 +1542,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   //    same correction for correlated fit results                          //
   ////////////////////////////////////////////////////////////////////////////
+  if(debug) cout << "LINE " << __LINE__ << endl;
 
   std::vector< std::vector< double > > JER_correlated_corrected_MC_FE, JER_correlated_corrected_data_FE;
   std::vector< std::vector< double > > JER_correlated_corrected_MC_FE_error, JER_correlated_corrected_data_FE_error;
@@ -1550,13 +1550,16 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   correctForRef( "mc_cor_corrected", JER_correlated_corrected_MC_FE,   JER_correlated_corrected_MC_FE_error,   JER_correlated_corrected_MC_FE_ref,   JER_correlated_corrected_MC_FE_ref_error,   JER_correlated_corrected_MC_SM,   JER_correlated_corrected_MC_SM_error,   width_pt_FE, ref_shift, outdir);
   correctForRef( "data_cor_correct", JER_correlated_corrected_data_FE, JER_correlated_corrected_data_FE_error, JER_correlated_corrected_data_FE_ref, JER_correlated_corrected_data_FE_ref_error, JER_correlated_corrected_data_SM, JER_correlated_corrected_data_SM_error, width_pt_FE, ref_shift, outdir);
 
-  if (debug) std::cout << "JER_correlated_corrected_MC_FE " << JER_correlated_corrected_MC_FE.size() << '\n';
+  // if (debug) std::cout << "JER_correlated_corrected_MC_FE " << JER_correlated_corrected_MC_FE.size() << '\n';
+  if(debug) std::cout << "JER_correlated_corrected_MC_FE " << JER_correlated_corrected_MC_FE.size() << '\n';
+  if(debug) std::cout << "JER_correlated_corrected_data_FE " << JER_correlated_corrected_data_FE.size() << '\n';
 
   ////////////////////////////////////////////////////////////////////////////
   //    ref region corrected for correlated fit                             //
   ////////////////////////////////////////////////////////////////////////////
   //    and again, Ref region for widths at alpha = 0.15                    //
   ////////////////////////////////////////////////////////////////////////////
+  if(debug) cout << "LINE " << __LINE__ << endl;
 
   std::vector< std::vector< double > > JER015_MC_FE, JER015_data_FE;
   std::vector< std::vector< double > > JER015_MC_FE_error, JER015_data_FE_error;
@@ -1569,6 +1572,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   //    I make make vectors with ratios of widths                           //
   ////////////////////////////////////////////////////////////////////////////
+  if(debug) cout << "LINE " << __LINE__ << endl;
 
   std::vector< std::vector< double > > scales_uncorrelated_SM, scales_uncorrelated_FE, scales_uncorrelated_FE_control;
   std::vector< std::vector< double > > scales_uncorrelated_SM_error, scales_uncorrelated_FE_error, scales_uncorrelated_FE_control_error;
