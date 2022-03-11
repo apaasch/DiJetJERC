@@ -25,11 +25,12 @@ JECCrossCheckHists::JECCrossCheckHists(Context & ctx, const string & dirname): H
     // jets
     TH1::SetDefaultSumw2();
 
+    book<TH1F>("sumweights", "Sum of event weights", 1, 0.5, 1.5);
     book<TH1F>("N_jets", "N_{jets}", 50, -0.5, 49.5);
     book<TH1F>("pt_hat", "p_{T} hat", 150, 0, 6000);
     book<TH1F>("PU_pt_hat","PU p_{T} hat", 150,0,6000);
     book<TH1F>("PU_pt_hat_Ratio","PU p_{T} hat  Ratio", 50,0,5);
-     PU_vs_pt_hat = book<TH2F>("PU_pt_hat_vs_pt_hat","x=p_{T}hat y=PUp_{T}hat",150,0,6000 ,150,0,6000);
+    PU_vs_pt_hat = book<TH2F>("PU_pt_hat_vs_pt_hat","x=p_{T}hat y=PUp_{T}hat",150,0,6000 ,150,0,6000);
 
     book<TH1F>("pt","p_{T} all jets; p_{T} (GeV)",100,0,1500);
     book<TH1F>("pt_modT1METjets","p_{T} all jets in 2.650<#eta<3.139; p_{T} (GeV)",100,0,1500);
@@ -76,6 +77,8 @@ void JECCrossCheckHists::fill(const uhh2::Event & ev, const int rand){
 
   double weight = ev.weight;
   const int njets = ev.jets->size();
+
+  hist("sumweights")->Fill(1, weight);
   hist("N_jets")->Fill(njets, weight);
    // if(!ev.isRealData && !no_genp){
   if(!ev.isRealData){

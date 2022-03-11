@@ -20,6 +20,7 @@ JECAnalysisHists::JECAnalysisHists(Context & ctx, const string & dirname): Hists
   // jets
   TH1::SetDefaultSumw2();
 
+  book<TH1F>("sumweights", "Sum of event weights", 1, 0.5, 1.5);
   book<TH1F>("N_jets", "N_{jets}", 50, -0.5, 49.5);
   book<TH1F>("pt_hat", "p_{T} hat", 150, 0, 6000);
   book<TH1F>("pt","p_{T} all jets; p_{T} (GeV)",100,0,1500);
@@ -143,6 +144,7 @@ void JECAnalysisHists::fill(const uhh2::Event & ev, const int rand){
   double weight = ev.weight;
   const int njets = ev.jets->size();
 
+  hist("sumweights")->Fill(1, weight);
   hist("N_jets")->Fill(njets, weight);
 
   double pthat = ev.get(tt_gen_pthat);
