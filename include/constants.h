@@ -7,9 +7,11 @@
 
 // barrel region (|eta| < 1.131)
 constexpr static double s_eta_barr = 1.131;
+// constexpr static double s_eta_barr = 1.044; // changed for shift 4
 // HF region (|eta| > 2.853)
 const double pi = TMath::Pi();
 const double eta_cut = 2.853;
+const double eta_cut_barrel = 1.566;
 // two back-to-back leading jets (delta_phi(j1,j2) = min(|phi1 - phi2|, 2PI - |phi2 - phi1|) > 2.7)
 constexpr static double s_delta_phi = 2.7;
 
@@ -212,11 +214,16 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"DiJet_forward_2018",                { 93, 116, 142, 210, 279, 379 }},
   {"DiJet_forward_2018_ptbins",         { 93, 116, 142, 210, 279, 379 }},
   {"DiJet_central_UL18",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
-  {"DiJet_central_UL18_ptbins",         { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
+  {"DiJet_central_UL18_ptbins_fine",    { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790}}, // 26 bins
+  {"DiJet_central_UL18_ptbins_default", { 66,           93,           118,           189,           257, 291, 325, 358, 391, 434, 478, 531,           585}},
+  {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790}},
+  {"DiJet_barrel_UL18_ptbins",          { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 950}}, // 27 bins
+  // {"DiJet_central_UL18_ptbins",        { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
   {"DiJet_forward_UL18",                { 93, 116, 142, 210, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins_fine",    { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // split in 3
+  {"DiJet_forward_UL18_ptbins_default", { 93, 116, 142, 210, 279, 379 }}, // default
+  // {"DiJet_forward_UL18_ptbins",        { 93, 116, 142, 210, 279, 379 }}, // default
   {"DiJet_forward_UL18_ptbins",         { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // split in 3
-  // {"DiJet_forward_UL18_ptbins",         { 93, 116, 142, 154, 172, 210, 220, 240, 279, 379 }}, // split in 3
-  // {"DiJet_forward_UL18_ptbins",         { 93, 116, 142, 210, 279, 379 }}, // default
   // 2018 AK8
   {"SingleJet_central_AK8_2018",        { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }}, //HLT AK8PFJet* //https://indico.desy.de/indico/event/24350/contribution/0/material/slides/0.pdf
   {"SingleJet_central_AK8_2018_ptbins", { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
