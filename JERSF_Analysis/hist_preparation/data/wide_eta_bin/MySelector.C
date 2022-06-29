@@ -73,13 +73,6 @@ if (cond1 || cond2) {                                                 \
   alpha_spectrum_##region.at(r).at(k)->Fill(alpha, weight);           \
 }                                                                     \
 
-// if ( forControl ){                                             \
-//   if ( 0 < m && p == 26 ) continue;                            \
-// }                                                              \
-// else{                                                          \
-//   if ( 5 < m && p == 26 ) continue;                            \
-// }
-
 #define WRITE_HISTOS(region)                                     \
 for( int m = 0; m < EtaBins_##region; m++ ) {                    \
   f->cd();                                                       \
@@ -98,7 +91,6 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
     std::vector< std::vector< TH1F* > > temp2, temp2pt, temp2rho, temp2pt3, temp2pts;
     std::vector< TH1F* > alpha_temp2;
 
-    // int ptBins = m<6?ptBinstmp+1:ptBinstmp; // Hard coded to add pt bin beyond 1000 for eta<1.566 --- REMOVED since new pt binning does not need split in eta
     for( int p = 0; p < ptBins; p++ ) {
       std::vector< TH1F* > temp1, temp1pt, temp1rho, temp1pt3, temp1pts;
       TString name_alpha = "alpha"; name_alpha += extraText; name_alpha += "_eta"; name_alpha += m+1; name_alpha += "_pt"; name_alpha += p+1;
@@ -175,19 +167,12 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
 
-  // name_pt_bin = triggerName+"_barrel_";
-  // if (isAK8) name_pt_bin += "AK8_";
-  // name_pt_bin += year+"_ptbins";
-  // PtBins_Barrel = pt_trigger_thr.at(name_pt_bin).size();
-  // for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Barrel.push_back(pt);
-
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
 
-  // Pt_bins_Barrel.push_back(1500);
   Pt_bins_Central.push_back(1500);
   Pt_bins_HF.push_back(1500);
 
@@ -208,7 +193,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   if (true) {
     std::cout << "\nConstructor: " << PtBins_Central << " " << PtBins_HF;
-    // std::cout << "\nPt_bins_Barrel: ";         for (size_t i = 0; i < Pt_bins_Barrel.size(); i++) std::cout << " " << Pt_bins_Barrel[i];
     std::cout << "\nPt_bins_Central: ";         for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << " " << Pt_bins_Central[i];
     std::cout << "\nPt_bins_HF: ";              for (size_t i = 0; i < Pt_bins_HF.size(); i++) std::cout << " " << Pt_bins_HF[i];
     std::cout << "\nAlpha_bins: ";              for (size_t i = 0; i < Alpha_bins.size(); i++) std::cout << " " << Alpha_bins[i];
@@ -219,17 +203,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
     std::cout << "\nEta_bins_FE : ";            for (size_t i = 0; i < Eta_bins_FE.size(); i++) std::cout << " " << Eta_bins_FE[i];
     std::cout << "\n" << std::endl;
   }
-
-  // std::cout << "Count PtBins_Barrel" << std::endl;
-  // for ( int k = 0 ; k < PtBins_Barrel ; k++ ) {
-  //   std::vector< std::vector< double > >  temp;
-  //   for (int r = 0; r < neta; r++) {
-  //     std::vector< double >  temp2;
-  //     for (int m = 0; m < AlphaBins; m++) temp2.push_back(0);
-  //     temp.push_back(temp2);
-  //   }
-  //   nevents_barrel.push_back(temp);
-  // }
 
   int neta = (int) eta_bins.size();
   std::cout << "Count PtBins_Central" << std::endl;
@@ -264,7 +237,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 }
 
 bool MySelector::Process(Long64_t entry) {
-  // std::cout << "\n %%%%%%%%%%%%%%%%%%%% Start new Event %%%%%%%%%%%%%%%%% " << std::endl;
   ++TotalEvents;
   if ( TotalEvents%1000000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
   GetEntry(entry);
@@ -291,12 +263,9 @@ bool MySelector::Process(Long64_t entry) {
 
   bool dofill; int shift;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
-  // bool inBarrel = TMath::Abs(probejet_eta)<eta_cut_barrel?true:false;
 
   if (!isHF) {
     dofill=true;
-    // int PtBins = inBarrel?PtBins_Barrel:PtBins_Central; // before PtBins_Central
-    // std::vector<int> Pt_bins = inBarrel?Pt_bins_Barrel:Pt_bins_Central; // before PtBins_Central
     for ( int k = 0 ; k < PtBins_Central ; k++ ) {
       if ((pt_ave > Pt_bins_Central[k]) && (pt_ave < Pt_bins_Central[k+1]) ) {
         for ( int r = 0 ; r < EtaBins_SM ; r++ ) {
@@ -386,7 +355,7 @@ void MySelector::SlaveTerminate() {
 
   bool forControl = false;
   for( int r = 0; r < AlphaBins; r++ ) {
-    for( int p = 0; p < PtBins_Central; p++ ) { // PtBins_Barrel
+    for( int p = 0; p < PtBins_Central; p++ ) {
       forControl = false;
       WRITE_HISTOS(SM)
       WRITE_HISTOS(FE_reference)
@@ -407,29 +376,13 @@ void MySelector::SlaveTerminate() {
 
   std::vector<TH2F*> h_nevents_central, h_nevents_HF;
 
-  // std::vector<double> Pt_bins_Barrel_D(Pt_bins_Barrel.begin(), Pt_bins_Barrel.end());
   std::vector<double> Pt_bins_Central_D(Pt_bins_Central.begin(), Pt_bins_Central.end());
   std::vector<double> Pt_bins_HF_D(Pt_bins_HF.begin(), Pt_bins_HF.end());
 
   for (int m = 0; m < 6; m++){
-    // h_nevents_barrel.push_back(new TH2F(("barrel_"+std::to_string(m)).c_str(),("barrel_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Barrel_D.size()-1,&Pt_bins_Barrel_D[0]));
     h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
     h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
   }
-  // std::cout << "Pt_bins_Barrel: " << nevents_barrel.size() << std::endl;
-  // for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << Pt_bins_Central_D[i];
-  // std::cout << std::endl;
-  //
-  // for (int r = 0; r < 14; r++) {
-  //   for (int m = 0; m < 6; m++){
-  //     std::cout << r << " " << m << " ";
-  //     for ( int k = 0 ; k < nevents_barrel.size() ; k++ ) {
-  //       std::cout << "\t" << nevents_barrel[k][r][m];
-  //       h_nevents_barrel[m]->SetBinContent(h_nevents_barrel[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_barrel[m]->GetYaxis()->FindBin(Pt_bins_Barrel_D.at(k)), nevents_barrel[k][r][m]);
-  //     }
-  //     std::cout << std::endl;
-  //   } std::cout << std::endl;
-  // }
 
   std::cout << "Pt_bins_Central: " << nevents_central.size() << std::endl;
   for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << Pt_bins_Central_D[i];
