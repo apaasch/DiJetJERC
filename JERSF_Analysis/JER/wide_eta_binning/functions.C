@@ -22,7 +22,6 @@
 #include "constants.h"
 
 #include <bits/stdc++.h>
-#include "common_binning.hpp"
 
 bool debug = false;
 bool alpha_new = true;
@@ -99,7 +98,7 @@ TString dtos(double number, int precision);
 void SetBinsToZero(TGraphErrors* graph, double bin);
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info);
 void RemoveAsymBinsFromJER(TH1F* hist, double bin);
-void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBinstmp, int AlphaBins, int etaShift);
+void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBins, int AlphaBins, int etaShift);
 void histMeanPt( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths );
 void histWidthAsym_old( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry , std::vector<std::vector<std::vector<double> > > &Widths, std::vector<std::vector<std::vector<double> > > &WidthsError , bool fill_all );
 void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths, std::vector< std::vector< std::vector< double > > > &WidthsError , bool fill_all, double alpha, bool isFE, std::vector< std::vector< std::vector< double > > > &lower_x, std::vector< std::vector< std::vector< double > > > &upper_x, std::vector <double> eta_bins, std::vector <double> alpha_bins);
@@ -113,10 +112,8 @@ void correctJERwithPLI015(std::vector<std::vector<double> > &Output, std::vector
 // void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir);
 void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<double> > Input2, std::vector<std::vector<double> > InputError2, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir);
 void makeScales( std::vector< std::vector< double > > &Output, std::vector< std::vector< double > > &OutputError, std::vector< std::vector< double > > Input1, std::vector< std::vector< double > > Input1Error, std::vector< std::vector< double > > Input2, std::vector< std::vector< double > > Input2Error );
-void fill_mctruth_graph( TString name1, std::vector< TGraphAsymmErrors* > &output, std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range);
 void fill_mctruth_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range);
 void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range, int shift2 = 0);
-void fill_graph( TString name1, std::vector< TGraphAsymmErrors* > &output, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range, int shift2 = 0);
 void Fill_Map3D(std::vector< std::vector < std::vector < TH1F* > > > &Asymmetry, std::vector < TH2F* > &Map, std::vector < double > &eta_bins, std::vector < double > &pt_bins );
 void make_lin_fit(double & slope, double & d_slope, double & offset, double & d_offset, double min_slope, double max_slope, double min_offset, double max_offset, double & chi2);
 void chi2_linear(Int_t& npar, Double_t* grad, Double_t& fval, Double_t* p, Int_t status);
@@ -888,47 +885,6 @@ void fill_mctruth_hist( TString name1, std::vector< TH1F* > &output, std::vector
   }
 }
 
-void fill_mctruth_graph( TString name1, std::vector< TGraphAsymmErrors* > &output, std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range) {
-
-  for( unsigned int m = 0; m <  Widths.size(); m++ ) {
-
-    vector<double> usedPtBinning = m<14?usedPtTrigger_central:usedPtTrigger_forward; // m= 14 hardcoded for common binning
-    if(m<13){
-      cout << "JUST FOR DEBUGGING mctruth: " << m << "\t" << usedPtBinning.size() << "\t" << Widths.at(m).size() << endl;
-    }
-    vector<double> pt_points, pt_points_low, pt_points_high;
-    vector<double> JER_points, JER_points_low, JER_points_high;
-
-    // TH1F *h1 = new TH1F( name_width, name_width, 1100, 0, 1100 );
-    for( unsigned int p = 0; p <  Widths.at(m).size(); p++ ) {
-      double pT = (double)(*std::max_element(pt_binning.at(m).at(p).begin(),pt_binning.at(m).at(p).end()));
-      if ( ( !(TMath::IsNaN(Widths.at(m).at(p).at(5))) )      && Widths.at(m).at(p).at(5)!= 0. ){
-        pt_points.push_back(pT);
-        pt_points_low.push_back(fabs(pT-usedPtBinning[p]));
-        pt_points_high.push_back(fabs(usedPtBinning[p+1]-pT));
-        JER_points.push_back(Widths.at(m).at(p).at(5));
-      }
-      if ( ( !(TMath::IsNaN(WidthsError.at(m).at(p).at(5))) ) && Widths.at(m).at(p).at(5)!= 0. ){
-        JER_points_low.push_back(WidthsError.at(m).at(p).at(5));
-        JER_points_high.push_back(WidthsError.at(m).at(p).at(5));
-      }
-      TString name_width = name1; name_width += m+1;
-    }
-
-    TString name_width = name1; name_width += m+1;
-    int npoints = pt_points.size();
-    TGraphAsymmErrors *h1 = new TGraphAsymmErrors( npoints, &JER_points[0], &pt_points[0], &JER_points_low[0], &JER_points_high[0], &pt_points_low[0], &pt_points_high[0]);
-    h1->SetNameTitle(name_width, name_width);
-    if (name1.Contains("SF_")) h1 ->GetYaxis()->SetTitle("Scale factor");
-    else                       h1 ->GetYaxis()->SetTitle("#sigma_{JER}");
-    h1 ->GetXaxis()->SetTitle("p_{T}");
-    h1 ->GetYaxis()-> SetRangeUser( 0., range );
-    h1 ->GetYaxis()->SetTitle("#sigma_{MCTruth}");	h1 ->GetXaxis()->SetTitle("p_{T}");	// h1 -> Sumw2();
-    h1 ->GetYaxis()-> SetRangeUser( 0., range );
-    output.push_back(h1);
-  }
-}
-
 // ======================================================================================================
 // ===                                                                                                ===
 // ======================================================================================================
@@ -956,49 +912,6 @@ void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::v
       if (name1.Contains("SF_") && h1->GetBinContent(h1->FindBin(pT))<1) h1->SetBinContent(h1->FindBin(pT),1);
     }
     h1 ->GetYaxis()-> SetRangeUser( 0., range );
-    output.push_back(h1);
-  }
-}
-
-void fill_graph( TString name1, std::vector< TGraphAsymmErrors* > &output, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range, int shift2) {
-
-  for( unsigned int m = 0; m <  Widths.size(); m++ ) {
-
-    vector<double> usedPtBinning = m<13?usedPtTrigger_central:usedPtTrigger_forward; // m= 14 hardcoded for common binning
-    if(name1.EqualTo("data_JER_uncorrelated_SM")){
-      cout << name1 << " " << m << "\t" << usedPtBinning.size() << "\t" << Widths.at(m).size() << endl;
-    }
-    vector<double> pt_points, pt_points_low, pt_points_high;
-    vector<double> JER_points, JER_points_low, JER_points_high;
-
-    for( unsigned int p = 0; p <  Widths.at(m).size(); p++ ) {
-      double pT = (double)(*std::max_element(pt_binning.at(m+shift2).at(p).begin(),pt_binning.at(m+shift2).at(p).end()));
-
-      if ( ( !(TMath::IsNaN(Widths.at(m).at(p))) ) && Widths.at(m).at(p)!= 0. ){
-        pt_points.push_back(pT);
-        pt_points_low.push_back(fabs(pT-usedPtBinning[p]));
-        pt_points_high.push_back(fabs(usedPtBinning[p+1]-pT));
-        JER_points.push_back(Widths.at(m).at(p));
-      }
-      if ( ( !(TMath::IsNaN(WidthsError.at(m).at(p))) ) && Widths.at(m).at(p)!= 0. ){
-        JER_points_low.push_back(WidthsError.at(m).at(p));
-        JER_points_high.push_back(WidthsError.at(m).at(p));
-      }
-
-      // if (name1.Contains("SF_") && h1->GetBinContent(h1->FindBin(pT))<1) h1->SetBinContent(h1->FindBin(pT),1);
-    }
-
-    TString name = name1;
-    name += m+1;
-    int npoints = pt_points.size();
-    TGraphAsymmErrors *h1 = new TGraphAsymmErrors( npoints, &JER_points[0], &pt_points[0], &JER_points_low[0], &JER_points_high[0], &pt_points_low[0], &pt_points_high[0]);
-    h1->SetNameTitle(name, name);
-    if (name1.Contains("SF_")) h1 ->GetYaxis()->SetTitle("Scale factor");
-    else                       h1 ->GetYaxis()->SetTitle("#sigma_{JER}");
-    h1 ->GetXaxis()->SetTitle("p_{T}");
-    h1 ->GetYaxis()-> SetRangeUser( 0., range );
-    // std::cout << m << " " << Widths.at(m).size() << std::endl;;
-
     output.push_back(h1);
   }
 }
