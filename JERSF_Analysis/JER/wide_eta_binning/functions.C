@@ -122,7 +122,6 @@ double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1*
 void fitLin( TH1F &hist, double &width, double &error );
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 bool removePointsforFit(bool isFE, int m, int p);
-bool removePointsfromJER(bool isFE, int m, int p);
 void chi2_calculation(Double_t& fval, Double_t* p);
 
 TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
@@ -555,12 +554,6 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       vector<double> widths     = Widths.at(m).at(p);
       vector<double> widths_err = WidthsError.at(m).at(p);
 
-      // if(Widths.at(m).at(p).at(5)==0.){ // removed by hand
-      //   alpha.pop_back();
-      //   widths.pop_back();
-      //   widths_err.pop_back();
-      // }
-
       TMatrixD y_cov_mc;
       y_cov_mc.ResizeTo(alpha.size(), alpha.size());
 
@@ -780,7 +773,6 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
     OutputError.push_back(temp_error2);
   }
 
-  vector<double> eta_bins = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305,        1.566, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
   if(debug) cout << "In correctForRef | LINE " << __LINE__ << endl;
   for( unsigned int m = shift; m < Input.size() ; m++ ) {
     vector<double> pTbinsValue = (m<binHF)?usedPtTrigger_central:usedPtTrigger_forward;
@@ -809,6 +801,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
         temp = TMath::Sqrt( 2*Probe*Probe - Ref*Ref);
         temp_error = sumSquare(2*Probe*ProbeError, Ref*RefError )/temp;
 
+        // Remove ptbins by Hand; How to automate? TODO
         bool removeByHand = (
           (m==1&&p==0)|| // 0.3-0.5
           (m==8&&p==27)|| // 1.9-2.0
@@ -818,7 +811,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
         );
 
         if(removeByHand){
-          if(debug) cout << "Remove " << eta_bins[m] << " | " << p+1 << " from JER by Hand" << endl;
+          if(debug) cout << "Remove eta bin " << m << " | " << p+1 << " from JER by Hand" << endl;
           temp2.push_back(0.);
           temp_error2.push_back(0.);
         }
@@ -1092,43 +1085,6 @@ void findExtreme2(std::vector<TH1*> vec, double *x_min, double *x_max, double *y
 // ===                                                                                                ===
 // ======================================================================================================
 
-void findExtreme2(std::vector<TGraphErrors*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
-  std::vector<double> x;
-  for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(TMath::MinElement(vec.at(i)->GetN(),vec.at(i)->GetX()));}
-  *x_min = *std::min_element(x.begin(), x.end());
-  x.clear();
-
-  for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(TMath::MaxElement(vec.at(i)->GetN(),vec.at(i)->GetX()));}
-  *x_max = *std::max_element(x.begin(), x.end());
-  x.clear();
-
-  for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(TMath::MinElement(vec.at(i)->GetN(),vec.at(i)->GetY()));}
-  *y_min = *std::min_element(x.begin(), x.end());
-  x.clear();
-
-  // for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(vec.at(i)->GetBinContent(vec.at(i)->GetMaximumBin()));}
-  // for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(vec.at(i)->GetHistogram()->GetMaximum());}
-  // for (int i = 0; i < vec.size(); i++) {x.push_back(vec.at(i)->GetHistogram()->GetBinContent(vec.at(i)->GetHistogram()->GetMaximumBin()));}
-  for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(TMath::MaxElement(vec.at(i)->GetN(),vec.at(i)->GetY()));}
-  *y_max = *std::max_element(x.begin(), x.end());
-  x.clear();
-
-  if ((*x_min) == (*x_max)) {
-    *x_min = (*x_min)*0.9;
-    *x_max = (*x_max)*1.2;
-  }
-
-  if ((*y_min) == (*y_max)) {
-    *y_min = *y_min*0.9;
-    *y_max = *y_max*1.2;
-  }
-
-  if (*x_min >= *x_max ||  *y_min >= *y_max)
-  {
-    cout << "Aiuto" << endl;
-  }
-}
-
 void findExtreme2(std::vector<TGraphAsymmErrors*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
   std::vector<double> x;
   for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(TMath::MinElement(vec.at(i)->GetN(),vec.at(i)->GetX()));}
@@ -1311,21 +1267,6 @@ bool removePointsforFit2(bool isFE, int m, int p) {
   if (  isFE && m==11 && p>=8 ) check = true;
   if (  isFE && m==12 && p>=7 ) check = true;
   if (  isFE && m==13 && p>=5 ) check = true;
-  return check;
-}
-
-// ======================================================================================================
-// ===                                                                                                ===
-// ======================================================================================================
-
-bool removePointsfromJER(bool isFE, int m, int p) {
-  bool check = false;
-  if ( isFE && m==3  && p>=6 ) check = true;
-  if ( isFE && m==5  && p==6 ) check = true;
-  if ( isFE && m==6  && p==8 ) check = true;
-  if ( isFE && m==7  && p>=7 ) check = true;
-  if ( isFE && m==8  && p==6 ) check = true;
-
   return check;
 }
 
