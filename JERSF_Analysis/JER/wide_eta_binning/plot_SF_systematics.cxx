@@ -894,15 +894,11 @@ void plot_SF_systematics() {
   // studies.push_back("Standard");
   // studies.push_back("L1L2Residual");
   // studies.push_back("PuJetId");
-  // studies.push_back("eta_JER");
+  studies.push_back("eta_JER");
   // studies.push_back("eta_common_fine");
-  studies.push_back("eta_common_fine_aNew");
   // studies.push_back("eta_simple");
 
   MapTS JECs;
-  // JECs.push_back("Autumn18_V17");
-  // JECs.push_back("Autumn18_V19");
-  // JECs.push_back("Fall17_17Nov2017_V32");
   JECs["UL16preVFP"]  = {"Summer19UL16APV_V3"};
   JECs["UL16postVFP"] = {"Summer19UL16_V2"};
   JECs["UL17"]        = {"Summer19UL17_V5"};
@@ -910,13 +906,6 @@ void plot_SF_systematics() {
   JECs["Legacy"]      = {"Summer19Legacy"};
 
   MapTS DATAS;
-  // DATAS.push_back("RunA");
-  // DATAS.push_back("RunB");
-  // DATAS.push_back("RunC");
-  // DATAS.push_back("RunABC");
-  // DATAS.push_back("RunD");
-  // DATAS.push_back("RunFG");
-  // DATAS.push_back("RunH");
   // DATAS["UL16preVFP"]  = {"RunBCDEF", "RunBCD", "RunEF"};
   // DATAS["UL17"]        = {"RunBCDEF", "RunB", "RunC", "RunD", "RunE", "RunF"};
   // DATAS["UL18"]        = {"RunABCD", "RunA", "RunB", "RunC", "RunD"};
