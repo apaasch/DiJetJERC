@@ -20,6 +20,7 @@
 #include <TMinuit.h>
 #include <TMatrixD.h>
 #include "constants.h"
+#include "common_binning.hpp"
 
 #include <bits/stdc++.h>
 
