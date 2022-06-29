@@ -106,6 +106,8 @@ public:
   int PtBins_Central, PtBins_HF;
   int AlphaBins;
 
+  // int PtBins_Barrel;
+  // std::vector<int> Pt_bins_Barrel;
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
   std::vector<double> Eta_bins_SM;
@@ -117,7 +119,7 @@ public:
 
 
 
-  std::vector< std::vector< std::vector< double > > > nevents_central,nevents_HF;
+  std::vector< std::vector< std::vector< double > > > nevents_barrel, nevents_central,nevents_HF;
 
   std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM, 						asymmetries_pt_SM,						asymmetries_rho_SM,						asymmetries_pt3_SM;
   std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM_control, 		asymmetries_pt_SM_control,		asymmetries_rho_SM_control,		asymmetries_pt3_SM_control;

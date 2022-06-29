@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "UHH2/core/include/Jet.h"
-#include "UHH2/core/include/L1Jet.h"
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/GenericEvent.h"
 #include "UHH2/core/include/PrimaryVertex.h"
@@ -125,8 +124,6 @@ namespace uhh2DiJetJERC {
     bool no_genp = true;
     if(no_genp) cout<<"\n\n!!! WARNING, no genparticle are used! !!!\n\n"<<endl;
 
-    handle_l1jet_seeds = ctx.declare_event_input< vector< L1Jet>>("L1Jet_seeds");
-
   }
 
   void Selection::SetEvent(uhh2::Event& evt) {
@@ -201,7 +198,7 @@ namespace uhh2DiJetJERC {
     double probejet_eta = event->get(tt_probejet_eta);
     double ptave = event->get(tt_pt_ave);
 
-    if(ptave*cosh(probejet_eta)>3250) return false; //3250 GeV =sqrt(s)/2 with s=13 TeV
+    if(ptave*cosh(probejet_eta)>6500) return false; //6500 GeV =sqrt(s)/2 with sqrt(s)=13 TeV
     return true;
   }
 
@@ -227,73 +224,6 @@ namespace uhh2DiJetJERC {
   //   }
   //   return true;
   // }
-
-
-  bool Selection::L1JetBXclean(Jet& jet, bool usePtRatioFilter){
-    assert(event);
-
-    std::vector< L1Jet>* l1jets = &event->get(handle_l1jet_seeds);
-    bool _return = true;
-
-    unsigned int n_l1jets = l1jets->size();
-
-    if(n_l1jets<2) _return = false;
-
-    if(_return){
-      double dRmin = 100.;
-      int dRmin_seed_idx = -1;
-      float dR;
-
-      for(unsigned int i = 0; i<n_l1jets; i++){
-        dR=uhh2::deltaR(l1jets->at(i),jet);
-
-        if(dR<0.4 && dR < dRmin){
-          dRmin=dR;
-          dRmin_seed_idx = i;
-        }
-      }
-      if(dRmin_seed_idx>0){
-        if(l1jets->at(dRmin_seed_idx).bx() == -1){
-          if(usePtRatioFilter){
-            _return = ( l1jets->at(dRmin_seed_idx).pt() / jet.pt() ) < 0.2;
-          }
-          else _return = false;
-        }
-      }
-    }
-
-    return _return;
-  }
-
-  bool Selection::L1JetBXcleanSmart(){
-    assert(event);
-    bool _return = true;
-
-    std::vector< Jet>* jets = event->jets;
-    unsigned int n_jets = jets->size();
-
-    n_jets = std::min(int(n_jets),3);
-
-    for(unsigned int j = 0; j<n_jets && _return ; j++){
-      _return *=L1JetBXclean(jets->at(j), true);
-    }
-
-    return _return;
-  }
-
-  bool Selection::L1JetBXcleanFull(){
-    assert(event);
-    bool _return = true;
-
-    std::vector< Jet>* jets = event->jets;
-    unsigned int n_jets = jets->size();
-
-    for(unsigned int j = 0; j<n_jets && _return ; j++){
-      _return *=L1JetBXclean(jets->at(j));
-    }
-
-    return _return;
-  }
 
   bool Selection::Unprefirable(std::vector<run_lumi_ev> rlsev){
     assert(event);

@@ -28,8 +28,8 @@ int pt_dep_method = 8; //4-min value 5-max value
 
 // NO MERGE SM and FE
 
-int shift_SM = 11; // How many point to skip from the end
-int shift_FE = 3; // How many point to skip from the beginning
+int shift_SM = 15; // How many point to skip from the end (11 for eta_JER)
+int shift_FE = 4; // How many point to skip from the beginning (3 for eta_JER)
 int shift_barrel = 1; // How many point used to calculate SF in the previous step
 
 bool isOverlap = false; // just define the global variable. The value should be adjusted afterwards in the code; //TODO
@@ -509,9 +509,9 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   // lumi_13TeV = MCversion+" "+DATA+" ("+year+")";
   lumi_13TeV = "RunII Legacy";
 
-  VecD eta_bins_all(eta_bins_JER,                eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
-  VecD eta_bins_SM(eta_bins_JER,                 eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double) - shift_SM);
-  VecD eta_bins_FE(eta_bins_JER + shift_FE,      eta_bins_JER + sizeof(eta_bins_JER)/sizeof(double));
+  VecD eta_bins_all(eta_bins_common,                eta_bins_common + sizeof(eta_bins_common)/sizeof(double));
+  VecD eta_bins_SM(eta_bins_common,                 eta_bins_common + sizeof(eta_bins_common)/sizeof(double) - shift_SM);
+  VecD eta_bins_FE(eta_bins_common + shift_FE,      eta_bins_common + sizeof(eta_bins_common)/sizeof(double));
 
 
   std::cout << std::string(230, 42) << "\n";
@@ -882,10 +882,10 @@ void plot_SF_systematics() {
   TString path ;
 
   VecTS years;
-  years.push_back("UL16preVFP");
+  // years.push_back("UL16preVFP");
   // years.push_back("UL16postVFP");
   // years.push_back("UL17");
-  // years.push_back("UL18");
+  years.push_back("UL18");
   // years.push_back("Legacy");
   //TString year = "2018";
 
@@ -894,7 +894,9 @@ void plot_SF_systematics() {
   // studies.push_back("Standard");
   // studies.push_back("L1L2Residual");
   // studies.push_back("PuJetId");
-  studies.push_back("eta_JER");
+  // studies.push_back("eta_JER");
+  // studies.push_back("eta_common_fine");
+  studies.push_back("eta_common_fine_aNew");
   // studies.push_back("eta_simple");
 
   MapTS JECs;
@@ -926,12 +928,12 @@ void plot_SF_systematics() {
   DATAS["Legacy"]      = {"RunII"};
 
 
-  DATAS["UL16preVFP"]  = {"RunB", "RunC", "RunD", "RunE", "RunF"};
-  DATAS["UL16postVFP"] = {"RunFG", "RunH"};
-  DATAS["UL17"]        = {"RunB", "RunC", "RunD", "RunE", "RunF"};
-  DATAS["UL18"]        = {"RunA", "RunB", "RunC", "RunD"};
-
-  DATAS["UL16preVFP"]  = {"RunBCD", "RunEF"};
+  // DATAS["UL16preVFP"]  = {"RunB", "RunC", "RunD", "RunE", "RunF"};
+  // DATAS["UL16postVFP"] = {"RunFG", "RunH"};
+  // DATAS["UL17"]        = {"RunB", "RunC", "RunD", "RunE", "RunF"};
+  // DATAS["UL18"]        = {"RunA", "RunB", "RunC", "RunD"};
+  //
+  // DATAS["UL16preVFP"]  = {"RunBCD", "RunEF"};
 
 
 

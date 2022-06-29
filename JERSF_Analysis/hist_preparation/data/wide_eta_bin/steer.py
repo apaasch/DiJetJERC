@@ -86,12 +86,13 @@ def main_program(path="", list_path="", out_path="", year="", study="", JECVersi
 USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
+
 #year = "2018"
-year = "UL16preVFP_split"
+# year = "UL16preVFP_split"
 # year = "UL16preVFP"
 # year = "UL16postVFP"
 # year = "UL17"
-# year = "UL18"
+year = "UL18"
 
 # year = "Legacy"
 
@@ -104,7 +105,9 @@ samples["UL16preVFP_split"] = ["BCD", "EF", "BCDEF"]
 samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
 samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
 samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
-samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
+# samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
+# samples["UL18"] = ["A", "B", "C", "ABC"] # for Puppi studies
+samples["UL18"] = ["ABCD"]
 samples["Legacy"] = ["II"]
 
 JECVersions = {}
@@ -118,12 +121,13 @@ JECVersions["UL18"] = ["Summer19UL18_V5"]
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
-JetLabels = ["AK4CHS"]
-systematics = ["", "alpha","PU", "JEC", "JER"]
-# systematics = ["", "alpha","PU", "JEC"]
+# JetLabels = ["AK4Puppi_v11"]
+JetLabels = ["AK4Puppi"]
+# systematics = ["", "alpha","PU", "JEC", "JER"]
+systematics = ["", "alpha","PU", "JEC"]
 # systematics = ["JER"]
 # systematics = ["", "alpha","PU"]
-# systematics = [""]
+# systematics = ["", ]
 
 list_processes = []
 list_logfiles = []
@@ -133,9 +137,10 @@ studies = []
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
 # studies.append("Simplified")
-# studies.append("PuJetId")
-studies.append("eta_JER")
-studies.append("eta_simple")
+# # studies.append("PuJetId")
+# studies.append("eta_JER")
+studies.append("eta_common")
+# studies.append("eta_simple")
 
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
@@ -152,4 +157,4 @@ for i in list_processes:
 
 print len(list_processes)
 
-parallelise(list_processes, 10, list_logfiles)
+parallelise(list_processes, 15, list_logfiles)

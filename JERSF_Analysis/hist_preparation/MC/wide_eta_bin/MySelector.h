@@ -135,13 +135,14 @@ public:
 
   void BuildEvent();
 
-  int TotalEvents, unmachedJets, unmatchegGenJets;
+  int TotalEvents, unmachedJets, unmatchegGenJets, SwapedJets;
 
   int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE;
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
-  int PtBins_Central, PtBins_HF, PtBins;
+  int PtBins_Barrel, PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins;
 
+  std::vector<int> Pt_bins_Barrel;
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
   std::vector<double> Eta_bins_SM;
@@ -153,7 +154,7 @@ public:
 
 
 
-  std::vector< std::vector< std::vector< double > > > nevents_central,nevents_HF;
+  std::vector< std::vector< std::vector< double > > > nevents_barrel, nevents_central,nevents_HF;
 
   std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM, 						asymmetries_pt_SM,						asymmetries_rho_SM,						asymmetries_ptf_SM,						asymmetries_pt3_SM,						asymmetries_dR1_SM,						asymmetries_dR2_SM;
   std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM_control, 		asymmetries_pt_SM_control,		asymmetries_rho_SM_control,		asymmetries_ptf_SM_control,		asymmetries_pt3_SM_control,		asymmetries_dR1_SM_control,		asymmetries_dR2_SM_control;

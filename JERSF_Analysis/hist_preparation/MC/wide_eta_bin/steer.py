@@ -85,10 +85,11 @@ def main_program(path="", list_path="", out_path="", year="", study="", JECVersi
 USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
-#year = "2018"
-year = "UL16preVFP_split"
+
+# year = "2018"
+# year = "UL16preVFP_split"
 # year = "UL16preVFP"
-# year = "UL16postVFP"
+year = "UL16postVFP"
 # year = "UL17"
 # year = "UL18"
 
@@ -109,20 +110,22 @@ samples["Legacy"] = ["HT"]
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
-JECVersions["UL17"] = ["Summer19UL17_V5"]
-JECVersions["UL18"] = ["Summer19UL18_V5"]
+JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
+JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
+JECVersions["UL17"] = ["Summer20UL17_V2"]
+JECVersions["UL18"] = ["Summer20UL18_V2"]
 
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
-JetLabels = ["AK4CHS"]
-systematics = ["", "alpha","PU", "JEC", "JER"]
+JetLabels = ["AK4Puppi", "AK8Puppi"]
+# JetLabels = ["AK4CHS"]
+# systematics = ["", "alpha","PU", "JEC", "JER"]
+# systematics = ["", "alpha", "JEC", "JER"]
+# systematics = ["PU", "JEC"]
+# systematics = ["PU"]
 # systematics = ["", "alpha","PU", "JEC"]
-# systematics = ["JER"]
-# systematics = ["", "alpha","PU"]
-# systematics = [""]
+systematics = [""]
 
 list_processes = []
 list_logfiles = []
@@ -133,8 +136,9 @@ studies = []
 # studies.append("L1L2")
 # studies.append("Simplified")
 # studies.append("PuJetId")
-# studies.append("eta_JER")
-studies.append("eta_simple")
+studies.append("eta_common")
+# studies.append("eta_common")
+# studies.append("eta_simple")
 
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
@@ -150,5 +154,8 @@ for i in list_processes:
   print i
 
 print len(list_processes)
+# print "PRO - ", list_processes
+# print ""
+# print "LOG - ", list_logfiles
 
-parallelise(list_processes, 4, list_logfiles)
+parallelise(list_processes, 2, list_logfiles)
