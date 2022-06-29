@@ -178,8 +178,8 @@ studies = []
 # studies.append("eta_JER")
 # studies.append("eta_JER_fine")
 # studies.append("eta_JER_default")
-# studies.append("eta_common_default")
-studies.append("eta_common_central_fine_v2")
+studies.append("eta_common_default")
+# studies.append("eta_common_central_fine_v2")
 # studies.append("eta_common")
 # studies.append("eta_simple")
 
