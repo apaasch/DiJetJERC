@@ -95,8 +95,6 @@ void DrawComparison(double eta, bool inRatio = false){
 // ===                                                                                                ===
 // ======================================================================================================
 void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, double &Nerr, double &Serr, double &Cerr, double& Perr, double &mcChi, int &mcNDF, double eta) {
-// void MCFIT(TGraphAsymmErrors* hist, TGraphAsymmErrors* mcERR, double &N, double &S, double &C, double &P, double &Nerr, double &Serr, double &Cerr, double& Perr, double &mcChi, int &mcNDF, double eta) {  // Change - TGraphAsymmErrors
-
   TF1* mcFIT;
   if(useP)
   {
@@ -136,7 +134,6 @@ void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, d
   mcNDF = mcFIT->GetNDF();
   mcFIT->SetLineColor(kBlue+2);
   mcERR->SetStats(kFALSE);
-  // mcERR->GetHistogram()->SetStats(kFALSE); // Change - TGraphAsymmErrors
   mcERR->GetXaxis()->SetRange(min_fit,max_fit);
 
 }
@@ -145,7 +142,6 @@ void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, d
 // ===                                                                                                ===
 // ======================================================================================================
 void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &P, double &kNS, double &kC, double &Nerr, double &Serr, double &Cerr, double& Perr, double &kNSerr, double &kCerr, double &dtChi, int &dtNDF, double eta, int m, bool isFE) {
-// void DTFIT(TGraphAsymmErrors* hist, TGraphAsymmErrors* dtERR, double &N, double &S, double &C, double &P, double &kNS, double &kC, double &Nerr, double &Serr, double &Cerr, double& Perr, double &kNSerr, double &kCerr, double &dtChi, int &dtNDF, double eta, int m, bool isFE) { // Change - TGraphAsymmErrors
   double min=70; double max=1200;
   if(eta==2.7515) max=430;
   if(eta==2.9085) min=110;
@@ -178,7 +174,6 @@ void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &P, d
   // if (!isFE && m == 3) { dtFIT -> SetParLimits(3, 0.0, 15); dtFIT -> SetParLimits(4, 0.0, 15); }
   // if (!isFE && m == 3) { dtFIT -> SetParameter(0, N); dtFIT -> SetParameter(1, S); dtFIT -> SetParameter(2, C); dtFIT -> FixParameter(3,1); dtFIT -> FixParameter(4, 1); }
   if (hist->GetEntries() != 0) hist -> Fit("dtFIT", "RMQ+");
-  // if (hist->GetN() != 0) hist -> Fit("dtFIT", "RMQ+"); // Change - TGraphAsymmErrors // equivalent to line above?
   else hist->GetListOfFunctions()->Add(dtFIT);
 
   kNS = dtFIT -> GetParameter( 3 );
@@ -187,10 +182,8 @@ void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &P, d
   kCerr = dtFIT -> GetParError( 4 );
   dtChi = dtFIT->GetChisquare();
   dtNDF = dtFIT->GetNDF();
-  // std::cout << dtERR->GetName() << " " << dtERR->GetEntries() << '\n';
   (TVirtualFitter::GetFitter())->GetConfidenceIntervals(dtERR,0.68);
   dtERR->SetStats(kFALSE);
-  // dtERR->GetHistogram()->SetStats(kFALSE); // Change - TGraphAsymmErrors
   dtERR->GetXaxis()->SetRange(min_fit,max_fit);
 }
 
@@ -229,7 +222,6 @@ void PLOT_ALLWIDTHS(std::vector< std::vector< TH1F* > > h_data, std::vector< std
 // ===                                                                                                ===
 // ======================================================================================================
 void PLOT_MCT(std::vector< TH1F* > h_MCTruth, std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vector< TH1F* > h_015 , TString outdir, std::vector<double> eta_bins, bool isFE) {
-// void PLOT_MCT(std::vector< TGraphAsymmErrors* > h_MCTruth, std::vector< TGraphAsymmErrors* > h_uncor, std::vector< TGraphAsymmErrors* > h_cor, std::vector< TGraphAsymmErrors* > h_015 , TString outdir, std::vector<double> eta_bins, bool isFE) { // Change - TGraphAsymmErrors
   int MCTruth      = kMagenta;
   int color_uncor  = kRed;
   int color_cor    = kBlue;
@@ -240,9 +232,7 @@ void PLOT_MCT(std::vector< TH1F* > h_MCTruth, std::vector< TH1F* > h_uncor, std:
     TString nameYaxis = h_cor.at(m)->GetYaxis()->GetTitle();
     nameXaxis = "p_{T} [GeV]";
     std::vector<TH1*> vec;
-    // std::vector<TGraphAsymmErrors*> vec; // Change - TGraphAsymmErrors
 
-    // double xgraph,ygraph;
     if (isFE) vec.push_back(h_MCTruth.at(m+1));
     else vec.push_back(h_MCTruth.at(m));
     vec.push_back(h_MCTruth.at(m));
@@ -251,7 +241,6 @@ void PLOT_MCT(std::vector< TH1F* > h_MCTruth, std::vector< TH1F* > h_uncor, std:
     vec.push_back(h_015.at(m));
     double x_min, x_max, y_min, y_max;
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
-    // findExtreme2(vec, &x_min, &x_max, &y_min, &y_max); // Change - TGraphAsymmErrors
     TCanvas* canv = tdrCanvas(canvName, x_min, x_max, y_min, y_max, nameXaxis, nameYaxis);
     canv->SetTickx(0);
     canv->SetTicky(0);
@@ -542,7 +531,6 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
 // ===                                                                                                ===
 // ======================================================================================================
 void SFtoTXT(std::ofstream& texfile, std::vector< TH1F* > h_JER, std::vector< std::vector< std::vector< double > > > width_pt, std::vector<double> &SF, std::vector<double> &SF_err, std::vector<double> &SF_ptdep_min, std::vector<double> &SF_ptdep_max, std::vector<double> &eta_bin_center, std::vector<double> &eta_bin_err, std::vector<double> eta_bins, int shift, bool isFE, bool isCorr ) {
-// void SFtoTXT(std::ofstream& texfile, std::vector< TGraphAsymmErrors* > h_JER, std::vector< std::vector< std::vector< double > > > width_pt, std::vector<double> &SF, std::vector<double> &SF_err, std::vector<double> &SF_ptdep_min, std::vector<double> &SF_ptdep_max, std::vector<double> &eta_bin_center, std::vector<double> &eta_bin_err, std::vector<double> eta_bins, int shift, bool isFE, bool isCorr ) {
   for( unsigned int m = 0; m < h_JER.size(); m++ ){
     TF1 * constfit = h_JER.at(m) -> GetFunction("constfit");
     TF1 * NSC_ratio = h_JER.at(m) -> GetFunction("NSC_ratio");
@@ -568,7 +556,6 @@ void SFtoTXT(std::ofstream& texfile, std::vector< TH1F* > h_JER, std::vector< st
 // ===                                                                                                ===
 // ======================================================================================================
 void SIGtoTXT(std::vector< TH1F* > h_MC, std::vector<double> eta_bins, TString outdir, TString name){
-// void SIGtoTXT(std::vector< TGraphAsymmErrors* > h_MC, std::vector<double> eta_bins, TString outdir, TString name){ // Change - TGraphAsymmErrors
   ofstream output_values;
   output_values.open(outdir+"pdfy/JERs/values_"+name+".txt");
   output_values << right << fixed << setprecision(5);
@@ -576,11 +563,8 @@ void SIGtoTXT(std::vector< TH1F* > h_MC, std::vector<double> eta_bins, TString o
   output_values << setw(12) << "pT"    << " " << setw(8) << "sigma\n";
   for( unsigned int m = 0; m < h_MC.size(); m++ ){
     for(unsigned int bin = 1; bin <= h_MC.at(m)->GetNbinsX(); bin++){
-    // for(unsigned int bin = 1; bin <= h_MC.at(m)->GetN(); bin++){ // Change - TGraphAsymmErrors
       double pt    = h_MC.at(m)->GetXaxis()->GetBinCenter(bin);
       double width = h_MC.at(m)->GetBinContent(bin);
-      // double pt, width; // Change - TGraphAsymmErrors
-      // h_MC.at(m)->GetPoint(m, pt, width); // Change - TGraphAsymmErrors
       if(width!=0){
         output_values << setw(7) << eta_bins[m] << " " << setw(7) << eta_bins[m+1] << " ";
         output_values << setw(12) << pt         << " " << setw(7) << width         << "\n";
@@ -593,7 +577,6 @@ void SIGtoTXT(std::vector< TH1F* > h_MC, std::vector<double> eta_bins, TString o
 // ===                                                                                                ===
 // ======================================================================================================
 void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vector< TH1F* > h_015, TString outdir, std::vector<double> eta_bins, bool isFE, std::vector< TH1F* > h_JER_corr_NSC) {
-// void PLOT_SF(std::vector< TGraphAsymmErrors* > h_uncor, std::vector< TGraphAsymmErrors* > h_cor, std::vector< TGraphAsymmErrors* > h_015, TString outdir, std::vector<double> eta_bins, bool isFE, std::vector< TGraphAsymmErrors* > h_JER_corr_NSC) { // Change - TGraphAsymmErrors
   int color_uncor = kBlue;
   int color_cor   = kRed;
   int color_015   = kGreen+2;
@@ -602,13 +585,11 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     TString nameXaxis = "p_{T}^{ave} [GeV]";
     TString nameYaxis = h_uncor.at(m)->GetYaxis()->GetTitle();
     std::vector<TH1*> vec;
-    // std::vector<TGraphAsymmErrors*> vec; // Change - TGraphAsymmErrors
     vec.push_back(h_uncor.at(m));
     vec.push_back(h_cor.at(m));
     vec.push_back(h_015.at(m));
     double x_min, x_max, y_min, y_max;
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
-    // findExtreme2(vec, &x_min, &x_max, &y_min, &y_max); // Change - TGraphAsymmErrors
     extraText3.clear();
     extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
 
@@ -625,42 +606,21 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     if(h_uncor.at(m)->GetFunction("constfit")){
       f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);f->SetLineWidth(2);f->Draw("same");
       f->SetParameter(0,f->GetParameter(0)-0.002);
-      // legend = tdrLeg(0.30,0.70,0.50,0.90, 0.025, 42, color_uncor);
-      // tdrHeader(legend,"JER", 22);
-      // sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      // sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      // legend->Draw("same");
     } else { std::cout << "Fit uncor function at bin " << m << " was not found" << std::endl; }
 
     if(h_cor.at(m)->GetFunction("constfit")){
       f = h_cor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_cor);f->SetLineWidth(2);f->Draw("same");
-      // legend = tdrLeg(0.50,0.70,0.70,0.90, 0.025, 42, color_cor);
-      // tdrHeader(legend,"JER cor", 22);
-      // sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      // sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      // legend->Draw("same");
     } else { std::cout << "Fit cor function at bin " << m << " was not found" << std::endl; }
 
     f = new TF1( "constfit", "pol0", min_fit_lin, max_fit_lin );
     f->SetParameter(0,1);
     if (h_015.at(m)->GetEntries() > 1) h_015.at(m) -> Fit("constfit","RMQ+");
-    // if (h_015.at(m)->GetN() > 1) h_015.at(m) -> Fit("constfit","RMQ+"); // Change - TGraphAsymmErrors
     else h_015.at(m)->GetListOfFunctions()->Add(f);
     if (h_015.at(m) -> GetFunction("constfit")==0) h_015.at(m)->GetListOfFunctions()->Add(f);
     f->SetLineColor(color_015); f->SetLineWidth(2);f->Draw("same");
 
     f = h_JER_corr_NSC.at(m) -> GetFunction("NSC_ratio");
     f->SetLineColor(kOrange+1); f->SetLineWidth(2); f->Draw("same");
-
-    // if(h_015.at(m)->GetFunction("constfit")){
-    //   f = h_015.at(m) -> GetFunction("constfit"); f->SetLineColor(color_015);
-    //   legend = tdrLeg(0.70,0.70,0.90,0.90, 0.025, 42, color_uncor);
-    //   tdrHeader(legend,"JER 0.15", 22);
-    //   sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-    //   sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-    //   legend->Draw("same");
-    // } else { /*std::cout << "Fit 015 function at bin " << m << " was not found" << std::endl;*/ }
-
 
     TLegend *leg = tdrLeg(0.55,0.55,0.9,0.85, 0.04, 42, kBlack);
     leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC} correlated","lep");
@@ -775,7 +735,6 @@ void AddFit(bool draw, int color, int place, TCanvas* canv, TString name, TStrin
 // ===                                                                                                ===
 // ======================================================================================================
 void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vector< TH1F* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE, bool isCorr) {
-// void PLOT_NSC(std::vector< TGraphAsymmErrors* > h_data, std::vector< TGraphAsymmErrors* > h_MC, std::vector< TGraphAsymmErrors* > h_SF, TString outdir, std::vector<double> eta_bins, bool isFE, bool isCorr) { // Change - TGraphAsymmErrors
 
   int color_data  = kBlue;
   int color_MC    = kRed;
@@ -805,15 +764,11 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     // if(m==1) RemoveAsymBinsFromJER(h_MC.at(m), 5);
     h_data.at(m)->SetStats(kFALSE);
     h_MC.at(m)->SetStats(kFALSE);
-    // h_data.at(m)->GetHistogram()->SetStats(kFALSE); // Change - TGraphAsymmErrors
-    // h_MC.at(m)->GetHistogram()->SetStats(kFALSE); // Change - TGraphAsymmErrors
     double N, S, C, P, kNS, kC, Nerr, Serr, Cerr, Perr, kNSerr, kCerr, mcChi, dtChi;
     int mcNDF, dtNDF;
 
     TH1F* mcERR = (TH1F*)h_data.at(m)->Clone();
     TH1F* dtERR = (TH1F*)h_data.at(m)->Clone();
-    // TGraphAsymmErrors* mcERR = (TGraphAsymmErrors*)h_data.at(m)->Clone(); // Change - TGraphAsymmErrors
-    // TGraphAsymmErrors* dtERR = (TGraphAsymmErrors*)h_data.at(m)->Clone(); // Change - TGraphAsymmErrors
     MCFIT(h_MC.at(m), mcERR, N, S, C, P, Nerr, Serr, Cerr, Perr, mcChi, mcNDF, eta);
     DTFIT(h_data.at(m), dtERR, N, S, C, P, kNS, kC, Nerr, Serr, Cerr, Perr, kNSerr, kCerr, dtChi, dtNDF, eta, m, isFE);
 
@@ -834,14 +789,11 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     TString nameYaxis = h_data.at(m)->GetYaxis()->GetTitle();
 
     std::vector<TH1*> vec;
-    // std::vector<TGraphAsymmErrors*> vec;
     vec.push_back(h_data.at(m));
     vec.push_back(h_MC.at(m));
 
     double x_min, x_max, y_min, y_max;
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
-    // findExtreme2(vec, &x_min, &x_max, &y_min, &y_max);
-    // x_max = 1200.; // Hard coded
     extraText3.clear();
     extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
 
@@ -853,9 +805,6 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     tdrDraw(h_MC.at(m), "", kFullCircle, color_MC );
     TLegend *leg = tdrLeg(0.6,0.7,0.9,0.9);
     leg->SetNColumns(2);
-    // char legTitle[100];
-    // sprintf(legTitle, "#eta #in [%.3f,%.3f]", eta_bins[m], eta_bins[m+1]);
-    // tdrHeader(leg,legTitle);
     leg->AddEntry(h_MC.at(m),"MC","lp");
     leg->AddEntry(h_data.at(m),"data","lp");
     char line[100];
@@ -1003,7 +952,6 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     vec.clear();
     vec.push_back(h_SF.at(m));
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
-    // findExtreme2(vec, &x_min, &x_max, &y_min, &y_max);
     extraText3.clear();
     extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
     canv = tdrCanvas(canvName, 150, 800, 0.9, 1.4, nameXaxis, nameYaxis);
@@ -1134,12 +1082,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
 
-  // name_pt_bin = triggerName+"_barrel_";
-  // if (isAK8) name_pt_bin += "AK8_";
-  // name_pt_bin += year+"_ptbins";
-  // PtBins_Barrel = pt_trigger_thr.at(name_pt_bin).size();
-  // for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Barrel.push_back(pt);
-
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
@@ -1155,7 +1097,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
 
   if (debug) {
     std::cout << "Trigger " << Trigger << " " << Pt_bins_Central.size() << " " << Pt_bins_HF.size() << '\n';
-    // std::cout << "Pt_bins_Barrel\t"; for (size_t i = 0; i < Pt_bins_Barrel.size(); i++) std::cout << Pt_bins_Barrel[i] << '\t'; std::cout << '\n';
     std::cout << "Pt_bins_Central\t"; for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << Pt_bins_Central[i] << '\t'; std::cout << '\n';
     std::cout << "Pt_bins_HF\t";  for (size_t i = 0; i < Pt_bins_HF.size(); i++) std::cout << Pt_bins_HF[i] << '\t'; std::cout << '\n';
   }
@@ -1244,18 +1185,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "asymmpt_SM " << asymmetries_pt_data_SM.size() << '\n';
     std::cout << "asymmpt_FE " << asymmetries_pt_data_FE.size() << '\n';
   }
-
-  // cout << setw(2) << asymmetries_data_SM.size() << " --- " << endl;
-  // for(unsigned int e=0; e<asymmetries_data_SM.size(); e++){
-  //   cout << "eta " << e << " --- " << setw(3) << asymmetries_data_SM[e].size() << " | " << endl;
-  //   for(unsigned int p=0; p<asymmetries_data_SM[e].size(); p++){
-  //     cout << setw(3) << asymmetries_data_SM[e][p].size() << " ";
-  //     for(unsigned int a=0; a<asymmetries_data_SM[e][p].size(); a++){
-  //       cout << setw(5) << asymmetries_data_SM[e][p][a]->GetEntries() << " ";
-  //     }
-  //     cout << endl;
-  //   }
-  // }
 
   // std::vector < TH2F* > Map_mean_data;
   //
@@ -1656,12 +1585,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
 
   std::vector< TH1F* > JER_MC_Truth_SM, JER_MC_Truth_FE;
-  // std::vector< TGraphAsymmErrors* > JER_MC_Truth_SM, JER_MC_Truth_FE;
 
   fill_mctruth_hist( "MC_Truth"    , JER_MC_Truth_SM, mcTruth_res_SM, mcTruth_res_SM_error, width_pt_SM, hist_max_value);
   fill_mctruth_hist( "MC_Truth_Fwd", JER_MC_Truth_FE, mcTruth_res_FE, mcTruth_res_FE_error, width_pt_FE, hist_max_value);
-  // fill_mctruth_graph( "MC_Truth"    , JER_MC_Truth_SM, mcTruth_res_SM, mcTruth_res_SM_error, width_pt_SM, hist_max_value);
-  // fill_mctruth_graph( "MC_Truth_Fwd", JER_MC_Truth_FE, mcTruth_res_FE, mcTruth_res_FE_error, width_pt_FE, hist_max_value);
 
   ////////////////////////////////////////////////////////////////////////////
   //    I make histograms with  JERs and scale factors                      //
@@ -1670,11 +1596,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< TH1F* > JER_uncorrelated_MC_hist_SM,         JER_uncorrelated_data_hist_SM,          JER_uncorrelated_scale_hist_SM,         JER015_uncorrelated_MC_hist_SM;
   std::vector< TH1F* > JER_uncorrelated_MC_hist_FE,         JER_uncorrelated_data_hist_FE,          JER_uncorrelated_scale_hist_FE,         JER015_uncorrelated_MC_hist_FE;
   std::vector< TH1F* > JER_uncorrelated_MC_hist_FE_control, JER_uncorrelated_data_hist_FE_control,  JER_FE_uncorrelated_scale_control_hist, JER015_uncorrelated_MC_hist_SM_control;
-  // std::vector< TGraphAsymmErrors* > JER_uncorrelated_MC_hist_SM,         JER_uncorrelated_data_hist_SM,          JER_uncorrelated_scale_hist_SM,         JER015_uncorrelated_MC_hist_SM;
-  // std::vector< TGraphAsymmErrors* > JER_uncorrelated_MC_hist_FE,         JER_uncorrelated_data_hist_FE,          JER_uncorrelated_scale_hist_FE,         JER015_uncorrelated_MC_hist_FE;
-  // std::vector< TGraphAsymmErrors* > JER_uncorrelated_MC_hist_FE_control, JER_uncorrelated_data_hist_FE_control,  JER_FE_uncorrelated_scale_control_hist, JER015_uncorrelated_MC_hist_SM_control;
 
-  // fill_hist before -> same input ... fill_graph
   fill_hist( "MC_JER_uncorrelated_SM",    JER_uncorrelated_MC_hist_SM,    JER_uncorrelated_corrected_MC_SM,   JER_uncorrelated_corrected_MC_SM_error,   width_pt_SM, hist_max_value);
   fill_hist( "data_JER_uncorrelated_SM",  JER_uncorrelated_data_hist_SM , JER_uncorrelated_corrected_data_SM, JER_uncorrelated_corrected_data_SM_error, width_pt_SM, hist_max_value);
   fill_hist( "SF_uncorrelated_SM",        JER_uncorrelated_scale_hist_SM, scales_uncorrelated_SM,             scales_uncorrelated_SM_error,             width_pt_SM, hist_max_value_SF);
@@ -1689,10 +1611,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
 
   fill_hist( "MC_JER015_uncorrelated_SM", JER015_uncorrelated_MC_hist_SM, JER015_MC_SM,                       JER015_MC_SM_error,                       width_pt_SM,      hist_max_value);
   fill_hist( "MC_JER015_uncorrelated_FE", JER015_uncorrelated_MC_hist_FE, JER015_MC_FE,                       JER015_MC_FE_error,                       width_pt_FE,      hist_max_value,1);
-  // fill_hist( "MC_JER015_uncorrelated_FE_control", JER015_uncorrelated_MC_hist_FE_control, JER015_MC_FE_control,                   JER015_MC_FE_error,                           width_pt_FE,      0.2);
 
   std::vector< TH1F* > JER015_scale_hist_SM, JER015_scale_hist_FE;
-  // std::vector< TGraphAsymmErrors* > JER015_scale_hist_SM, JER015_scale_hist_FE;
 
   fill_hist( "SF_SM015", JER015_scale_hist_SM,  scales015_SM, scales015_SM_error, width_pt_SM, hist_max_value_SF);
   fill_hist( "SF_FE015", JER015_scale_hist_FE,  scales015_FE, scales015_FE_error, width_pt_FE, hist_max_value_SF,1);
@@ -1700,9 +1620,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::vector< TH1F* > JER_correlated_MC_hist_SM,         JER_correlated_data_hist_SM,         JER_correlated_scale_hist_SM;
   std::vector< TH1F* > JER_correlated_MC_hist_FE,         JER_correlated_data_hist_FE,         JER_correlated_scale_hist_FE;
   std::vector< TH1F* > JER_correlated_MC_hist_FE_control, JER_correlated_data_hist_FE_control, JER_correlated_scale_hist_FE_control;
-  // std::vector< TGraphAsymmErrors* > JER_correlated_MC_hist_SM,         JER_correlated_data_hist_SM,         JER_correlated_scale_hist_SM;
-  // std::vector< TGraphAsymmErrors* > JER_correlated_MC_hist_FE,         JER_correlated_data_hist_FE,         JER_correlated_scale_hist_FE;
-  // std::vector< TGraphAsymmErrors* > JER_correlated_MC_hist_FE_control, JER_correlated_data_hist_FE_control, JER_correlated_scale_hist_FE_control;
 
   fill_hist( "MC_JER_correlated_SM",   JER_correlated_MC_hist_SM,    JER_correlated_corrected_MC_SM,         JER_correlated_corrected_MC_SM_error,         width_pt_SM, hist_max_value);
   fill_hist( "data_JER_correlated_SM", JER_correlated_data_hist_SM,  JER_correlated_corrected_data_SM,       JER_correlated_corrected_data_SM_error,       width_pt_SM, hist_max_value);
@@ -1762,9 +1679,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   std::cout << "START PLOTTING" << '\n';
 
   TFile fMCTruth("output/MCTruth.root","RECREATE");
-  if(debug) cout << "JER_MC_Truth_SM"<< endl;
   PLOT_MCT(JER_MC_Truth_SM,JER_uncorrelated_MC_hist_SM,JER_correlated_MC_hist_SM,JER015_uncorrelated_MC_hist_SM,outdir+"pdfy/MCTruth/",eta_bins_edge_SM, false);
-  if(debug) cout << "JER_MC_Truth_FE"<< endl;
   PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
   fMCTruth.Close();
 
@@ -1847,16 +1762,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   /////////////////////////////////////////////////////////////////////////////////////////
 
   TFile NSCroot(outdir+"output/NSC.root","RECREATE");
-
-  // cout << JER_uncorrelated_data_hist_SM.size() << endl;
-  // for(auto i: JER_uncorrelated_data_hist_SM){
-  //   cout << i->GetN() << " ";
-  //   for(unsigned int j=0; j<i->GetN(); j++){
-  //     double x, y;
-  //     i->GetPoint(j, x,y);
-  //     cout << setw(3) << j << setw(15) << x << setw(15) << y << endl;
-  //   }
-  // }
   PLOT_NSC(JER_uncorrelated_data_hist_SM,JER_uncorrelated_MC_hist_SM,JER_uncorrelated_scale_hist_SM,outdir,eta_bins_edge_SM,false, false);
   PLOT_NSC(JER_correlated_data_hist_SM,JER_correlated_MC_hist_SM,JER_correlated_scale_hist_SM,outdir,eta_bins_edge_SM,false, true);
   PLOT_NSC(JER_uncorrelated_data_hist_FE,JER_uncorrelated_MC_hist_FE,JER_uncorrelated_scale_hist_FE,outdir,eta_bins_edge_FE, true, false);
