@@ -353,16 +353,12 @@ void MySelector::SlaveTerminate() {
   TFile *f1 = new TFile(outdir+"histograms_data_incl_full_control.root","RECREATE");
   TFile *f_alpha = new TFile(outdir+"alpha_spectrum.root","RECREATE"); ;
 
-  bool forControl = false;
   for( int r = 0; r < AlphaBins; r++ ) {
     for( int p = 0; p < PtBins_Central; p++ ) {
-      forControl = false;
       WRITE_HISTOS(SM)
       WRITE_HISTOS(FE_reference)
-      forControl = true;
       WRITE_HISTOS(FE_control)
     }
-    forControl = false;
     for( int p = 0; p < PtBins_HF; p++ ) {
       WRITE_HISTOS(SM_control)
       WRITE_HISTOS(FE)
