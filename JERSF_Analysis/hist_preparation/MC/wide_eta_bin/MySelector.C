@@ -43,7 +43,6 @@ bool JetInEtaBin(double jet_eta, std::vector<double> bins, int bin) {
   return JetInRange(jet_eta, bins[bin], bins[bin+1]);
 }
 
-
 #define FILL_HISTOS(region,method)                                                                      \
 if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
 asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                                            \
@@ -76,8 +75,6 @@ if (TMath::Abs(gen_asy) < 5) {                                                  
   gen_dR3_##region.at(r).at(k).at(m)->Fill( gen_asy, gen_Delta_R_radiation_barrel, gen_Delta_R_radiation_probe, weight);  \
 }                                                                                                                         \
 
-
-
 #define SELECT_ETA_ALPHA_BIN(region,method,cond1,cond2)                     \
 if (cond1 || cond2) {                                                       \
   h_alpha_sel->Fill(alpha, 1);                                              \
@@ -94,8 +91,6 @@ if (cond1 || cond2) {                                                       \
   alpha2D_##region.at(r).at(k)->Fill(alpha, alphaGen, weight);              \
 }                                                                           \
 
-// if(k>24) std::cout << "SELECT_ETA_ALPHA_BIN | " << r << " " << k << " " << m << std::endl;
-
 #define SELECT_ETA_ALPHA_BIN_GEN(region,cond1,cond2)                                           \
 if (cond1 || cond2) {                                                                          \
   for ( int m = 0 ; m < AlphaBins ; m++ ) {                                                    \
@@ -106,14 +101,6 @@ if (cond1 || cond2) {                                                           
     }                                                                                          \
   }                                                                                            \
 }                                                                                              \
-
-// if ( forControl ){                                                        \
-// if ( 0 < m && p == 26 ) continue;                                       \
-// }                                                                         \
-// else{                                                                     \
-// if ( 5 < m && p == 26 ) continue;                                       \
-// }                                                                         \
-// if(p>24) std::cout << "WRITE_HISTOS | " << m << " " << p << " " << r << std::endl; \
 
 #define WRITE_HISTOS(region)                                                \
 for( int m = 0; m < EtaBins_##region; m++ ) {                               \
@@ -152,7 +139,6 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
     std::vector< TH1F* > alpha_temp2;
     std::vector< std::vector< TH3F* > > temp2_dR3, gen_temp2_dR3 ;
     std::vector< TH2F* > alpha2D_temp2;
-    // int ptBins = m<6?ptBinstmp+1:ptBinstmp; // Hard coded to add pt bin beyond 1000 for eta<1.566
     for( int p = 0; p < ptBins; p++ ) {
       std::vector< TH1F* > temp1, temp1pt, temp1ptf, temp1rho, temp1pt3, temp1dR1, temp1dR2, gen_temp1rho, gen_temp1pt3, gen_temp1, gen_temp1pt, temp1_MCTruth;
       std::vector< TH2F* > temp1_dR, gen_temp1_dR, temp1_dR_probe, gen_temp1_dR_probe, temp1_dR_barrel, gen_temp1_dR_barrel, temp1_MCTruth2D;
@@ -168,7 +154,6 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
 
       for( int r = 0; r < AlphaBins; r++ ) {
         TString name     = text;        name     += extraText; name     += "_eta"; name     += m+1; name     += "_pt"; name     += p+1; name     += "_alpha"; name     += r+1;
-        // std::cout << "[CREATED] " << name << std::endl;
         TString name_pt  = text+"pt";   name_pt  += extraText; name_pt  += "_eta"; name_pt  += m+1; name_pt  += "_pt"; name_pt  += p+1; name_pt  += "_alpha"; name_pt  += r+1;
         TString name_ptf = text+"ptfine";   name_ptf += extraText; name_ptf += "_eta"; name_ptf += m+1; name_ptf += "_pt"; name_ptf += p+1; name_ptf += "_alpha"; name_ptf += r+1;
         TString name_rho = text+"rho";  name_rho += extraText; name_rho += "_eta"; name_rho += m+1; name_rho += "_pt"; name_rho += p+1; name_rho += "_alpha"; name_rho += r+1;
@@ -239,7 +224,6 @@ void MySelector::Begin(TTree * /*tree*/) {
 
   TotalEvents = 0;
   unmatchegGenJets = 0;
-  SwapedJets = 0;
 }
 
 void MySelector::SlaveBegin(TTree * /*tree*/) {
@@ -288,7 +272,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
 
-  // Pt_bins_Barrel.push_back(1500);
   Pt_bins_Central.push_back(1500);
   Pt_bins_HF.push_back(1500);
 
@@ -316,7 +299,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   if (true) {
     std::cout << "\nConstructor: " << PtBins_Central << " " << PtBins_HF;
-    // std::cout << "\nPt_bins_Barrel: ";         for (size_t i = 0; i < Pt_bins_Barrel.size(); i++) std::cout << " " << Pt_bins_Barrel[i];
     std::cout << "\nPt_bins_Central: ";         for (size_t i = 0; i < Pt_bins_Central.size(); i++) std::cout << " " << Pt_bins_Central[i];
     std::cout << "\nPt_bins_HF: ";              for (size_t i = 0; i < Pt_bins_HF.size(); i++) std::cout << " " << Pt_bins_HF[i];
     std::cout << "\nAlpha_bins: ";              for (size_t i = 0; i < Alpha_bins.size(); i++) std::cout << " " << Alpha_bins[i];
@@ -351,7 +333,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
     nevents_HF.push_back(temp);
   }
 
-  std::cout << "Make Histograms" << std::endl;
   MakeHistograms(asymmetries_SM,             asymmetries_pt_SM,             asymmetries_ptf_SM,           asymmetries_rho_SM,           asymmetries_pt3_SM,           asymmetries_dR1_SM,           asymmetries_dR2_SM,           alpha_spectrum_SM,            gen_asymmetries_SM,           gen_asymmetries_pt_SM,            gen_asymmetries_rho_SM,           gen_asymmetries_pt3_SM,           MC_Truth_asymmetries_SM,            MC_Truth_asymmetries_2D_SM,            dR_SM,            gen_dR_SM,            dR_probe_SM,            gen_dR_probe_SM,            dR_barrel_SM,           gen_dR_barrel_SM,           dR3_SM,           gen_dR3_SM,           alpha2D_SM,           "asymm",  "_SM",            EtaBins_SM,           PtBins,  AlphaBins,   etaShift_SM,            0, 0);
   MakeHistograms(asymmetries_SM_control,     asymmetries_pt_SM_control,     asymmetries_ptf_SM_control,   asymmetries_rho_SM_control,   asymmetries_pt3_SM_control,   asymmetries_dR1_SM_control,   asymmetries_dR2_SM_control,   alpha_spectrum_SM_control,    gen_asymmetries_SM_control,   gen_asymmetries_pt_SM_control,    gen_asymmetries_rho_SM_control,   gen_asymmetries_pt3_SM_control,   MC_Truth_asymmetries_SM_control,    MC_Truth_asymmetries_2D_SM_control,    dR_SM_control,    gen_dR_SM_control,    dR_probe_SM_control,    gen_dR_probe_SM_control,    dR_barrel_SM_control,   gen_dR_barrel_SM_control,   dR3_SM_control,   gen_dR3_SM_control,   alpha2D_SM_control,   "asymm",  "_SM_control",    EtaBins_SM_control,   PtBins,  AlphaBins,   etaShift_SM_control,    0, 0);
   MakeHistograms(asymmetries_FE_reference,  asymmetries_pt_FE_reference,  asymmetries_ptf_FE_reference,  asymmetries_rho_FE_reference, asymmetries_pt3_FE_reference, asymmetries_dR1_FE_reference, asymmetries_dR2_FE_reference, alpha_spectrum_FE_reference,  gen_asymmetries_FE_reference, gen_asymmetries_pt_FE_reference,  gen_asymmetries_rho_FE_reference, gen_asymmetries_pt3_FE_reference, MC_Truth_asymmetries_FE_reference,  MC_Truth_asymmetries_2D_FE_reference,  dR_FE_reference,  gen_dR_FE_reference,  dR_probe_FE_reference,  gen_dR_probe_FE_reference,  dR_barrel_FE_reference, gen_dR_barrel_FE_reference, dR3_FE_reference, gen_dR3_FE_reference, alpha2D_FE_reference, "asymm",  "_FE_reference",  EtaBins_FE_reference, PtBins, AlphaBins,    etaShift_FE_reference,  0, 0);
@@ -362,7 +343,6 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   dR_bins.push_back(2.0); dR_bins.push_back(2.4); dR_bins.push_back(2.8); dR_bins.push_back(3.2); dR_bins.push_back(3.6);
   dR_bins.push_back(4.0); dR_bins.push_back(4.4); dR_bins.push_back(4.8); dR_bins.push_back(5.2); dR_bins.push_back(5.6); dR_bins.push_back(6.0);
 
-  std::cout << "Make 2D Histograms" << std::endl;
   for( int m = 0; m < EtaBins_FE; m++ ) {
     std::vector< std::vector< std::vector< TH2F* > > > temp1_barrel, gen_temp1_barrel, temp1_probe, gen_temp1_probe;
     for( int p = 0; p < PtBins_HF; p++ ) {
@@ -390,29 +370,12 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
     gen_asy_dR_probe_FE.push_back(gen_temp1_probe);
   }
 
-  for(unsigned int e = 0; e<gen_asymmetries_FE_control.size(); e++ )     std::cout << gen_asymmetries_FE_control[e].size()     << " ";
-  std::cout << std::endl;
-  for(unsigned int e = 0; e<gen_asymmetries_pt_FE_control.size(); e++ )  std::cout << gen_asymmetries_pt_FE_control[e].size()  << " ";
-  std::cout << std::endl;
-  for(unsigned int e = 0; e<gen_asymmetries_pt3_FE_control.size(); e++ ) std::cout << gen_asymmetries_pt3_FE_control[e].size() << " ";
-  std::cout << std::endl;
-  for(unsigned int e = 0; e<gen_dR_FE_control.size(); e++ )              std::cout << gen_dR_FE_control[e].size()              << " ";
-  std::cout << std::endl;
-  for(unsigned int e = 0; e<gen_dR_probe_FE_control.size(); e++ )        std::cout << gen_dR_probe_FE_control[e].size()        << " ";
-  std::cout << std::endl;
-  for(unsigned int e = 0; e<gen_dR_barrel_FE_control.size(); e++ )       std::cout << gen_dR_barrel_FE_control[e].size()       << " ";
-  std::cout << std::endl;
-  for(unsigned int e = 0; e<gen_dR3_FE_control.size(); e++ )             std::cout << gen_dR3_FE_control[e].size()             << " ";
-  std::cout << std::endl;
-
 }
 
 bool MySelector::Process(Long64_t entry) {
 
   ++TotalEvents;
-  // if(TotalEvents < 24500000) return kTRUE; // Delete later
   if ( TotalEvents%1000000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
-  // if ( TotalEvents%10000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; } // Delete later
 
   // if (weight <= 0 || weight > 1000) weight = 0;
 
@@ -461,7 +424,6 @@ bool MySelector::Process(Long64_t entry) {
   bool dofill; int shift;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
-  // std::cout << "Start writing histograms Reco" << std::endl;
   if (!isHF) {
     dofill=true;
     for ( int k = 0 ; k < PtBins_Central ; k++ ) {
@@ -513,7 +475,6 @@ bool MySelector::Process(Long64_t entry) {
     }
   }
 
-  // std::cout << "Start writing histograms Gen" << std::endl;
   if (!isHF) {
     dofill=true;
     for ( int k = 0 ; k < PtBins_Central ; k++ ) {
@@ -535,7 +496,6 @@ bool MySelector::Process(Long64_t entry) {
           if (is_JER_SM) continue;
           cond1 = (JetInRange(barrelgenjet_eta, 0, s_eta_barr) && JetInEtaBin(probegenjet_eta, Eta_bins_FE_control, r));
           cond2 = (JetInRange(probegenjet_eta,  0, s_eta_barr) && JetInEtaBin(barrelgenjet_eta, Eta_bins_FE_control, r));
-          // std::cout << "EtaBins_FE_control " << k << " - " << r << " | " << barrelgenjet_eta << "   " << barreljet_eta << " | " << probegenjet_eta << "   " << probejet_eta << " | " << Eta_bins_FE_control[r] << "-" << Eta_bins_FE_control[r+1] << " " << cond1 << " " << cond2 << " " << inBarrel << std::endl;
           SELECT_ETA_ALPHA_BIN_GEN(FE_control,cond1,cond2)
         }
 
@@ -570,7 +530,7 @@ void MySelector::SlaveTerminate() {
   // have been processed. When running with PROOF SlaveTerminate() is called
   // on each slave server.
 
-std::cout <<"\t\tAnalyzed events #" <<  TotalEvents << std::endl;
+  std::cout <<"\t\tAnalyzed events #" <<  TotalEvents << std::endl;
   std::cout <<"\t\tunmatchegGenJets events #" <<  unmatchegGenJets << std::endl;
 
   std::ofstream mytxtfile;
@@ -605,16 +565,12 @@ std::cout <<"\t\tAnalyzed events #" <<  TotalEvents << std::endl;
   TFile *f3 = new TFile(outdir+"histograms_mc_incl_full_2D_dR.root","RECREATE");
   TFile *f_alpha = new TFile(outdir+"alpha_spectrum.root","RECREATE"); ;
 
-  bool forControl = false;
   for( int r = 0; r < AlphaBins; r++ ) {
     for( int p = 0; p < PtBins_Central; p++ ) {
-      forControl = false;
       WRITE_HISTOS(SM)
       WRITE_HISTOS(FE_reference)
-      forControl = true;
       WRITE_HISTOS(FE_control)
     }
-    forControl = false;
     for( int p = 0; p < PtBins_HF; p++ ) {
       WRITE_HISTOS(SM_control)
       WRITE_HISTOS(FE)
@@ -637,12 +593,10 @@ std::cout <<"\t\tAnalyzed events #" <<  TotalEvents << std::endl;
 
   std::vector<TH2F*> h_nevents_central, h_nevents_HF;
 
-  // std::vector<double> Pt_bins_Barrel_D(Pt_bins_Barrel.begin(), Pt_bins_Barrel.end());
   std::vector<double> Pt_bins_Central_D(Pt_bins_Central.begin(), Pt_bins_Central.end());
   std::vector<double> Pt_bins_HF_D(Pt_bins_HF.begin(), Pt_bins_HF.end());
 
   for (int m = 0; m < 6; m++){
-    // h_nevents_barrel.push_back(new TH2F(("barrel_"+std::to_string(m)).c_str(),("barrel_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Barrel_D.size()-1,&Pt_bins_Barrel_D[0]));
     h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
     h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
   }
