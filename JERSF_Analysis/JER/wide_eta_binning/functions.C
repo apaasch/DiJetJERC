@@ -119,7 +119,6 @@ void make_lin_fit(double & slope, double & d_slope, double & offset, double & d_
 void chi2_linear(Int_t& npar, Double_t* grad, Double_t& fval, Double_t* p, Int_t status);
 double sumSquare(double a, double b);
 double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin);
-double findMinMax(TGraphAsymmErrors* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin);
 void fitLin( TH1F &hist, double &width, double &error );
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 bool removePointsforFit(bool isFE, int m, int p);
@@ -1217,20 +1216,6 @@ double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1*
   for (unsigned int p = 2; p < pt_width.size(); p++) {// TODO It's set to 2 just because in the following steps pt>2"bin are used
   double pT = (double)(*std::max_element(pt_width.at(p).begin(),pt_width.at(p).end()));
   if (JER->GetBinContent(JER->FindBin(pT))== 0.) continue;
-  min = std::min(min, TMath::Abs(NSC_ratio->Eval(pT) - constfit->Eval(pT)));
-  max = std::max(min, TMath::Abs(NSC_ratio->Eval(pT) - constfit->Eval(pT)));
-}
-if (isMin) return min;
-else return max;
-}
-
-double findMinMax(TGraphAsymmErrors* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin) {
-  double min = 10000;
-  double max = 0;
-  for(unsigned int p = 2; p < pt_width.size(); p++){ // TODO It's set to 2 just because in the following steps pt>2"bin are used
-  double pT = (double)(*std::max_element(pt_width.at(p).begin(),pt_width.at(p).end()));
-  cout << pT << "   " << p << endl;
-  // if (JER->GetBinContent(JER->FindBin(pT))== 0.) continue;
   min = std::min(min, TMath::Abs(NSC_ratio->Eval(pT) - constfit->Eval(pT)));
   max = std::max(min, TMath::Abs(NSC_ratio->Eval(pT) - constfit->Eval(pT)));
 }
