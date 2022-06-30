@@ -6,7 +6,6 @@
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/EventHelper.h"
 #include "UHH2/core/include/Jet.h"
-#include "UHH2/core/include/L1Jet.h"
 #include "UHH2/core/include/Utils.h"
 #include "UHH2/common/include/CommonModules.h"
 #include "UHH2/common/include/DetectorCleaning.h"
@@ -165,11 +164,6 @@ protected:
   Event::Handle<long long> tt_evID;
   Event::Handle<int> tt_lumiSec;
 
-  Event::Handle<int> tt_jet1_l1bx;
-  Event::Handle<int> tt_jet2_l1bx;
-  Event::Handle<int> tt_jet3_l1bx;
-
-
   std::unique_ptr<JECAnalysisRecoGenMatchedHistsFractions> h_matched_all;//uses PF and GEN fractions only
   std::unique_ptr<JECAnalysisRecoGenMatchedHistsFractions> h_matched_pt[n_pt-1];//uses PF and GEN fractions only
 
@@ -217,7 +211,7 @@ protected:
 
   //useful booleans
   bool debug, no_genp;
-  bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_L1seed_from_bx1_filter, apply_PUid;
+  bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_PUid;
   bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18;
   std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL16preVFP", runPeriodsUL16preVFP}, {"UL16postVFP", runPeriodsUL16postVFP}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
   std::string year;
@@ -250,8 +244,6 @@ protected:
 
   std::vector<uhh2DiJetJERC::run_lumi_ev>  unprefirableSummary;
   bool useUnprefireable;
-
-  uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
 
 };
 
@@ -366,9 +358,6 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   tt_run        = ctx.declare_event_output<int>("run");
   tt_evID       = ctx.declare_event_output<long long>("eventID");
   tt_lumiSec    = ctx.declare_event_output<int>("lumi_sec");
-  tt_jet1_l1bx  = ctx.declare_event_output<int>("jet1_l1bx");
-  tt_jet2_l1bx  = ctx.declare_event_output<int>("jet1_l2bx");
-  tt_jet3_l1bx  = ctx.declare_event_output<int>("jet1_l3bx");
 
   tt_trigger40  = ctx.declare_event_output<int>("trigger40");
   tt_trigger60  = ctx.declare_event_output<int>("trigger60");
@@ -594,9 +583,9 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   // apply_EtaPhi_HCAL = string2bool(ctx.get("EtaPhi_HCAL", "false"));
   isThreshold = string2bool(ctx.get("isThreshold", "false"));
   apply_PUid = string2bool(ctx.get("Apply_PUid_3rdjet", "false"));
+  cout << apply_PUid << endl;
   cout << "Dataset is " << ((isMC) ? " mc " : " data") << endl;
 
-  apply_L1seed_from_bx1_filter =  (ctx.get("Apply_L1Seed_From_BX1_Filter","false") == "true" && !isMC);
   is2016v2      = (dataset_version.find("2016v2")      != std::string::npos);
   is2016v3      = (dataset_version.find("2016v3")      != std::string::npos);
   is2017        = (dataset_version.find("2017")        != std::string::npos);
@@ -715,7 +704,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
       for (size_t i = 0; i < pt_indexes.at(triggerModeName).size() ; i++) {
         std::string trg_xml = PtBinsTrigger+"_"+pt_indexes.at(triggerModeName)[i];
         if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) trg_xml = TString(trg_xml).ReplaceAll("550","500");
-        if (isAK8) trg_xml += "_AK8";
+        if (isAK8 && !isUL16) trg_xml += "_AK8";
         if ((is2017 || isUL17) && ((dataset_version.find("RunB") != std::string::npos) || (dataset_version.find("RunC") != std::string::npos))){
           trg_xml = TString(trg_xml).ReplaceAll("DiJet","SingleJet");
         }
@@ -812,8 +801,6 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   upper_binborders_runnrs.push_back(last_entry); //this is not exactly an UPPER limit because it is equal to the highest possible entry, not greater than it...created exception for this case.
   lumi_in_bins.push_back(ilumi_current_bin);
 
-  handle_l1jet_seeds = ctx.declare_event_input< vector< L1Jet>>("L1Jet_seeds");
-
   cout<<"end of AnalyseModule Constructor" << '\n';
 
 };
@@ -853,9 +840,11 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   h_lumi_nocuts->fill(event);
 
   // Do pileup reweighting
+  if(debug) cout << "Lumi Weights" << endl;
   if (apply_lumiweights) if(!LumiWeight_module->process(event)) return false;
 
   // Do pileup reweighting
+  if(debug) cout << "Reweighting" << endl;
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
 
   //Dump Input
@@ -863,6 +852,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   //LEPTON selection
   h_Muon_before->fill(event);
+  if(debug) cout << "Muon Cleaner" << endl;
   muoSR_cleaner->process(event);
   sort_by_pt<Muon>(*event.muons);
   if(debug )std::cout<<"#muons = "<<event.muons->size()<<std::endl;
@@ -925,7 +915,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   h_beforeJetID->fill(event);
   jetID->process(event); //TODO FixME: make sure JetID works for AK8
-  if(debug) cout<<"after jet ID"<<endl;
 
   h_beforePUid->fill(event);
   if(apply_PUid) jetPUid->process(event);
@@ -1200,7 +1189,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   for (std::string mode: {"central", "forward"}) {
     std::string trg_thr_name = PtBinsTrigger+"_"+mode;
-    if (isAK8) trg_thr_name += "_AK8";
+    if (isAK8 && !isMC && !isUL16) trg_thr_name += "_AK8";
     trg_thr_name += "_"+year;
     if (debug) std::cout << "trg_thr_name " << trg_thr_name << " pt_bins: " << pt_trigger_thr.at(trg_thr_name).size() << '\n';
     for (unsigned int i = 0; i < pt_trigger_thr.at(trg_thr_name).size(); i++) {
@@ -1553,85 +1542,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(useUnprefireable){
     if(!sel->Unprefirable(unprefirableSummary)) return false;
   }
-
-
-  // L1 jet seed cleaning
-  if(apply_L1seed_from_bx1_filter){
-    if(debug) cout << "before the L1 seed filter" << endl;
-    if(!sel->L1JetBXcleanSmart()){
-      if(debug) cout << "L1 seed filtered" << endl;
-      return false;
-    }
-    if(debug) cout << "after the first L1 seed filter" << endl;
-  }
-
-  //get the corresponding L1 Jet and save the bx
-  std::vector< L1Jet>* l1jets = &event.get(handle_l1jet_seeds);
-
-  if(debug) cout << "declared L1Jet seeds" << endl;
-
-  int jet1_l1bx, jet2_l1bx, jet3_l1bx;
-
-  unsigned int n_l1jets =l1jets->size();
-  if(debug) cout << "l1jets size is "<<n_l1jets<<endl;
-  if(n_l1jets>0){
-    double dRmin = 100.;
-    int dRmin_seed_idx = -1;
-    float dR;
-    if(debug) cout << "before first L1Jet seeds dR loop" << endl;
-    for(unsigned int i = 0; i<n_l1jets; i++){
-      dR=uhh2::deltaR(l1jets->at(i),ak4jets->at(0));
-
-      if(dR < dRmin){
-        dRmin=dR;
-        dRmin_seed_idx = i;
-      }
-    }
-    if( ( l1jets->at(dRmin_seed_idx).pt() / ak4jets->at(0).pt() ) < 0.2 ) jet1_l1bx = -10;
-    else jet1_l1bx = l1jets->at(dRmin_seed_idx).bx();
-  }
-  else jet1_l1bx = 10;
-
-  if(n_l1jets>1){
-    double dRmin = 100.;
-    int dRmin_seed_idx = -1;
-    float dR;
-    for(unsigned int i = 0; i<n_l1jets; i++){
-      dR=uhh2::deltaR(l1jets->at(i),ak4jets->at(1));
-
-      if(dR < dRmin){
-        dRmin=dR;
-        dRmin_seed_idx = i;
-      }
-    }
-    if( ( l1jets->at(dRmin_seed_idx).pt() / ak4jets->at(0).pt() ) < 0.2 ) jet2_l1bx = -10;
-    else jet2_l1bx = l1jets->at(dRmin_seed_idx).bx();
-  }
-  else jet2_l1bx = 10;
-
-  if(ak4jets->size()>2){
-    if(n_l1jets>2){
-      double dRmin = 100.;
-      int dRmin_seed_idx = -1;
-      float dR;
-      for(unsigned int i = 0; i<n_l1jets; i++){
-        dR=uhh2::deltaR(l1jets->at(i),ak4jets->at(2));
-
-        if(dR < dRmin){
-          dRmin=dR;
-          dRmin_seed_idx = i;
-        }
-      }
-      if( ( l1jets->at(dRmin_seed_idx).pt() / ak4jets->at(0).pt() ) < 0.2 ) jet3_l1bx = -10;
-      else jet3_l1bx = l1jets->at(dRmin_seed_idx).bx();
-    }
-    else jet3_l1bx = 10;
-  }
-  else jet3_l1bx = 10;
-
-  event.set(tt_jet1_l1bx,jet1_l1bx);
-  event.set(tt_jet2_l1bx,jet2_l1bx);
-  event.set(tt_jet3_l1bx,jet3_l1bx);
 
   //###############################################################################################
 

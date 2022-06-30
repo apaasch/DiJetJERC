@@ -54,6 +54,10 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     a = os.system(cmd)
     cmd = "cp functions.C %s" % (outdir)
     a = os.system(cmd)
+    cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/JERCProtoLab/macros/common_info/common_binning.hpp %s" % (outdir)
+    a = os.system(cmd)
+    cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/JERCProtoLab/macros/common_info/common_binning.cxx %s" % (outdir)
+    a = os.system(cmd)
     cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/include/tdrstyle_all.h %s" % (outdir)
     a = os.system(cmd)
     cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/include/constants.h %s" % (outdir)
@@ -114,6 +118,7 @@ samples["UL16preVFP"] = ["BCDEF"]
 samples["UL16postVFP"] = ["FGH"]
 samples["UL17"] = ["BCDEF"]
 samples["UL18"] = ["ABCD"]
+# samples["UL18"] = ["ABC"]
 
 
 # samples["UL16preVFP"] = ["B", "C", "D", "E", "F"]
@@ -149,11 +154,13 @@ JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
 JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
 JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
 JECVersions["UL17"] = ["Summer19UL17_V5"]
+# JECVersions["UL18"] = ["Summer20UL18_V2"]
 JECVersions["UL18"] = ["Summer19UL18_V5"]
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
-JetLabels=["AK4CHS"]
+# JetLabels=["AK4CHS"]
+JetLabels=["AK4Puppi"]
 dirs = ["", "up", "down"]
 # systematics=["", "PU", "JEC", "alpha", "JER"]
 # systematics=["PU", "JEC", "alpha", "JER"]
@@ -172,7 +179,8 @@ studies = []
 # studies.append("eta_JER_fine")
 # studies.append("eta_JER_default")
 studies.append("eta_common_default")
-# studies.append("eta_common_fine")
+# studies.append("eta_common_central_fine_v2")
+# studies.append("eta_common")
 # studies.append("eta_simple")
 
 for extraText in [""]:

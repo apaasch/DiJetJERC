@@ -69,9 +69,9 @@ def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
 
 
 
-def main_program(option="", internal_option="", study="Standard", processes=[], others=[], JECVersions_Data=[], JECVersions_MC=[], JetLabels=[], systematics=[], original_dir="./SubmittedJobs/", original_file="JER2018.xml", year="2018", isMB=False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False, extratext=""):
+def main_program(option="", internal_option="", study="Standard", processes=[], others=[], JECVersions_Data=[], JECVersions_MC=[], JetLabels=[], systematics=[], original_dir="./SubmittedJobs/", original_file="JER2018.xml", year="2018", isMB=False, test_trigger=False, isThreshold=False, isLowPt=False, isECAL=False, extratext=""):
     if option == "new":
-        createConfigFiles(study, processes, others, JECVersions_Data, JECVersions_MC, JetLabels, systematics, original_dir, original_file, outdir, year, isMB, test_trigger, isThreshold,isLowPt,isL1Seed,isECAL,extratext)
+        createConfigFiles(study, processes, others, JECVersions_Data, JECVersions_MC, JetLabels, systematics, original_dir, original_file, outdir, year, isMB, test_trigger, isThreshold,isLowPt,isECAL,extratext)
     elif option == "remove" or option == "delete":
         delete_workdir(original_dir, JECVersions_Data, JetLabels, systematics, extratext)
     else:
@@ -207,58 +207,66 @@ Data_process.append("DATA_RunD_UL18")
 # systematics = ["", "PU", "JEC", "JER"]
 
 # year = "2018"
-year = "UL16preVFP"
+# year = "UL16preVFP"
 # year = "UL16postVFP"
 # year = "UL17"
-# year = "UL18"
+year = "UL18"
 
 
 studies = []
 # studies.append("Standard")
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
-studies.append("eta_JER")
+# studies.append("eta_JER")
+studies.append("eta_common")
 # studies.append("eta_L2R")
 # studies.append("eta_narrow")
-studies.append("eta_simple")
+#studies.append("eta_simple")
 
 print "Running for: ", studies
 time.sleep(2)
 
+# outdir = "DiJetJERC_DiJetHLT"
 outdir = "DiJetJERC_DiJetHLT"
 original_file = outdir+".xml"
 original_dir_ = os.getcwd()
 
 
 # QCDSamples = ["QCDPt","QCDHT", "DATA"]
-QCDSamples = ["QCDHT", "DATA"]
+# QCDSamples = ["QCDHT", "DATA"]
+QCDSamples = ["DATA"]
+# QCDSamples = ["QCDHT"]
 processes = filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process)
 others = list(set(QCD_process+Data_process)-set(processes))
 
 JECVersions_Data = {}
 JECVersions_MC = {}
 
-JECVersions_Data["2017"]        = ["Fall17_17Nov2017_V32"]
-JECVersions_MC["2017"]          = ["Fall17_17Nov2017_V32"]
-JECVersions_Data["2018"]        = ["Autumn18_V19"]
-JECVersions_MC["2018"]          = ["Autumn18_V19"]
-JECVersions_Data["UL16preVFP"]  = ["Summer19UL16APV_V3"]
-JECVersions_MC["UL16preVFP"]    = ["Summer19UL16APV_V3"]
-JECVersions_Data["UL16postVFP"] = ["Summer19UL16_V2"]
-JECVersions_MC["UL16postVFP"]   = ["Summer19UL16_V2"]
-JECVersions_Data["UL17"]        = ["Summer19UL17_V5"]
-JECVersions_MC["UL17"]          = ["Summer19UL17_V5"]
-JECVersions_Data["UL18"]        = ["Summer19UL18_V5"]
-JECVersions_MC["UL18"]          = ["Summer19UL18_V5"]
-# JetLabels = ["AK4CHS","AK8Puppi", "AK4Puppi"]
-JetLabels = ["AK4CHS"]
+JECVersions_Data["UL16preVFP"]  = ["Summer20UL16APV_V2"]
+JECVersions_MC["UL16preVFP"]    = ["Summer20UL16APV_V2"]
+JECVersions_Data["UL16postVFP"] = ["Summer20UL16_V2"]
+JECVersions_MC["UL16postVFP"]   = ["Summer20UL16_V2"]
+JECVersions_Data["UL17"]        = ["Summer20UL17_V2"]
+JECVersions_MC["UL17"]          = ["Summer20UL17_V2"]
+JECVersions_Data["UL18"]        = ["Summer20UL18_V2"]
+JECVersions_MC["UL18"]          = ["Summer20UL18_V2"]
+
+# JECVersions_Data["UL18"]        = ["Summer19UL18_V5"]
+# JECVersions_MC["UL18"]          = ["Summer19UL18_V5"]
+
+# JetLabels = ["AK4CHS", "AK4Puppi", "AK8CHS", "AK8Puppi"]
+# JetLabels = ["AK4Puppi_v11"]
+JetLabels = ["AK4Puppi"]
+# JetLabels = ["AK4CHS", "AK4Puppi"]
 # JetLabels = ["AK8Puppi", "AK4Puppi"]
-systematics = ["", "PU", "JEC", "JER"]
+# JetLabels = [ "AK8Puppi"]
+# systematics = ["", "PU", "JEC", "JER"]
 # systematics = ["", "PU", "JEC"]
 # systematics = ["PU", "JEC"]
 # systematics = ["PU"]
-# systematics = [""]
-# systematics = ["JEC"]
+systematics = [""]
+
+print year,studies, QCDSamples, JECVersions_Data[year], JetLabels, systematics
 
 for study in studies:
 

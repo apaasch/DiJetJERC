@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -94,7 +95,6 @@ void DrawComparison(double eta, bool inRatio = false){
 // ===                                                                                                ===
 // ======================================================================================================
 void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, double &Nerr, double &Serr, double &Cerr, double& Perr, double &mcChi, int &mcNDF, double eta) {
-
   TF1* mcFIT;
   if(useP)
   {
@@ -182,7 +182,6 @@ void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &P, d
   kCerr = dtFIT -> GetParError( 4 );
   dtChi = dtFIT->GetChisquare();
   dtNDF = dtFIT->GetNDF();
-  // std::cout << dtERR->GetName() << " " << dtERR->GetEntries() << '\n';
   (TVirtualFitter::GetFitter())->GetConfidenceIntervals(dtERR,0.68);
   dtERR->SetStats(kFALSE);
   dtERR->GetXaxis()->SetRange(min_fit,max_fit);
@@ -508,7 +507,7 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
         if(alpha_new) f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_data);
       }
 
-      TLegend *leg = tdrLeg(0.50,0.70,0.85,0.87, 0.045, 42, kBlack);
+      TLegend *leg = tdrLeg(0.50,0.70,0.85,0.90, 0.045, 42, kBlack);
 
       TLine* first = new TLine(0, 0, 0, 0); first->SetLineColor(kGray+1); first->SetLineStyle(3);
       TLine* last = new TLine(0, 0, 0, 0); last->SetLineColor(kGray+1); last->SetLineStyle(4);
@@ -607,20 +606,10 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     if(h_uncor.at(m)->GetFunction("constfit")){
       f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);f->SetLineWidth(2);f->Draw("same");
       f->SetParameter(0,f->GetParameter(0)-0.002);
-      // legend = tdrLeg(0.30,0.70,0.50,0.90, 0.025, 42, color_uncor);
-      // tdrHeader(legend,"JER", 22);
-      // sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      // sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      // legend->Draw("same");
     } else { std::cout << "Fit uncor function at bin " << m << " was not found" << std::endl; }
 
     if(h_cor.at(m)->GetFunction("constfit")){
       f = h_cor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_cor);f->SetLineWidth(2);f->Draw("same");
-      // legend = tdrLeg(0.50,0.70,0.70,0.90, 0.025, 42, color_cor);
-      // tdrHeader(legend,"JER cor", 22);
-      // sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-      // sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-      // legend->Draw("same");
     } else { std::cout << "Fit cor function at bin " << m << " was not found" << std::endl; }
 
     f = new TF1( "constfit", "pol0", min_fit_lin, max_fit_lin );
@@ -632,16 +621,6 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
 
     f = h_JER_corr_NSC.at(m) -> GetFunction("NSC_ratio");
     f->SetLineColor(kOrange+1); f->SetLineWidth(2); f->Draw("same");
-
-    // if(h_015.at(m)->GetFunction("constfit")){
-    //   f = h_015.at(m) -> GetFunction("constfit"); f->SetLineColor(color_015);
-    //   legend = tdrLeg(0.70,0.70,0.90,0.90, 0.025, 42, color_uncor);
-    //   tdrHeader(legend,"JER 0.15", 22);
-    //   sprintf(line, "#chi^{2}/ndf = %.2f/%d", f->GetChisquare(), f->GetNDF());        legend->AddEntry((TObject*)0, line, "");
-    //   sprintf(line, "p0 = %.5f #pm %.5f",     f->GetParameter(0), f->GetParError(0)); legend->AddEntry((TObject*)0, line, "");
-    //   legend->Draw("same");
-    // } else { /*std::cout << "Fit 015 function at bin " << m << " was not found" << std::endl;*/ }
-
 
     TLegend *leg = tdrLeg(0.55,0.55,0.9,0.85, 0.04, 42, kBlack);
     leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC} correlated","lep");
@@ -782,7 +761,6 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
   for( unsigned int m = 0; m < h_data.size(); m++ ){
     double eta = (eta_bins[m]+eta_bins[m+1])/2;
-
     // if(m==1) RemoveAsymBinsFromJER(h_MC.at(m), 5);
     h_data.at(m)->SetStats(kFALSE);
     h_MC.at(m)->SetStats(kFALSE);
@@ -827,9 +805,6 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     tdrDraw(h_MC.at(m), "", kFullCircle, color_MC );
     TLegend *leg = tdrLeg(0.6,0.7,0.9,0.9);
     leg->SetNColumns(2);
-    // char legTitle[100];
-    // sprintf(legTitle, "#eta #in [%.3f,%.3f]", eta_bins[m], eta_bins[m+1]);
-    // tdrHeader(leg,legTitle);
     leg->AddEntry(h_MC.at(m),"MC","lp");
     leg->AddEntry(h_data.at(m),"data","lp");
     char line[100];
@@ -858,7 +833,7 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
       TF1* mcFIT = h_MC.at(m)->GetFunction("mcFIT"); mcFIT->SetLineColor(color_MC+2);
 
       bool drawEXT = false; int colorEXT = kGray+2;
-      bool drawIND = true; int colorIND = kCyan+1;
+      bool drawIND = false; int colorIND = kCyan+1;
 
       TGraphErrors* MC_graph = TH1toTGraphError(h_MC.at(m), 0);
       MC_graph->GetListOfFunctions()->Add(mcFIT);
@@ -931,16 +906,16 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
       // Add new fit functions and compare to default. For pT-dependent SFs studies
       // void AddFit(bool draw, color, place, canv, TString name, TString function, info1,  info2, hist, r1, r2, initial, N, S, C, P={0,0})
-      AddFit(false, kOrange+2, 1, canv2, "mcFITold", fNSC, "NSC; old", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
-      AddFit(false, kGreen+2, 3, canv2, "mcFIT100", fNSC, "NSC; ", "pT in [100, 1200] GeV", h_MC.at(m), 100, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
-      AddFit(false, kGreen+2, 3, canv2, "mcFIT200", fNSC, "NSC; ", "pT in [200, 1200] GeV", h_MC.at(m), 200, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
-      AddFit(false, kGray+2, 4, canv2, "mcFITv1", fNSC, "NSC; v1", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {5, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.02,1.});
-      AddFit(false, kBlue+2, 9, canv2, "mcFITsig", fNSCsign, "sign(N)NSC; ", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {0.00015, 0.8, 0.04}, {-10.,10.}, {0.,2.}, {0.,1.});
-      AddFit(false, kMagenta+2, 9, canv2, "mcFITpowCut", fNSxPC, "NSxPC; ", "pT in [110, 1200] GeV", h_MC.at(m), 110, 1200, {0.00015, 0.8, 0.06,-1}, {-20.,20.}, {0.,2.}, {0.02,1.}, {-3.,0.});
-      AddFit(false, kOrange+2, 2, canv2, "mcFITpow", fNSxPC, "NSxPC; ", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {0.00015, 0.8, 0.06,-1}, {-20.,20.}, {0.,6.}, {0.015,1.}, {-3.,0.});
-      AddFit(false, kOrange+2, 3, canv2, "mcFITpowV1", fNSxPC, "NSxPC; new initial", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {5, 1, 0.05,-0.8}, {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
-      AddFit(true, kOrange+2, 4, canv2, "mcFITpowN", fNSxPC, "NSxPC; new N limit", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {1, 1, 0.05,-1.0}, {-5.,5.}, {0.,2.}, {0.015,1.}, {-3.,0.});
-      AddFit(false, kCyan+2, 1, canv2, "mcFITpowdiv", fNSxPCdiv, "NSxPC; C*C/100", "pT in [70, 1200] GeV", h_MC.at(m), 70, 1200, {5, 1, 5,-0.8}, {-20.,20.}, {0.,2.}, {0.015,10.}, {-3.,0.});
+      AddFit(false, kOrange+2,  1, canv2, "mcFITold",    fNSC,      "NSC; old",           "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {0.00015, 0.8, 0.04},    {0.,10.},   {0.,2.}, {0.,1.});
+      AddFit(false, kGreen+2,   3, canv2, "mcFIT100",    fNSC,      "NSC; ",              "pT in [100, 1200] GeV", h_MC.at(m), 100, 1200, {0.00015, 0.8, 0.04},    {0.,10.},   {0.,2.}, {0.,1.});
+      AddFit(false, kGreen+2,   3, canv2, "mcFIT200",    fNSC,      "NSC; ",              "pT in [200, 1200] GeV", h_MC.at(m), 200, 1200, {0.00015, 0.8, 0.04},    {0.,10.},   {0.,2.}, {0.,1.});
+      AddFit(false, kGray+2,    4, canv2, "mcFITv1",     fNSC,      "NSC; v1",            "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {5, 0.8, 0.04},          {0.,20.},   {0.,2.}, {0.02,1.});
+      AddFit(false, kBlue+2,    9, canv2, "mcFITsig",    fNSCsign,  "sign(N)NSC; ",       "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {0.00015, 0.8, 0.04},    {-10.,10.}, {0.,2.}, {0.,1.});
+      AddFit(false, kMagenta+2, 9, canv2, "mcFITpowCut", fNSxPC,    "NSxPC; ",            "pT in [110, 1200] GeV", h_MC.at(m), 110, 1200, {0.00015, 0.8, 0.06,-1}, {-20.,20.}, {0.,2.}, {0.02,1.}, {-3.,0.});
+      AddFit(false, kOrange+2,  2, canv2, "mcFITpow",    fNSxPC,    "NSxPC; ",            "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {0.00015, 0.8, 0.06,-1}, {-20.,20.}, {0.,6.}, {0.015,1.}, {-3.,0.});
+      AddFit(false, kOrange+2,  3, canv2, "mcFITpowV1",  fNSxPC,    "NSxPC; new initial", "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {5, 1, 0.05,-0.8},       {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
+      AddFit(false, kOrange+2,  4, canv2, "mcFITpowN",   fNSxPC,    "NSxPC; new N limit", "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {1, 1, 0.05,-1.0},       {-5.,5.},   {0.,2.}, {0.015,1.}, {-3.,0.});
+      AddFit(false, kCyan+2,    1, canv2, "mcFITpowdiv", fNSxPCdiv, "NSxPC; C*C/100",     "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {5, 1, 5,-0.8},          {-20.,20.}, {0.,2.}, {0.015,10.}, {-3.,0.});
 
       // void AddFit(bool draw, color, place, canv, TString name, TString function, info1,  info2, graph, ratio, r1, r2, initial, N, S, C, P={0,0}){
       AddFit(drawIND, kCyan+1, 3, canv2, "mcFITind", fNSC, "NSC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.02,1.});
@@ -987,6 +962,7 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     constfit->SetLineColor(color_MC);
     constfit->SetLineWidth(2);
     if (h_SF.at(m)->GetEntries() > 1) h_SF.at(m) -> Fit("constfit","RMQ+");
+    // if (h_SF.at(m)->GetN() > 1) h_SF.at(m) -> Fit("constfit","RMQ+"); // Change - TGraphAsymmErrors
     else h_SF.at(m)->GetListOfFunctions()->Add(constfit);
     if (h_SF.at(m) -> GetFunction("constfit")==0) h_SF.at(m)->GetListOfFunctions()->Add(constfit);
 
@@ -1105,6 +1081,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   name_pt_bin += year+"_ptbins";
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
+
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
@@ -1634,7 +1611,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
 
   fill_hist( "MC_JER015_uncorrelated_SM", JER015_uncorrelated_MC_hist_SM, JER015_MC_SM,                       JER015_MC_SM_error,                       width_pt_SM,      hist_max_value);
   fill_hist( "MC_JER015_uncorrelated_FE", JER015_uncorrelated_MC_hist_FE, JER015_MC_FE,                       JER015_MC_FE_error,                       width_pt_FE,      hist_max_value,1);
-  // fill_hist( "MC_JER015_uncorrelated_FE_control", JER015_uncorrelated_MC_hist_FE_control, JER015_MC_FE_control,                   JER015_MC_FE_error,                           width_pt_FE,      0.2);
 
   std::vector< TH1F* > JER015_scale_hist_SM, JER015_scale_hist_FE;
 
@@ -1738,6 +1714,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     asyroot.Close();
 
   }
+  // plot_all = true;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots with widths(alpha)                                              //
@@ -1785,7 +1762,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   /////////////////////////////////////////////////////////////////////////////////////////
 
   TFile NSCroot(outdir+"output/NSC.root","RECREATE");
-
   PLOT_NSC(JER_uncorrelated_data_hist_SM,JER_uncorrelated_MC_hist_SM,JER_uncorrelated_scale_hist_SM,outdir,eta_bins_edge_SM,false, false);
   PLOT_NSC(JER_correlated_data_hist_SM,JER_correlated_MC_hist_SM,JER_correlated_scale_hist_SM,outdir,eta_bins_edge_SM,false, true);
   PLOT_NSC(JER_uncorrelated_data_hist_FE,JER_uncorrelated_MC_hist_FE,JER_uncorrelated_scale_hist_FE,outdir,eta_bins_edge_FE, true, false);
@@ -1803,8 +1779,19 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  TFile JERroot(outdir+"output/JERs.root","RECREATE");
 
+  TFile Dijetroot(outdir+"output/dijet_balance_"+year+".root","RECREATE");
+
+  TGraphAsymmErrors* g = new TGraphAsymmErrors();
+  cout << "TEST" << endl;
+  for( unsigned int m = 1; m < JER_correlated_MC_hist_SM.size(); m++ ) cout << m << " " << JER_correlated_MC_hist_SM.at(m)->GetTitle() << endl;
+  for( unsigned int m = 1; m < JER_correlated_MC_hist_SM.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_SM.at(m),   "MC",   "SM", "nominal"); g -> Write();}
+  for( unsigned int m = 1; m < JER_correlated_data_hist_SM.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_SM.at(m), "Data", "SM", "nominal"); g -> Write();}
+  for( unsigned int m = 1; m < JER_correlated_MC_hist_FE.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_FE.at(m),   "MC",   "FE", "nominal"); g -> Write();}
+  for( unsigned int m = 1; m < JER_correlated_data_hist_FE.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_FE.at(m), "Data", "FE", "nominal"); g -> Write();}
+  Dijetroot.Close();
+
+  TFile JERroot(outdir+"output/JERs.root","RECREATE");
   for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_SM.size(); m++ ){           JER_uncorrelated_MC_hist_SM.at(m)           -> Write();}
   for( unsigned int m = 0; m < JER_uncorrelated_data_hist_SM.size(); m++ ){         JER_uncorrelated_data_hist_SM.at(m)         -> Write();}
   for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE.size(); m++ ){           JER_uncorrelated_MC_hist_FE.at(m)           -> Write();}

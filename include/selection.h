@@ -76,8 +76,6 @@ namespace uhh2DiJetJERC {
     uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger220_HF;
     uhh2::GenericEvent::Handle<std::vector<FlavorParticle>> handle_trigger300_HF;
 
-    uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
-
   public:
     Selection(uhh2::Context & ctx);
     ~Selection();
@@ -111,10 +109,6 @@ namespace uhh2DiJetJERC {
     //returns -1 if the triggerobject does not contain less than jetid jets
     //returns -2 if no jet is matched within dR
     int FindMatchingJet(unsigned int jetid, unsigned int trigger_th, bool use_fwd = false);
-
-    bool L1JetBXclean(Jet& jet, bool usePtRatioFilter = false);
-    bool L1JetBXcleanFull();
-    bool L1JetBXcleanSmart();
 
     bool Unprefirable(std::vector<run_lumi_ev> rlsev);
 

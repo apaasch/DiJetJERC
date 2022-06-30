@@ -6,7 +6,7 @@ ROOT.gROOT.ProcessLine("gErrorIgnoreLevel = " + str(ROOT. kFatal) + ";")
 class CheckFileNumbers():
     def __init__(self, year="", study="", jecversion = "", jetLabel="", systematic=""):
         USER = os.environ["USER"]
-        self.sframeDir = "/nfs/dust/cms/user/"+USER+"/sframe_all//DiJetJERC_DiJetHLT/"
+        self.sframeDir = "/nfs/dust/cms/user/"+USER+"/sframe_all/DiJetJERC_DiJetHLT/"
         self.xmlDir = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/SubmittedJobs/"
         self.systematic = systematic.replace("_","")
         if systematic == "":
@@ -44,7 +44,6 @@ class CheckFileNumbers():
                 else:
                     ntuple = ROOT.TFile(str(root_file))
                     if ntuple.IsZombie() or ntuple.ReadKeys()==0:
-                        # print root_file
                         print "sframe_main",xml
                     else: tot_root += 1
         print self.folder, " "*(70-len(self.folder)) , "DONE. Counted: XML=", tot_xml, " "*(5-len(str(tot_xml))), "ROOT:", tot_root
@@ -53,16 +52,15 @@ class CheckFileNumbers():
 if __name__ == '__main__':
 
     years       = ["UL16postVFP", "UL17", "UL18"]
-    years       = ["UL16preVFP"]
-    studies     = [ "eta_JER","eta_simple",]
-    JetLabels   = ["AK4CHS"]
+    studies     = ["eta_common"]
+    JetLabels   = ["AK4CHS", "AK8CHS", "AK8Puppi"]
     Systematics = ["", "PU_up", "PU_down", "JEC_up", "JEC_down", "JER_nominal"]
 
     JECVersions = {}
-    JECVersions["UL16preVFP"]    = ["Summer19UL16APV_V3"]
-    JECVersions["UL16postVFP"]   = ["Summer19UL16_V2"]
-    JECVersions["UL17"]          = ["Summer19UL17_V5"]
-    JECVersions["UL18"]          = ["Summer19UL18_V5"]
+    JECVersions["UL16preVFP"]    = ["Summer20UL16APV_V2"]
+    JECVersions["UL16postVFP"]   = ["Summer20UL16_V2"]
+    JECVersions["UL17"]          = ["Summer20UL17_V2"]
+    JECVersions["UL18"]          = ["Summer20UL18_V2"]
 
     for year in years:
         for study in studies:
