@@ -239,8 +239,6 @@ def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None, time_
       processes.append(subprocess.Popen(process[1:], stdout=f, cwd=process[0]))
       time.sleep(time_)
     else:
-      # print(process)
-      # print(f)
       processes.append(subprocess.Popen(process, stdout=f))
 
   for proc in processes:
