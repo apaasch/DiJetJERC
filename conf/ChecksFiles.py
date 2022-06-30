@@ -41,7 +41,7 @@ class CheckFileNumbers():
                 if not os.path.isfile(root_file):
                     print "FILE doesn't exist", root_file
                     print "mkdir -p", file_dir.replace(self.xmlDir,self.sframeDir), "; sframe_main",xml
-		        else:
+                else:
                     ntuple = ROOT.TFile(str(root_file))
                     if ntuple.IsZombie() or ntuple.ReadKeys()==0:
                         print "sframe_main",xml
@@ -52,7 +52,6 @@ class CheckFileNumbers():
 if __name__ == '__main__':
 
     years       = ["UL16postVFP", "UL17", "UL18"]
-    years       = ["UL17", "UL18"]
     studies     = ["eta_common"]
     JetLabels   = ["AK4CHS", "AK8CHS", "AK8Puppi"]
     Systematics = ["", "PU_up", "PU_down", "JEC_up", "JEC_down", "JER_nominal"]
