@@ -125,7 +125,7 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
             if not os.path.exists(path):
                 os.makedirs(path)
             for process in processes:
-                print(process)
+                print process
                 if (isMB and not "_MB" in process) or (not isMB and "_MB" in process):
                     continue
                 filename = original_file[:len(original_file)-4]+"_"+process+".xml"
