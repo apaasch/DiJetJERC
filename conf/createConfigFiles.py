@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 from utils import *
+from sys
+sys.path.insert(1, '/nfs/dust/cms/user/paaschal/UHH2_DiJet/CMSSW_10_6_28/src/UHH2/common/UHH2-datasets')
+from CrossSectionHelper import MCSampleValuesHelper
 
 newNumber = {
     "DATA_RunB_UL17":        150,
@@ -110,6 +113,27 @@ TargetLumi = {
     "RunII":       "137190",
 }
 
+LumiWeight = {
+    "QCDHT50to100_UL16preVFP":      150,
+    "QCDHT100to200_UL16preVFP":     130,
+    "QCDHT200to300_UL16preVFP":     100,
+    "QCDHT300to500_UL16preVFP":     100,
+    "QCDHT500to700_UL16preVFP":     100,
+    "QCDHT700to1000_UL16preVFP":    100,
+    "QCDHT1000to1500_UL16preVFP":   100,
+    "QCDHT1500to2000_UL16preVFP":   140,
+    "QCDHT2000toInf_UL16preVFP":    100,
+    "QCDHT50to100_UL16postVFP":     150,
+    "QCDHT100to200_UL16postVFP":    130,
+    "QCDHT200to300_UL16postVFP":    100,
+    "QCDHT300to500_UL16postVFP":    100,
+    "QCDHT500to700_UL16postVFP":    100,
+    "QCDHT700to1000_UL16postVFP":   100,
+    "QCDHT1000to1500_UL16postVFP":  100,
+    "QCDHT1500to2000_UL16postVFP":  140,
+    "QCDHT2000toInf_UL16postVFP":   100,
+}
+
 @timeit
 def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], others=[], JECVersions_Data=[""], JECVersions_MC=[""], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", year="2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isECAL=False,extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
@@ -158,12 +182,19 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", study])
                 if 'DATA' in process and 'UL16' in year: # L2Residual not availble for UL16 in Summer20 yet
                     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                if 'DATA' in process and 'UL17' in year: # L2Residual not availble for UL16 in Summer20 yet
+                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
                 if 'DATA' in process and 'UL18' in year: # For first iteration
-                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2Residual"])
+                    if 'AK8' in newJetLabel:
+                        changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                    else:
+                        changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2Residual"])
                 # if "17" in year:
                 #     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
-                # if "UL17" == year:
-                #     changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
+                if "UL17" == year and ("RunB" in process or "RunC" in process):
+                    changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
+                if "UL16" in year and "AK8" in newJetLabel:
+                    changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
                 changes.append(["<!ENTITY", "OUTDIR", outdir , outdir+add_name+"/"+add_path])
                 changes.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+"_"+process])
                 if isThreshold:
@@ -183,10 +214,8 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                         changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"patJetsAk4PuppiJetswithMultuplicity"'])
                     else:
                         changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
-                # print year,newJetLabel
                 if "AK8" in newJetLabel:
-                    if not "UL16" in year:
-                        changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
+                    changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
                     changes.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"slimmedGenJetsAK8"'])
                     if "Puppi" in newJetLabel: changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8Puppi"'])
                     if "CHS" in newJetLabel: changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk8CHS"'])
