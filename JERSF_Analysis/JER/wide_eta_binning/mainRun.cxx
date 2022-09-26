@@ -29,9 +29,9 @@
 // double min_fit = 100.;
 // double max_fit = 1200.;
 double min_fit = 70.;
-double max_fit = 1200.;
+double max_fit = 1700.;
 bool useP = false; // decides if default is NSC or NSxPC
-bool useOriginal = false; // Fit before pt studies
+bool useOriginal = true; // Fit before pt studies
 
 double min_fit_lin = 170.;
 double max_fit_lin = 790.;
@@ -63,7 +63,7 @@ void setParameters(TF1* func, std::vector<double> initial, std::vector<double> N
 // ======================================================================================================
 void DrawComparison(double eta, bool inRatio = false){
   TString name = to_string(eta);
-  TF1* func = new TF1( "Comparison"+name, fNSxPC, 70, 1200);
+  TF1* func = new TF1( "Comparison"+name, fNSxPC, 70, max_fit);
   if(eta==0.6525) func->SetParameters(2.738, 0.8313, 0.04231, -0.9279);
   if(eta==0.957)  func->SetParameters(3.152, 0.8212, 0.04697, -0.8962);
   if(eta==1.218)  func->SetParameters(3.531, 0.9372, 0.05745, -0.9065);
@@ -98,21 +98,21 @@ void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, d
   TF1* mcFIT;
   if(useP)
   {
-    mcFIT = new TF1( "mcFIT", fNSxPC, 70, 1200);
+    mcFIT = new TF1( "mcFIT", fNSxPC, 70, max_fit);
     if(eta==2.7515) mcFIT = new TF1( "mcFIT", fNSxPC, 70, 430); // exclude last point
-    if(eta==2.9085) mcFIT = new TF1( "mcFIT", fNSxPC, 110, 1200); // exclude first point
+    if(eta==2.9085) mcFIT = new TF1( "mcFIT", fNSxPC, 110, max_fit); // exclude first point
 
     setParameters(mcFIT, {5, 1, 0.05,-0.8}, {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
     if(eta>2.5) setParameters(mcFIT, {5, 1, 0.05,-0.8}, {-20.,20.}, {0.,2.}, {0.015,1.}, {-3.,0.});
   }
   else if(useOriginal){
-    mcFIT = new TF1( "mcFIT", fNSC, 70, 1200);
+    mcFIT = new TF1( "mcFIT", fNSC, 70, max_fit);
     setParameters(mcFIT, {0.00015, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.015,1.});
   }
   else{
-    mcFIT = new TF1( "mcFIT", fNSC, 70, 1200);
+    mcFIT = new TF1( "mcFIT", fNSC, 70, max_fit);
     if(eta==2.7515) mcFIT = new TF1( "mcFIT", fNSC, 70, 430); // exclude last point
-    if(eta==2.9085) mcFIT = new TF1( "mcFIT", fNSC, 110, 1200); // exclude first point
+    if(eta==2.9085) mcFIT = new TF1( "mcFIT", fNSC, 110, max_fit); // exclude first point
 
     setParameters(mcFIT, {0.00015, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.015,1.});
     if(eta>2.5) setParameters(mcFIT, {0.00015, 0.8, 0.04}, {0.,20.}, {0.,2.}, {0.,1.});
@@ -142,25 +142,25 @@ void MCFIT(TH1* hist, TH1F* mcERR, double &N, double &S, double &C, double &P, d
 // ===                                                                                                ===
 // ======================================================================================================
 void DTFIT(TH1* hist, TH1F* dtERR, double &N, double &S, double &C, double &P, double &kNS, double &kC, double &Nerr, double &Serr, double &Cerr, double& Perr, double &kNSerr, double &kCerr, double &dtChi, int &dtNDF, double eta, int m, bool isFE) {
-  double min=70; double max=1200;
+  double min=70; double max=max_fit;
   if(eta==2.7515) max=430;
   if(eta==2.9085) min=110;
   TF1 * dtFIT;
   if(useP)
   {
-    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 70, 1200);
+    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 70, max_fit);
     if(eta==2.7515) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 70, 430); // exclude last point
-    if(eta==2.9085) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 110, 1200); // exclude first point
+    if(eta==2.9085) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]*pow(x,[5])+[4]*[4]*[2]*[2] )", 110, max_fit); // exclude first point
   }
   else if(useOriginal)
   {
-    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, 1200);
+    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*abs([0])/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, max_fit);
   }
   else
   {
-    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, 1200);
+    dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, max_fit);
     if(eta==2.7515) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 70, 430); // exclude last point
-    if(eta==2.9085) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 110, 1200); // exclude first point
+    if(eta==2.9085) dtFIT = new TF1( "mdtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", 110, max_fit); // exclude first point
   }
   // TF1 * dtFIT = new TF1( "dtFIT", "TMath::Sqrt( ([3]*[3]*[0]*[0]/(x*x))+[3]*[3]*[1]*[1]/x+[4]*[4]*[2]*[2] )", min_fit, max_fit);
   dtFIT -> FixParameter(0, N);
@@ -593,7 +593,7 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     extraText3.clear();
     extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
 
-    TCanvas* canv = tdrCanvas(canvName, 150, 800, 0.99, 1.4, nameXaxis, nameYaxis);
+    TCanvas* canv = tdrCanvas(canvName, 50, 800, 0.99, 1.4, nameXaxis, nameYaxis);
 
     tdrDraw(h_uncor.at(m), "", kFullCircle, color_uncor );
     tdrDraw(h_cor.at(m), "", kFullCircle, color_cor );
@@ -1085,12 +1085,13 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
-  if(Trigger.Contains("fine"))    name_pt_bin += "_fine";
-  if(Trigger.Contains("default")) name_pt_bin += "_default";
+  // if(Trigger.Contains("fine"))    name_pt_bin += "_fine";
+  // if(Trigger.Contains("default")) name_pt_bin += "_default";
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
-  Pt_bins_Central.push_back(1500);
-  Pt_bins_HF.push_back(1500);
+  Pt_bins_Central.push_back(3000);
+  Pt_bins_HF.push_back(3000);
+  if(year.find("UL16") != std::string::npos && isAK8 ) Pt_bins_HF = Pt_bins_Central;
 
   usedPtTrigger_central = Pt_bins_Central; // global variable used in function.C (correctForRef)
   usedPtTrigger_forward = Pt_bins_HF; // global variable used in function.C (correctForRef)
@@ -1513,6 +1514,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   correctForRef( "datacorrect", JER_uncorrelated_corrected_data_FE, JER_uncorrelated_corrected_data_FE_error, JER_uncorrelated_corrected_data_FE_ref, JER_uncorrelated_corrected_data_FE_ref_error, JER_uncorrelated_corrected_data_SM, JER_uncorrelated_corrected_data_SM_error, width_pt_FE, ref_shift, outdir);
 
   if (debug) std::cout << "JER_uncorrelated_corrected_MC_FE " << JER_uncorrelated_corrected_MC_FE.size() << '\n';
+  if (debug) std::cout << "JER_uncorrelated_corrected_data_FE " << JER_uncorrelated_corrected_data_FE.size() << '\n';
 
   ////////////////////////////////////////////////////////////////////////////
   //    forward widths corrected for Ref widths!                            //
@@ -1632,6 +1634,20 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   fill_hist( "MC_JER_correlated_FE_control",   JER_correlated_MC_hist_FE_control,    JER_correlated_corrected_MC_FE_ref,   JER_correlated_corrected_MC_FE_ref_error,   width_pt_FE, hist_max_value);
   fill_hist( "data_JER_correlated_FE_control", JER_correlated_data_hist_FE_control,  JER_correlated_corrected_data_FE_ref, JER_correlated_corrected_data_FE_ref_error, width_pt_FE, hist_max_value);
   fill_hist( "SF_correlated_FE_control",       JER_correlated_scale_hist_FE_control, scales_correlated_FE_control, scales_correlated_FE_control_error, width_pt_FE, hist_max_value_SF);
+
+  if (debug) {
+    std::cout << "JER_correlated_MC_hist_SM " << JER_correlated_MC_hist_SM.size() << '\n';
+    std::cout << "JER_correlated_data_hist_SM " << JER_correlated_data_hist_SM.size() << '\n';
+    std::cout << "JER_correlated_scale_hist_SM " << JER_correlated_scale_hist_SM.size() << '\n';
+
+    std::cout << "JER_correlated_MC_hist_FE " << JER_correlated_MC_hist_FE.size() << '\n';
+    std::cout << "JER_correlated_data_hist_FE " << JER_correlated_data_hist_FE.size() << '\n';
+    std::cout << "JER_correlated_scale_hist_FE " << JER_correlated_scale_hist_FE.size() << '\n';
+
+    std::cout << "JER_correlated_MC_hist_FE_control " << JER_correlated_MC_hist_FE_control.size() << '\n';
+    std::cout << "JER_correlated_data_hist_FE_control " << JER_correlated_data_hist_FE_control.size() << '\n';
+    std::cout << "JER_correlated_scale_hist_FE_control " << JER_correlated_scale_hist_FE_control.size() << '\n';
+  }
 
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -1761,6 +1777,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // plot with JERs with NSC fit
   /////////////////////////////////////////////////////////////////////////////////////////
 
+  for(unsigned int i=1; i<JER_correlated_data_hist_FE.at(1)->GetNbinsX(); i++){
+    double content = JER_correlated_data_hist_FE.at(1)->GetBinContent(i);
+    if(content==0) continue;
+    cout << i << " " << JER_correlated_data_hist_FE.at(1)->GetBinCenter(i) << " " << content << endl;
+  }
+
   TFile NSCroot(outdir+"output/NSC.root","RECREATE");
   PLOT_NSC(JER_uncorrelated_data_hist_SM,JER_uncorrelated_MC_hist_SM,JER_uncorrelated_scale_hist_SM,outdir,eta_bins_edge_SM,false, false);
   PLOT_NSC(JER_correlated_data_hist_SM,JER_correlated_MC_hist_SM,JER_correlated_scale_hist_SM,outdir,eta_bins_edge_SM,false, true);
@@ -1783,12 +1805,11 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   TFile Dijetroot(outdir+"output/dijet_balance_"+year+".root","RECREATE");
 
   TGraphAsymmErrors* g = new TGraphAsymmErrors();
-  cout << "TEST" << endl;
-  for( unsigned int m = 1; m < JER_correlated_MC_hist_SM.size(); m++ ) cout << m << " " << JER_correlated_MC_hist_SM.at(m)->GetTitle() << endl;
-  for( unsigned int m = 1; m < JER_correlated_MC_hist_SM.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_SM.at(m),   "MC",   "SM", "nominal"); g -> Write();}
-  for( unsigned int m = 1; m < JER_correlated_data_hist_SM.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_SM.at(m), "Data", "SM", "nominal"); g -> Write();}
-  for( unsigned int m = 1; m < JER_correlated_MC_hist_FE.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_FE.at(m),   "MC",   "FE", "nominal"); g -> Write();}
-  for( unsigned int m = 1; m < JER_correlated_data_hist_FE.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_FE.at(m), "Data", "FE", "nominal"); g -> Write();}
+  for( unsigned int m = 0; m < JER_correlated_MC_hist_SM.size(); m++ ) cout << m << " " << JER_correlated_MC_hist_SM.at(m)->GetTitle() << endl;
+  for( unsigned int m = 0; m < JER_correlated_MC_hist_SM.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_SM.at(m),   "MC",   "SM", "nominal"); g -> Write();}
+  for( unsigned int m = 0; m < JER_correlated_data_hist_SM.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_SM.at(m), "Data", "SM", "nominal"); g -> Write();}
+  for( unsigned int m = 0; m < JER_correlated_MC_hist_FE.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_FE.at(m),   "MC",   "FE", "nominal"); g -> Write();}
+  for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_FE.at(m), "Data", "FE", "nominal"); g -> Write();}
   Dijetroot.Close();
 
   TFile JERroot(outdir+"output/JERs.root","RECREATE");

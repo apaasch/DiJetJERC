@@ -32,6 +32,8 @@ int binHF = 15;
 int printEta = 15;
 int printPt = 6;
 
+int sizeHist = 1700;
+
 static std::vector<double> usedPtTrigger_central; // Set in mainRun.cxx
 static std::vector<double> usedPtTrigger_forward; // Set in mainRun.cxx
 
@@ -198,15 +200,15 @@ TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, 
     yerrors_lo.push_back(pTerr);
     yerrors_hi.push_back(pTerr);
   }
-  if(debug) cout << " x: " << setw(8) << xvalues.size() << " " << setw(8) << xerrors_lo.size() << " " << setw(8) << xerrors_hi.size() << " | y: " << setw(12) << yvalues.size() << " " << setw(12) << yerrors_lo.size() << " " << setw(12) << yerrors_hi.size() << endl;
+  // if(debug) cout << " x: " << setw(8) << xvalues.size() << " " << setw(8) << xerrors_lo.size() << " " << setw(8) << xerrors_hi.size() << " | y: " << setw(12) << yvalues.size() << " " << setw(12) << yerrors_lo.size() << " " << setw(12) << yerrors_hi.size() << endl;
   for(unsigned int p=0; p<xvalues.size();p++){
     xerrors_lo.push_back(xvalues[p]-usedPtBinning[p]);
     xerrors_hi.push_back(usedPtBinning[p+1]-xvalues[p]);
-    if(debug) cout << " x:" << setw(8) << xvalues[p] << setw(8) << xerrors_lo[p] << setw(8) << xerrors_hi[p] << " | y:" << setw(12) << yvalues[p] << setw(12) << yerrors_lo[p] << setw(12) << yerrors_hi[p] << " | pt:" << setw(8) << usedPtBinning[p] << setw(8) << usedPtBinning[p+1] << endl;
+    // if(debug) cout << " x:" << setw(8) << xvalues[p] << setw(8) << xerrors_lo[p] << setw(8) << xerrors_hi[p] << " | y:" << setw(12) << yvalues[p] << setw(12) << yerrors_lo[p] << setw(12) << yerrors_hi[p] << " | pt:" << setw(8) << usedPtBinning[p] << setw(8) << usedPtBinning[p+1] << endl;
   }
   TGraphAsymmErrors* MC_graph = new TGraphAsymmErrors(xvalues.size(), &xvalues[0], &yvalues[0], &xerrors_lo[0], &xerrors_hi[0], &yerrors_lo[0], &yerrors_hi[0]);
   // TString names = "TGraph_"+(TString) hist->GetName();
-  TString bins = BinToString(eta_bins[m], eta_bins[m+1]);
+  TString bins = BinToString(eta_bins[m], eta_bins[m+1], 5);
   TString names = "dijet_balance_jer_"+sample+"_";
   names += bins+"_";
   names += method+"_";
@@ -641,7 +643,7 @@ void widths_015_ratios( TString name1, std::vector<TH1F*> &widths, std::vector<s
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
     TString name_width = name1;
     name_width += "_eta"; name_width += m+1;
-    TH1F *hist = new TH1F( name_width, name_width, 1100, 0, 1100 );
+    TH1F *hist = new TH1F( name_width, name_width, sizeHist, 0, sizeHist );
     hist ->GetYaxis()->SetTitle();
     hist ->GetXaxis()->SetTitle("p_{T} [GeV]");
     hist -> GetYaxis()->SetRangeUser( 0, 2. );
@@ -723,7 +725,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
   double Ref, Probe, RefError, ProbeError, pT;
   if(debug) cout << "In correctForRef with " << name1 << endl;
 
-  TH1F *hist = new TH1F( name1+"_hist", name1+"_hist", 1100, 0, 1100 );
+  TH1F *hist = new TH1F( name1+"_hist", name1+"_hist", sizeHist, 0, sizeHist );
   hist ->GetYaxis()->SetTitle("#sigma_{A}");
   hist ->GetXaxis()->SetTitle("p_{T}");
 
@@ -865,7 +867,7 @@ void makeScales( std::vector< std::vector< double > > &Output, std::vector< std:
 void fill_mctruth_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range) {
   for( unsigned int m = 0; m <  Widths.size(); m++ ) {
     TString name_width = name1; name_width += m+1;
-    TH1F *h1 = new TH1F( name_width, name_width, 1100, 0, 1100 );
+    TH1F *h1 = new TH1F( name_width, name_width, sizeHist, 0, sizeHist );
     h1 ->GetYaxis()->SetTitle("#sigma_{MCTruth}");	h1 ->GetXaxis()->SetTitle("p_{T}");	h1 -> Sumw2();
 
     for( unsigned int p = 0; p <  Widths.at(m).size(); p++ ) {
@@ -891,7 +893,7 @@ void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::v
   for( unsigned int m = 0; m <  Widths.size(); m++ ) {
     TString name = name1;
     name += m+1;
-    TH1F *h1 = new TH1F( name, name, 1100, 0, 1100 );
+    TH1F *h1 = new TH1F( name, name, sizeHist, 0, sizeHist );
     // std::cout << m << " " << Widths.at(m).size() << std::endl;;
     if (name1.Contains("SF_")) h1 ->GetYaxis()->SetTitle("Scale factor");
     else                       h1 ->GetYaxis()->SetTitle("#sigma_{JER}");
@@ -1086,7 +1088,7 @@ void findExtreme2(std::vector<TH1*> vec, double *x_min, double *x_max, double *y
 // ===                                                                                                ===
 // ======================================================================================================
 
-void findExtreme2(std::vector<TGraphAsymmErrors*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
+void findExtreme2(std::vector<TGraphErrors*> vec, double *x_min, double *x_max, double *y_min, double *y_max) {
   std::vector<double> x;
   for (unsigned int i = 0; i < vec.size(); i++) {x.push_back(TMath::MinElement(vec.at(i)->GetN(),vec.at(i)->GetX()));}
   *x_min = *std::min_element(x.begin(), x.end());

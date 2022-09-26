@@ -213,6 +213,7 @@ protected:
   bool debug, no_genp;
   bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_PUid;
   bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18;
+  bool switchTrigger_UL16, switchTrigger_UL17;
   std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL16preVFP", runPeriodsUL16preVFP}, {"UL16postVFP", runPeriodsUL16postVFP}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
   std::string year;
   bool isAK8, ispuppi;
@@ -697,20 +698,30 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   trigger_fwd     = (ctx.get("Trigger_FWD") == "true");
   //    ts  = (ctx.get("Trigger_Single") == "true"); //if true use single jet trigger, if false di jet trigger TODO collapse the SiJet and DiJEt AnalysisModules into one?
 
-  bool isUL16_fortrigger = (isUL16preVFP || isUL16postVFP);
+  switchTrigger_UL16 = (
+    isUL16 &&
+    dataset_version.find("RunB") != std::string::npos
+  )?true:false;
+
+  // Change PtBinsTrigger for 2017 RunB&C hier so the correct pt bins are selected in the processor
+  switchTrigger_UL17 = (
+    isUL17 &&
+    !isAK8 &&
+    ( dataset_version.find("RunB") != std::string::npos || dataset_version.find("RunC") != std::string::npos )
+  )?true:false;
+
   if(!isMC){
     for (std::string mode: {"central", "forward"}) {
       std::string triggerModeName = PtBinsTrigger+"_"+mode;
       for (size_t i = 0; i < pt_indexes.at(triggerModeName).size() ; i++) {
         std::string trg_xml = PtBinsTrigger+"_"+pt_indexes.at(triggerModeName)[i];
         if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) trg_xml = TString(trg_xml).ReplaceAll("550","500");
-        if (isAK8 && !isUL16) trg_xml += "_AK8";
-        if ((is2017 || isUL17) && ((dataset_version.find("RunB") != std::string::npos) || (dataset_version.find("RunC") != std::string::npos))){
-          trg_xml = TString(trg_xml).ReplaceAll("DiJet","SingleJet");
-        }
+        if (isAK8 && !switchTrigger_UL16) trg_xml += "_AK8";
+        if (switchTrigger_UL17) trg_xml = TString(trg_xml).ReplaceAll("DiJet", "SingleJet"); // to get SingleJet AK4 trigger
         const std::string& trg_name = ctx.get( trg_xml , "NULL");
         if (debug) {
           std::cout << "mode: " << mode << " i: " << i << '\n';
+          std::cout << "trg_mode " << triggerModeName << '\n';
           std::cout << "trg_xml " << trg_xml << '\n';
           std::cout << "trg_name " << trg_name << '\n';
         }
@@ -1189,7 +1200,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   for (std::string mode: {"central", "forward"}) {
     std::string trg_thr_name = PtBinsTrigger+"_"+mode;
-    if (isAK8 && !isMC && !isUL16) trg_thr_name += "_AK8";
+    if (isAK8) trg_thr_name += "_AK8";
     trg_thr_name += "_"+year;
     if (debug) std::cout << "trg_thr_name " << trg_thr_name << " pt_bins: " << pt_trigger_thr.at(trg_thr_name).size() << '\n';
     for (unsigned int i = 0; i < pt_trigger_thr.at(trg_thr_name).size(); i++) {
