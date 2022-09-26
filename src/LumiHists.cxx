@@ -48,6 +48,7 @@ LumiHists::LumiHists(uhh2::Context & ctx,
   triggername_(triggername),
   do_inst_lumi_hist_(do_inst_lumi_hist)
   {
+    book<TH1F>("sumweights", "Sum of event weights", 1, 0.5, 1.5);
     lumi_per_bin = string2double(ctx.get("lumihists_lumi_per_bin", "50.0"));
     if(lumi_per_bin <= 0.0) {
       throw runtime_error("lumihists_lumi_per_bin is <= 0.0; this is not allowed");
@@ -148,8 +149,8 @@ LumiHists::LumiHists(uhh2::Context & ctx,
   void LumiHists::fill(const uhh2::Event & ev){
     if(!ev.isRealData) return;
 
-
-    bool trigger_accepted = true;
+    double weight = ev.weight; // should be 1
+    hist("sumweights")->Fill(1, weight);bool trigger_accepted = true;
     if (trigger_accepted) {
       run_lumi rl{ev.run, ev.luminosityBlock};
       auto it = upper_bound(upper_binborders.begin(), upper_binborders.end(), rl);

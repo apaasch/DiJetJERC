@@ -16,16 +16,23 @@
 #include <TProfile.h>
 
 #include <TGraphAsymmErrors.h>
-
 #include <TGraphErrors.h>
 #include <TMinuit.h>
 #include <TMatrixD.h>
 #include "constants.h"
+#include "common_binning.hpp"
 
 #include <bits/stdc++.h>
 
 bool debug = false;
 bool alpha_new = true;
+
+int binHF = 15;
+
+int printEta = 15;
+int printPt = 6;
+
+int sizeHist = 1700;
 
 static std::vector<double> usedPtTrigger_central; // Set in mainRun.cxx
 static std::vector<double> usedPtTrigger_forward; // Set in mainRun.cxx
@@ -90,6 +97,7 @@ struct fit_data{
 fit_data data_;
 
 TString dtos(double number, int precision);
+
 void SetBinsToZero(TGraphErrors* graph, double bin);
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info);
 void RemoveAsymBinsFromJER(TH1F* hist, double bin);
@@ -120,8 +128,10 @@ bool removePointsforFit(bool isFE, int m, int p);
 void chi2_calculation(Double_t& fval, Double_t* p);
 
 TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
+TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, TH1* hist, TString sample, TString method, TString var="nominal");
 TH1F* GetMCFitRatio(TH1F* hist, TF1* fit, int color, int MarkerSize);
 TF1* GetFitsRatio(TF1* fit1, TF1* fit2, double ptmin, int color, TString func);
+string BinToString(float low, float high, int precision=3);
 
 // ======================================================================================================
 // ===                                                                                                ===
@@ -153,6 +163,58 @@ TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err){
   }
   // cout << " " << xvalues.size() << " " << yvalues.size() << " " << yerrors.size() << " " << dummy.size() << endl;
   TGraphErrors* MC_graph = new TGraphErrors(xvalues.size(), &xvalues[0], &yvalues[0], &dummy[0], &yerrors[0]);
+  return MC_graph;
+}
+
+string BinToString(float low, float high, int precision=3) {
+  stringstream ss;
+  ss <<  left << setfill('0') << setw(precision) << low;
+  string low_ = ss.str();
+  if (low==0) low_ = "0."+low_;
+  replace(low_.begin(), low_.end(), '.', 'p');
+  ss.str("");
+  ss.clear();
+  ss <<  left << setfill('0') << setw(precision) << high;
+  string high_ = ss.str();
+  if (high==0) high_ = "0."+high_;
+  replace(high_.begin(), high_.end(), '.', 'p');
+  return low_+"_"+high_;
+}
+
+TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, TH1* hist, TString sample, TString method, TString var){
+  vector<double> xvalues = {};
+  vector<double> xerrors_lo = {};
+  vector<double> xerrors_hi = {};
+  vector<double> yvalues = {};
+  vector<double> yerrors_lo = {};
+  vector<double> yerrors_hi = {};
+  vector<double> dummy = {};
+  std::vector<double> usedPtBinning = m<14?usedPtTrigger_central:usedPtTrigger_forward;
+  for(unsigned int i=2; i<=hist->GetNbinsX(); i ++){
+    if(hist->GetBinContent(i)==0) continue;
+    // cout << hist->GetTitle() << "   " << hist->GetBinContent(i) << endl;
+    double pT    = hist->GetXaxis()->GetBinCenter(i);
+    double pTerr = hist->GetBinError(i);
+    xvalues.push_back(pT);
+    yvalues.push_back(hist->GetBinContent(i));
+    yerrors_lo.push_back(pTerr);
+    yerrors_hi.push_back(pTerr);
+  }
+  // if(debug) cout << " x: " << setw(8) << xvalues.size() << " " << setw(8) << xerrors_lo.size() << " " << setw(8) << xerrors_hi.size() << " | y: " << setw(12) << yvalues.size() << " " << setw(12) << yerrors_lo.size() << " " << setw(12) << yerrors_hi.size() << endl;
+  for(unsigned int p=0; p<xvalues.size();p++){
+    xerrors_lo.push_back(xvalues[p]-usedPtBinning[p]);
+    xerrors_hi.push_back(usedPtBinning[p+1]-xvalues[p]);
+    // if(debug) cout << " x:" << setw(8) << xvalues[p] << setw(8) << xerrors_lo[p] << setw(8) << xerrors_hi[p] << " | y:" << setw(12) << yvalues[p] << setw(12) << yerrors_lo[p] << setw(12) << yerrors_hi[p] << " | pt:" << setw(8) << usedPtBinning[p] << setw(8) << usedPtBinning[p+1] << endl;
+  }
+  TGraphAsymmErrors* MC_graph = new TGraphAsymmErrors(xvalues.size(), &xvalues[0], &yvalues[0], &xerrors_lo[0], &xerrors_hi[0], &yerrors_lo[0], &yerrors_hi[0]);
+  // TString names = "TGraph_"+(TString) hist->GetName();
+  TString bins = BinToString(eta_bins[m], eta_bins[m+1], 5);
+  TString names = "dijet_balance_jer_"+sample+"_";
+  names += bins+"_";
+  names += method+"_";
+  names += var;
+  // cout << names << endl;
+  MC_graph->SetNameTitle(names, names);
   return MC_graph;
 }
 
@@ -198,6 +260,7 @@ void RemoveAsymBinsFromJER(TH1F* hist, double bin){
 
 void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
   FitPar << info << "\n";
+  if(fit==0) return;
   FitPar << "N = " << setw(8) << fit->GetParameter(0) << " \u00B1 " << setw(8) << fit->GetParError(0) << "\n";
   FitPar << "S = " << setw(8) << fit->GetParameter(1) << " \u00B1 " << setw(8) << fit->GetParError(1) << "\n";
   FitPar << "C = " << setw(8) << fit->GetParameter(2) << " \u00B1 " << setw(8) << fit->GetParError(2) << "\n";
@@ -486,15 +549,20 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       std::vector<float> alpha;
       alpha.push_back(0.05); alpha.push_back(0.1); alpha.push_back(0.15); alpha.push_back(0.20); alpha.push_back(0.25); alpha.push_back(0.3);
       std::vector<double> x,x_e;
-      for(int ialpha=0; ialpha < 6; ++ialpha) {
+      for(int ialpha=0; ialpha < alpha.size(); ++ialpha) {
         x.push_back(alpha.at(ialpha));
         x_e.push_back(0.);
       }
+
+      vector<double> widths     = Widths.at(m).at(p);
+      vector<double> widths_err = WidthsError.at(m).at(p);
+
       TMatrixD y_cov_mc;
       y_cov_mc.ResizeTo(alpha.size(), alpha.size());
+
       TMatrixD y_cov_mc_first;
-      vector<double> widths_first = Widths.at(m).at(p); vector<double> widths_first_err = WidthsError.at(m).at(p);
-      if(3<CheckNumberAlphaPoints(widths_first)){
+      vector<double> widths_first = widths; vector<double> widths_first_err = widths_err;
+      if(2<CheckNumberAlphaPoints(widths_first)){
         vector<double>::iterator it = std::find_if(widths_first.begin(), widths_first.end(), IsGreaterZero);
         int index = it-widths_first.begin();
         widths_first[index] = 0.; widths_first_err[index] = 0.;
@@ -503,17 +571,19 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
 
       TMatrixD y_cov_mc_last;
       vector<float> alpha_last = alpha; vector<double> x_last = x;
-      vector<double> widths_last = Widths.at(m).at(p); vector<double> widths_last_err = WidthsError.at(m).at(p);
-      if(3<CheckNumberAlphaPoints(widths_last)){ widths_last.pop_back(); widths_last_err.pop_back(); alpha_last.pop_back(); x_last.pop_back();}
+      vector<double> widths_last = widths; vector<double> widths_last_err = widths_err;
+      if(2<CheckNumberAlphaPoints(widths_last)){
+        widths_last.pop_back(); widths_last_err.pop_back(); alpha_last.pop_back(); x_last.pop_back();
+      }
       y_cov_mc_last.ResizeTo(alpha_last.size(), alpha_last.size());
 
-      createCov(Widths.at(m).at(p), WidthsError.at(m).at(p), alpha, y_cov_mc);
+      createCov(widths, widths_err, alpha, y_cov_mc);
       createCov(widths_first, widths_first_err, alpha, y_cov_mc_first);
       createCov(widths_last, widths_last_err, alpha_last, y_cov_mc_last);
 
 
       //create TGraphErrors from previously defined vectors
-      TGraphErrors* extrapol_MC = new TGraphErrors(alpha.size(),&x[0],&Widths.at(m).at(p).at(0),&x_e[0],&WidthsError.at(m).at(p).at(0));
+      TGraphErrors* extrapol_MC = new TGraphErrors(alpha.size(),&x[0],&widths.at(0),&x_e[0],&widths_err.at(0));
       TString name = "Graph_SM_eta";
       if (isFE) name = "Graph_FE_eta";
       name += m+1; name+="_pt"; name += p+1;
@@ -525,9 +595,9 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       TF1 *lin_extrapol_mc_last = new TF1("lin_extrapol_mc_last","[0]+[1]*x",0,alpha.back()+0.05);
 
       // void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *lin_extrapol, int m, int p, bool isFE, bool isMC){
-      SetFit(Widths.at(m).at(p), x, y_cov_mc, lin_extrapol_mc, m, p, isFE, isMC);
-      SetFit(widths_first, x, y_cov_mc_first, lin_extrapol_mc_first, m, p, isFE, isMC);
-      SetFit(widths_last, x_last, y_cov_mc_last, lin_extrapol_mc_last, m, p, isFE, isMC);
+      SetFit(widths,       x,      y_cov_mc,       lin_extrapol_mc,       m, p, isFE, isMC);
+      SetFit(widths_first, x,      y_cov_mc_first, lin_extrapol_mc_first, m, p, isFE, isMC);
+      SetFit(widths_last,  x_last, y_cov_mc_last,  lin_extrapol_mc_last,  m, p, isFE, isMC);
 
       extrapol_MC->GetListOfFunctions()->Add(lin_extrapol_mc);
 
@@ -573,7 +643,7 @@ void widths_015_ratios( TString name1, std::vector<TH1F*> &widths, std::vector<s
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
     TString name_width = name1;
     name_width += "_eta"; name_width += m+1;
-    TH1F *hist = new TH1F( name_width, name_width, 1100, 0, 1100 );
+    TH1F *hist = new TH1F( name_width, name_width, sizeHist, 0, sizeHist );
     hist ->GetYaxis()->SetTitle();
     hist ->GetXaxis()->SetTitle("p_{T} [GeV]");
     hist -> GetYaxis()->SetRangeUser( 0, 2. );
@@ -595,6 +665,8 @@ void widths_015_ratios( TString name1, std::vector<TH1F*> &widths, std::vector<s
 // ======================================================================================================
 
 void correctJERwithPLI(std::vector< std::vector< double > > &Output, std::vector< std::vector< double > > &OutputError, std::vector< std::vector< double > > Widths, std::vector< std::vector< double > > WidthsError, std::vector< std::vector< double > > PLI, std::vector< std::vector< double > > PLIError, float shift) {
+
+
   for( unsigned int i = 0; i < Widths.size(); i++ ) {
     std::vector< double > temp2;
     std::vector< double > temp_error2;
@@ -611,6 +683,7 @@ void correctJERwithPLI(std::vector< std::vector< double > > &Output, std::vector
         temp_error = 0.;
       }
       if ( TMath::IsNaN(temp) ) { temp = 0. ; temp_error = 0.; }
+
       temp2.push_back(temp);
       temp_error2.push_back(temp_error);
     }
@@ -650,8 +723,9 @@ void correctJERwithPLI015(std::vector<std::vector<double> > &Output, std::vector
 // void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
 void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<double> > Input2, std::vector<std::vector<double> > InputError2, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
   double Ref, Probe, RefError, ProbeError, pT;
+  if(debug) cout << "In correctForRef with " << name1 << endl;
 
-  TH1F *hist = new TH1F( name1+"_hist", name1+"_hist", 1100, 0, 1100 );
+  TH1F *hist = new TH1F( name1+"_hist", name1+"_hist", sizeHist, 0, sizeHist );
   hist ->GetYaxis()->SetTitle("#sigma_{A}");
   hist ->GetXaxis()->SetTitle("p_{T}");
 
@@ -671,6 +745,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
     }
   }
 
+  if(debug) cout << "In correctForRef | LINE " << __LINE__ << endl;
   TCanvas* canv = new TCanvas("nscplot","nscplot",50,50,800,600);
   hist -> Draw();
   canv -> Print(outdir+"pdfy/JERs/reference"+name1+".pdf","pdf");
@@ -683,7 +758,6 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
     for( unsigned int p = 0; p < Input.at(m).size(); p++ ) {
       double temp;
       double temp_error;
-
       if ( Input.at(m).at(p) != 0. ) {
         pT = (double)(*std::max_element(width_pt.at(0).at(p).begin(),width_pt.at(0).at(p).end()));
         // Other pT value ? average? minimum? ...
@@ -702,9 +776,10 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
     OutputError.push_back(temp_error2);
   }
 
-
+  if(debug) cout << "In correctForRef | LINE " << __LINE__ << endl;
   for( unsigned int m = shift; m < Input.size() ; m++ ) {
-    vector<double> pTbins = (m<11)?usedPtTrigger_central:usedPtTrigger_forward;
+    vector<double> pTbinsValue = (m<binHF)?usedPtTrigger_central:usedPtTrigger_forward;
+    vector<double> pTbinsRef = usedPtTrigger_central;
     std::vector< double > temp2;
     std::vector< double > temp_error2;
 
@@ -715,9 +790,9 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
       if ( Input.at(m).at(p) != 0. ) {
         // pT = width_pt.at(m).at(p).at(5) ;
         int index_p = -1; // In order to throw break
-        double ptvalue = (pTbins[p]+pTbins[p+1])/2; // 1st: Get mid of pT bin of HF bins
-        for(unsigned int z=0; z<usedPtTrigger_central.size(); z++){
-          if(usedPtTrigger_central[z]<ptvalue&&ptvalue<usedPtTrigger_central[z+1]){index_p = z; break;}
+        double ptvalue = (pTbinsValue[p]+pTbinsValue[p+1])/2; // 1st: Get mid of pT bin of HF bins
+        for(unsigned int z=0; z<pTbinsRef.size()-1; z++){
+          if(pTbinsRef[z]<ptvalue&&ptvalue<pTbinsRef[z+1]){index_p = z; break;}
         }
         pT = (double)(*std::max_element(width_pt.at(0).at(index_p).begin(),width_pt.at(0).at(index_p).end()));
 
@@ -729,10 +804,26 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
         temp = TMath::Sqrt( 2*Probe*Probe - Ref*Ref);
         temp_error = sumSquare(2*Probe*ProbeError, Ref*RefError )/temp;
 
-        if ( !(TMath::IsNaN(temp)) ) temp2.push_back(temp);
-        else temp2.push_back(0.);
-        if ( !(TMath::IsNaN(temp)) ) temp_error2.push_back(temp_error);
-        else temp_error2.push_back(0.);
+        // Remove ptbins by Hand; How to automate? TODO
+        bool removeByHand = (
+          (m==1&&p==0)|| // 0.3-0.5
+          (m==8&&p==27)|| // 1.9-2.0
+          (m==9&&(p==0||p==1))|| // 2.0-2.2
+          (m==13&&p==17)|| // 2.7-2.9
+          (m==16&&p==12) // 3.1-3.5
+        );
+
+        if(removeByHand){
+          if(debug) cout << "Remove eta bin " << m << " | " << p+1 << " from JER by Hand" << endl;
+          temp2.push_back(0.);
+          temp_error2.push_back(0.);
+        }
+        else{
+          if ( !(TMath::IsNaN(temp)) ) temp2.push_back(temp);
+          else temp2.push_back(0.);
+          if ( !(TMath::IsNaN(temp)) ) temp_error2.push_back(temp_error);
+          else temp_error2.push_back(0.);
+        }
       }
       else { temp2.push_back(0.); temp_error2.push_back(0.); }
     }
@@ -776,7 +867,7 @@ void makeScales( std::vector< std::vector< double > > &Output, std::vector< std:
 void fill_mctruth_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< std::vector< double > > > pt_binning, double range) {
   for( unsigned int m = 0; m <  Widths.size(); m++ ) {
     TString name_width = name1; name_width += m+1;
-    TH1F *h1 = new TH1F( name_width, name_width, 1100, 0, 1100 );
+    TH1F *h1 = new TH1F( name_width, name_width, sizeHist, 0, sizeHist );
     h1 ->GetYaxis()->SetTitle("#sigma_{MCTruth}");	h1 ->GetXaxis()->SetTitle("p_{T}");	h1 -> Sumw2();
 
     for( unsigned int p = 0; p <  Widths.at(m).size(); p++ ) {
@@ -802,7 +893,7 @@ void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::v
   for( unsigned int m = 0; m <  Widths.size(); m++ ) {
     TString name = name1;
     name += m+1;
-    TH1F *h1 = new TH1F( name, name, 1100, 0, 1100 );
+    TH1F *h1 = new TH1F( name, name, sizeHist, 0, sizeHist );
     // std::cout << m << " " << Widths.at(m).size() << std::endl;;
     if (name1.Contains("SF_")) h1 ->GetYaxis()->SetTitle("Scale factor");
     else                       h1 ->GetYaxis()->SetTitle("#sigma_{JER}");
@@ -1115,11 +1206,12 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
   // PT is meant to be the bin as in the pdf! aka p+1.
   // Values checked for UL
   double check = 0.;
-  if (p==1) check = (eta>=eta_cut)? 0.15 : 0.20;
-  if (p==2) check = (eta>=eta_cut)? 0.15 : 0.20;
-  if (p==3) check = 0.15;
-  if (p>=4) check = 0.1;
-  if (p>=6) check = (eta>=eta_cut)? 0.1 : 0.05;
+  if (p>=1)  check = (eta>=eta_cut)? 0.15 : 0.20;
+  if (p>=4)  check = (eta>=eta_cut)? 0.1 : 0.15;
+  if (p>=7)  check = 0.1;
+  if (p>=10) check = (eta>=eta_cut)? 0.1 : 0.05;
+
+  // if(eta==2.043 && p==26) check = 0.1;
 
   return check;
 }
@@ -1181,6 +1273,9 @@ bool removePointsforFit2(bool isFE, int m, int p) {
   return check;
 }
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
 
 TH2Poly* fill_2Dhist( TString name1, std::vector< std::vector< double > > SFs, std::vector< std::vector< double > > SFsError, std::vector<double> Pt_bins_Central, std::vector<double> Pt_bins_HF,std::vector<double> eta_bins, double eta_cut) {
 

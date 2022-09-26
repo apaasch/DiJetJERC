@@ -9,19 +9,19 @@ from utils import *
 
 def getLabel(sample):
     if sample == "A":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018A 14.00 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018A 14.00 fb^{-1}"
     elif sample == "B":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018B 7.10 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018B 7.10 fb^{-1}"
     elif sample == "C":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018C 6.94 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018C 6.94 fb^{-1}"
     elif sample == "D":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018D 31.93 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018D 31.93 fb^{-1}"
     elif sample == "ABC":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018 28.04 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018 28.04 fb^{-1}"
     elif sample == "ABCD":
-        LABEL_LUMI_INV_FB = "[MC 102X] Run2018 59.97 fb^{-1}"
+        LABEL_LUMI_INV_FB = "[MC 106X] Run2018 59.97 fb^{-1}"
     else:
-        LABEL_LUMI_INV_FB = "[MC 102X] (2018)"
+        LABEL_LUMI_INV_FB = "[MC 106X] (2018)"
     return LABEL_LUMI_INV_FB
 
 
@@ -53,6 +53,10 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     cmd = "cp %s.cxx %s" % (programm, outdir)
     a = os.system(cmd)
     cmd = "cp functions.C %s" % (outdir)
+    a = os.system(cmd)
+    cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/JERCProtoLab/macros/common_info/common_binning.hpp %s" % (outdir)
+    a = os.system(cmd)
+    cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/JERCProtoLab/macros/common_info/common_binning.cxx %s" % (outdir)
     a = os.system(cmd)
     cmd = "cp "+os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/include/tdrstyle_all.h %s" % (outdir)
     a = os.system(cmd)
@@ -114,6 +118,7 @@ samples["UL16preVFP"] = ["BCDEF"]
 samples["UL16postVFP"] = ["FGH"]
 samples["UL17"] = ["BCDEF"]
 samples["UL18"] = ["ABCD"]
+# samples["UL18"] = ["ABC"]
 
 
 # samples["UL16preVFP"] = ["B", "C", "D", "E", "F"]
@@ -142,19 +147,30 @@ QCDSamples["UL17"] = ["QCDHT"]
 QCDSamples["UL18"] = ["QCDHT"]
 QCDSamples["Legacy"] = ["QCDHT"]
 
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
 JECVersions = {}
+
+# Summer 19 campaign
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
-JECVersions["UL17"] = ["Summer19UL17_V5"]
-JECVersions["UL18"] = ["Summer19UL18_V5"]
+# JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
+# JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
+# JECVersions["UL18"] = ["Summer19UL18_V5"]
+# JECVersions["UL17"] = ["Summer19UL17_V5"]
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
+# Summer 20 campaign
+JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
+JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
+JECVersions["UL17"] = ["Summer20UL17_V2"]
+JECVersions["UL18"] = ["Summer20UL18_V2"]
+
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
-JetLabels=["AK4CHS"]
+# JetLabels=["AK4CHS"]
+JetLabels=["AK4Puppi"]
 dirs = ["", "up", "down"]
 # systematics=["", "PU", "JEC", "alpha", "JER"]
+# systematics=["PU", "JEC", "alpha", "JER"]
 # systematics=["", "JER"]
 # systematics=["JER"]
 # systematics=["JEC"]
@@ -166,12 +182,21 @@ studies = []
 # studies.append("Standard")
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
-studies.append("eta_JER")
+# studies.append("eta_JER")
+# studies.append("eta_JER_fine")
+# studies.append("eta_JER_default")
+studies.append("eta_common_default")
+# studies.append("eta_common_fine")
+# studies.append("eta_common_central_fine_v2")
+# studies.append("eta_common")
 # studies.append("eta_simple")
 
 for extraText in [""]:
     for study in studies:
-        out_path  = common_path+"file/"+study+"/"+extraText
+        study_out = study
+        if len(sys.argv)==3:
+            study_out += '_'+sys.argv[2]
+        out_path  = common_path+"file/"+study_out+"/"+extraText
         for newJECVersion in JECVersions[year]:
             for newJetLabel in JetLabels:
                 for syst in systematics:

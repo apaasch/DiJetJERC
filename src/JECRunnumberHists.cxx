@@ -26,6 +26,7 @@ JECRunnumberHists::JECRunnumberHists(Context & ctx, const string & dirname): His
     TH1::SetDefaultSumw2();
 
     book<TH1F>("runnr", "run number", 20001, 269999.5, 290000.5);
+    book<TH1F>("sumweights", "Sum of event weights", 1, 0.5, 1.5);
 
 }
 
@@ -40,6 +41,7 @@ void JECRunnumberHists::fill(const uhh2::Event & ev){
   double weight = ev.weight;
 
   hist("runnr")->Fill(ev.run, weight);
+  hist("sumweights")->Fill(1, weight);
 
 
 }

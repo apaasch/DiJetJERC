@@ -1,4 +1,9 @@
+#!/usr/bin/env python3
+
 from utils import *
+from sys
+sys.path.insert(1, '/nfs/dust/cms/user/paaschal/UHH2_DiJet/CMSSW_10_6_28/src/UHH2/common/UHH2-datasets')
+from CrossSectionHelper import MCSampleValuesHelper
 
 newNumber = {
     "DATA_RunB_UL17":        150,
@@ -89,12 +94,12 @@ newNumber = {
 
 
 lumi_file = {
-    "2017":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
-    "2018":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
-    "UL16preVFP":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL16preVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16preVFP_normtag.root",
-    "UL16postVFP":  os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL16postVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16postVFP_normtag.root",
-    "UL17":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root",
-    "UL18":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/data/UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON_normtag.root",
+    "2017":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
+    "2018":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
+    "UL16preVFP":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL16preVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16preVFP_normtag.root",
+    "UL16postVFP":  os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL16postVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16postVFP_normtag.root",
+    "UL17":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root",
+    "UL18":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON_normtag.root",
 }
 
 TargetLumi = {
@@ -108,8 +113,29 @@ TargetLumi = {
     "RunII":       "137190",
 }
 
+LumiWeight = {
+    "QCDHT50to100_UL16preVFP":      150,
+    "QCDHT100to200_UL16preVFP":     130,
+    "QCDHT200to300_UL16preVFP":     100,
+    "QCDHT300to500_UL16preVFP":     100,
+    "QCDHT500to700_UL16preVFP":     100,
+    "QCDHT700to1000_UL16preVFP":    100,
+    "QCDHT1000to1500_UL16preVFP":   100,
+    "QCDHT1500to2000_UL16preVFP":   140,
+    "QCDHT2000toInf_UL16preVFP":    100,
+    "QCDHT50to100_UL16postVFP":     150,
+    "QCDHT100to200_UL16postVFP":    130,
+    "QCDHT200to300_UL16postVFP":    100,
+    "QCDHT300to500_UL16postVFP":    100,
+    "QCDHT500to700_UL16postVFP":    100,
+    "QCDHT700to1000_UL16postVFP":   100,
+    "QCDHT1000to1500_UL16postVFP":  100,
+    "QCDHT1500to2000_UL16postVFP":  140,
+    "QCDHT2000toInf_UL16postVFP":   100,
+}
+
 @timeit
-def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], others=[], JECVersions_Data=[""], JECVersions_MC=[""], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", year="2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isL1Seed=False, isECAL=False,extratext=""):
+def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_MB", "DATA_RunF"], others=[], JECVersions_Data=[""], JECVersions_MC=[""], JetLabels=["AK4CHS"], systematics=["PU", "JEC", "JER"], original_dir = "./submittedJobs/", original_file = "JER2018.xml", outdir="JER2018", year="2018", isMB = False, test_trigger=False, isThreshold=False, isLowPt=False, isECAL=False,extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
     try:
         time = int(filter(lambda x: "TIME" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[5])
@@ -147,32 +173,47 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 changes.append(["user", "amalara", "amalara", os.environ["USER"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
-                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(40))+'"']) # newNumber[process]*0.9*time
+                changes.append(["<ConfigParse", 'FileSplit="'+FileSplit+'"', 'FileSplit="'+FileSplit+'"', 'FileSplit="'+str(int(newNumber[process]*0.1*time))+'"']) # newNumber[process]*0.9*time
                 changes.append(["<!ENTITY", 'LUMI_FILE', 'lumifile.root', lumi_file[year]])
                 changes.append(["<!ENTITY", "YEAR", "year", year])
                 changes.append(["<Cycle", "TargetLumi", "defaultValue", TargetLumi[year]])
                 changes.append(["<!ENTITY", "Study", "default", study])
                 if study!= "Standard" and "L1" in study:
                     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", study])
+                if 'DATA' in process and 'UL16' in year: # L2Residual not availble for UL16 in Summer20 yet
+                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                if 'DATA' in process and 'UL17' in year: # L2Residual not availble for UL16 in Summer20 yet
+                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                if 'DATA' in process and 'UL18' in year: # For first iteration
+                    if 'AK8' in newJetLabel:
+                        changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                    else:
+                        changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2Residual"])
                 # if "17" in year:
                 #     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
-                # if "UL17" == year:
-                #     changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
-                # if "18" in year:
-                #     changes.append(["<!ENTITY", "APPLY_EtaPhi_HCAL", '"false"', '"true"'])
+                if "UL17" == year and ("RunB" in process or "RunC" in process):
+                    changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
+                if "UL16" in year and "AK8" in newJetLabel:
+                    changes.append(["<!ENTITY", "TRIGGER_FWD", '"true"', '"false"'])
                 changes.append(["<!ENTITY", "OUTDIR", outdir , outdir+add_name+"/"+add_path])
                 changes.append(["<ConfigSGE", "Workdir", "workdir_"+outdir, "workdir_"+outdir+"_"+process])
                 if isThreshold:
                     changes.append(["<!ENTITY", "isThreshold", "false" , "true"])
-                if isL1Seed:
-                    changes.append(["<!ENTITY", "apply_L1seed_from_bx1_filter", "false" , "true"])
                 if "DATA" in process:
                     changes.append(["<!ENTITY", "JEC_VERSION", '"defaultJEC"', '"'+newJECVersion+'"'])
                 if "QCD" in process:
                     changes.append(["<!ENTITY", "JEC_VERSION", '"defaultJEC"', '"'+JECVersions_MC[index_JEC]+'"'])
-                changes.append(["<!ENTITY", "JETLABEL", '"AK4CHS"', '"'+newJetLabel+'"'])
+                if "AK4Puppi_" in newJetLabel:
+                    changes.append(["<!ENTITY", "JETLABEL", '"AK4CHS"', '"AK4Puppi"'])
+                else:
+                    changes.append(["<!ENTITY", "JETLABEL", '"AK4CHS"', '"'+newJetLabel+'"'])
+                if "Puppi" in newJetLabel or "AK8" in newJetLabel:
+                    changes.append(["<!ENTITY", "APPLY_PUid_3rdjet", '"true"', '"false"'])
                 if "AK4Puppi" in newJetLabel:
-                    changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
+                    if "v11" in newJetLabel:
+                        changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"patJetsAk4PuppiJetswithMultuplicity"'])
+                    else:
+                        changes.append(["<Item", "JetCollection", '"jetsAk4CHS"', '"jetsAk4Puppi"'])
                 if "AK8" in newJetLabel:
                     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
                     changes.append(["<Item", "GenJetCollection", '"slimmedGenJets"', '"slimmedGenJetsAK8"'])

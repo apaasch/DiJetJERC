@@ -7,9 +7,11 @@
 
 // barrel region (|eta| < 1.131)
 constexpr static double s_eta_barr = 1.131;
+// constexpr static double s_eta_barr = 1.044; // changed for shift 4
 // HF region (|eta| > 2.853)
 const double pi = TMath::Pi();
 const double eta_cut = 2.853;
+// const double eta_cut_barrel = 1.566;
 // two back-to-back leading jets (delta_phi(j1,j2) = min(|phi1 - phi2|, 2PI - |phi2 - phi1|) > 2.7)
 constexpr static double s_delta_phi = 2.7;
 
@@ -20,12 +22,14 @@ const double phi_bins[13] = { 0*pi/4, 1*pi/4, 2*pi/4, 3*pi/4, 4*pi/4, 5*pi/4, 6*
 
 const int n_eta_bins_JER = 15;
 const int n_eta_bins_L2R = 19;
-const int n_eta_bins_common = 20;
+const int n_eta_bins_JERC = 20;
+const int n_eta_bins_common = 18;
 const int n_eta_bins_narrow = 22;
 const int n_eta_bins_simple = 10;
 const double eta_bins_JER[n_eta_bins_JER]       = { 0.000,        0.522, 0.783,        1.131, 1.305,               1.740, 1.930, 2.043,        2.322, 2.500, 2.650, 2.853, 2.964, 3.139,               5.191};
 const double eta_bins_L2R[n_eta_bins_L2R]       = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305, 1.479, 1.653,        1.930,        2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
-const double eta_bins_common[n_eta_bins_common] = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305,        1.566, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
+const double eta_bins_JERC[n_eta_bins_JERC]     = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305,        1.566, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191}; // old common binning
+const double eta_bins_common[n_eta_bins_common] = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305,        1.566, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139,               5.191}; // Combine last three bins for statistics
 const double eta_bins_narrow[n_eta_bins_narrow] = { 0.000, 0.261, 0.522, 0.783, 1.044, 1.131, 1.305, 1.479, 1.653, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
 const double eta_bins_simple[n_eta_bins_simple] = { 0.000,                                    1.305,                                                  2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
 
@@ -151,10 +155,12 @@ constexpr static float PT_trigger_max = 7000; // TODO to generalise for years
 
 const std::map<std::string, std::vector<std::string> > pt_indexes = {
   {"DiJet_central",     {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger500"}},
+  {"SingleJet_central", {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger450", "trigger500"}},
+  // {"SingleJet_central", {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger450", "trigger500", "trigger550"}},// 550 not present in 2016. Hack in the code.
   {"DiJet_forward",     {"trigger60_HFJEC", "trigger80_HFJEC",  "trigger100_HFJEC", "trigger160_HFJEC", "trigger220_HFJEC", "trigger300_HFJEC"}},
-  {"SingleJet_central", {"trigger40", "trigger60", "trigger80", "trigger140", "trigger200", "trigger260", "trigger320", "trigger400", "trigger450", "trigger500", "trigger550"}},// 550 not present in 2016. Hack in the code.
   {"SingleJet_forward", {"trigger40_HFJEC", "trigger60_HFJEC",  "trigger80_HFJEC",  "trigger140_HFJEC", "trigger200_HFJEC", "trigger260_HFJEC", "trigger320_HFJEC", "trigger400_HFJEC"}}, // last one added do to Config , "trigger500_HFJEC"
 };
+
 
 const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   // Mix between 2017 and 2018 to be fixed!
@@ -162,72 +168,77 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"DiJet_forward_Legacy",                    { 93, 116, 142, 210, 279, 379 }},
   {"DiJet_central_Legacy_ptbins",             { 73, 85, 97, 179, 307, 370, 434, 520, 649 }},
   {"DiJet_forward_Legacy_ptbins",             { 93, 116, 142, 210, 279, 379 }},
-  // 2016 AK4 copy from 2017
-  {"DiJet_central_UL16preVFP",                { 73, 85, 97, 179, 307, 370, 434, 520, 649 }},
-  {"DiJet_central_UL16postVFP",               { 73, 85, 97, 179, 307, 370, 434, 520, 649 }},
-  {"DiJet_forward_UL16preVFP",                { 73, 93, 113, 176, 239, 318 }},
-  {"DiJet_forward_UL16postVFP",               { 73, 93, 113, 176, 239, 318 }},
-  {"DiJet_central_UL16preVFP_ptbins",         { 73, 85, 97, 179, 307, 370, 434, 520, 649 }},
-  {"DiJet_central_UL16postVFP_ptbins",        { 73, 85, 97, 179, 307, 370, 434, 520, 649 }},
-  {"DiJet_forward_UL16preVFP_ptbins",         { 73, 93, 113, 176, 239, 318 }},
-  {"DiJet_forward_UL16postVFP_ptbins",        { 73, 93, 113, 176, 239, 318 }},
-  {"SingleJet_central_UL16preVFP",            { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }},
-  {"SingleJet_central_UL16postVFP",           { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }},
-  {"SingleJet_central_UL16preVFP_ptbins",     { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }},
-  {"SingleJet_central_UL16postVFP_ptbins",    { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }},
-  {"SingleJet_forward_UL16preVFP",            { 73, 93, 113, 176, 239, 318 }},
-  {"SingleJet_forward_UL16postVFP",           { 73, 93, 113, 176, 239, 318 }},
-  {"SingleJet_forward_UL16preVFP_ptbins",     { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }},
-  {"SingleJet_forward_UL16postVFP_ptbins",    { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }},
-  // 2016 AK8 COPY FROM 2018
-  {"SingleJet_central_AK8_UL16preVFP",        { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
-  {"SingleJet_central_AK8_UL16postVFP",       { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
-  {"SingleJet_central_AK8_UL16preVFP_ptbins", { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
-  {"SingleJet_central_AK8_UL16postVFP_ptbins",{ 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
-  {"SingleJet_forward_AK8_UL16preVFP",        { 62, 95, 110, 182, 260, 339, 420, 508 }},
-  {"SingleJet_forward_AK8_UL16postVFP",       { 62, 95, 110, 182, 260, 339, 420, 508 }},
-  {"SingleJet_forward_AK8_UL16preVFP_ptbins", { 62, 95, 110, 182, 260, 339, 420, 508 }},
-  {"SingleJet_forward_AK8_UL16postVFP_ptbins",{ 62, 95, 110, 182, 260, 339, 420, 508 }},
+
+  // UL16preVFP AK4
+  {"DiJet_central_UL16preVFP",                { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
+  {"DiJet_central_UL16preVFP_ptbins",         { 59, 85, 104, 170, 236, 302, 370, 460, 575 }},
+  {"DiJet_forward_UL16preVFP",                { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  {"DiJet_forward_UL16preVFP_ptbins",         { 86, 110, 132, 204, 279, 373 }},
+  // UL16preVFP AK8
+  {"SingleJet_central_AK8_UL16preVFP",        { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18; Also for SJ AK4 for RunB
+  {"SingleJet_central_AK8_UL16preVFP_ptbins", { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18; Also for SJ AK4 for RunB
+  {"SingleJet_forward_AK8_UL16preVFP",        { 65, 103, 115, 179, 252, 317, 410, 519 }}, // Copied from UL18; Also for SJ AK4 for RunB
+  {"SingleJet_forward_AK8_UL16preVFP_ptbins", { 65, 103, 115, 179, 252, 317, 410, 519 }}, // Copied from UL18; Also for SJ AK4 for RunB
+
+  // UL16postVFP AK4
+  {"DiJet_central_UL16postVFP",               { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
+  {"DiJet_central_UL16postVFP_ptbins",        { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
+  {"DiJet_forward_UL16postVFP",               { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  {"DiJet_forward_UL16postVFP_ptbins",        { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  // UL16 AK8 COPY FROM 2018
+  {"SingleJet_central_AK8_UL16postVFP",       { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18
+  {"SingleJet_central_AK8_UL16postVFP_ptbins",{ 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18
+  {"SingleJet_forward_AK8_UL16postVFP",       { 65, 103, 115, 179, 252, 317, 410, 519 }}, // Copied from UL18
+  {"SingleJet_forward_AK8_UL16postVFP_ptbins",{ 65, 103, 115, 179, 252, 317, 410, 519 }}, // Copied from UL18
+
   // 2017 AK4
   {"DiJet_central_2017",                { 73, 85, 97, 179, 307, 370, 434, 520, 649 }}, //for Di triggers 94X 17Nov2017
-  {"DiJet_central_UL17",                { 73, 85, 97, 179, 307, 370, 434, 520, 649 }}, //for Di triggers 94X 17Nov2017
   {"DiJet_forward_2017",                { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
-  {"DiJet_forward_UL17",                { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
-  {"DiJet_central_UL17_ptbins",         { 73, 85, 97, 179, 307, 370, 434, 520, 649 }}, //for Di triggers 94X 17Nov2017
-  {"DiJet_forward_UL17_ptbins",         { 73, 93, 113, 176, 239, 318 }}, // for Dijet_HFJEC 2017 94X 17Nov2017
   {"SingleJet_central_2017",            { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
-  {"SingleJet_central_UL17",            { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
-  {"SingleJet_central_UL17_ptbins",     { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
   {"SingleJet_forward_2017",            { 73, 93, 113, 176, 239, 318 }}, // for Singlejet_HFJEC 2017 94X 17Nov2017 //TODO not used
-  {"SingleJet_forward_UL17",            { 73, 93, 113, 176, 239, 318 }}, // for Singlejet_HFJEC 2017 94X 17Nov2017 //TODO not used
-  {"SingleJet_forward_UL17_ptbins",     { 40, 72,  95, 160, 226, 283, 344, 443, 577, 606 }}, //for Single triggers 94X 17Nov2017
-  //{"SingleJet_forward_UL17",            { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
-  //{"SingleJet_forward_UL17_ptbins",     { 70, 87, 111, 180, 247, 310, 373, 457, 510, 562 }}, //from https://indico.cern.ch/event/887399/contributions/3741486/attachments/1984788/3306787/triggerUL17RunBCDEF.pdf
-  // 2017 AK8
   {"SingleJet_central_AK8_2017",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017
-  {"SingleJet_central_AK8_UL17",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017
+  // UL17 AK4
+  {"DiJet_central_UL17",                { 70, 87, 111, 180, 247, 310, 373, 457, 562 }}, // SJ AK4 UL17 (Jindrich); No DJ for B,C
+  {"DiJet_central_UL17_ptbins",         { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318, 373, 457, 562 }},// Combined DJ fwd and SJ central AK4
+  {"DiJet_forward_UL17",                { 73, 93, 113, 176, 239, 318 }}, // Copied from 2017
+  {"DiJet_forward_UL17_ptbins",         { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318}}, // Combined DJ fwd and SJ central AK4
+  {"SingleJet_central_UL17",            { 70, 87, 111, 180, 247, 310, 373, 457, 562 }}, // From Jindrich / Skip trigger 450 since no DiJet trigger
+  {"SingleJet_central_UL17_ptbins",     { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318, 373, 457, 562 }},// Combined DJ fwd and SJ central AK4
+  // UL17 AK8
+  {"SingleJet_central_AK8_UL17",        { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18
+  {"SingleJet_central_AK8_UL17_ptbins", { 65, 77, 96, 103, 115, 117, 179, 190, 252, 256, 317, 321, 410, 519, 526, 581 }},
+  {"SingleJet_forward_AK8_UL17",        { 65, 103, 115, 179, 252, 317, 410, 519 }}, // Copied from UL18
+  {"SingleJet_forward_AK8_UL17_ptbins", { 65, 77, 96, 103, 115, 117, 179, 190, 252, 256, 317, 321, 410, 519 }},
+
   // 2018 AK4
   {"DiJet_central_2018",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
   {"DiJet_central_2018_ptbins",         { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
   {"DiJet_forward_2018",                { 93, 116, 142, 210, 279, 379 }},
   {"DiJet_forward_2018_ptbins",         { 93, 116, 142, 210, 279, 379 }},
-  {"DiJet_central_UL18",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
-  {"DiJet_central_UL18_ptbins",         { 66, 93, 118, 189, 257, 291, 325, 358, 391, 434, 478, 531, 585}},
-  {"DiJet_forward_UL18",                { 93, 116, 142, 210, 279, 379 }},
-  {"DiJet_forward_UL18_ptbins",         { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // split in 3
-  // {"DiJet_forward_UL18_ptbins",         { 93, 116, 142, 154, 172, 210, 220, 240, 279, 379 }}, // split in 3
-  // {"DiJet_forward_UL18_ptbins",         { 93, 116, 142, 210, 279, 379 }}, // default
   // 2018 AK8
   {"SingleJet_central_AK8_2018",        { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }}, //HLT AK8PFJet* //https://indico.desy.de/indico/event/24350/contribution/0/material/slides/0.pdf
   {"SingleJet_central_AK8_2018_ptbins", { 78, 96, 119, 193, 262, 328, 393, 481, 534, 588 }},
   {"SingleJet_forward_AK8_2018",        { 62, 95, 110, 182, 260, 339, 420, 508 }}, // HLT AK8PFJetFwd* //https://indico.desy.de/indico/event/24423/contribution/1/material/slides/1.pdf
   {"SingleJet_forward_AK8_2018_ptbins", { 62, 95, 110, 182, 260, 339, 420, 508 }},
-  {"SingleJet_central_AK8_UL18",        { 77, 96, 117, 191, 267, 322, 387, 474, 526, 581 }}, //HLT AK8PFJet* //https://indico.cern.ch/event/983310/contributions/4144228/attachments/2159426/3643048/L2Res_09_12_2020.pdf
-  {"SingleJet_central_AK8_UL18_ptbins", { 77, 96, 117, 191, 267, 322, 387, 474, 526, 581 }},
-  {"SingleJet_forward_AK8_UL18",        { 66, 103, 115, 179, 252, 317, 410, 520 }}, // HLT AK8PFJetFwd* //https://indico.cern.ch/event/983310/contributions/4144228/attachments/2159426/3643048/L2Res_09_12_2020.pdf
-  {"SingleJet_forward_AK8_UL18_ptbins", { 66, 103, 115, 179, 252, 317, 410, 520 }},
+  // UL18 AK4
+  {"DiJet_central_UL18",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
+  // {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120}}, // 30 bins
+  {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 31 bins
+  {"DiJet_central_UL18_ptbins_default", { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
+  {"DiJet_central_UL18_ptbins_fine",    { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120}}, // 30 bins
+  {"DiJet_central_UL18_ptbins_fine_v1", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 31 bins
+  {"DiJet_forward_UL18",                { 93, 116, 142, 210, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins",         { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins_default", { 93, 116, 142, 210, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins_fine",    { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
+  {"DiJet_central_UL18_Jindrich",       { 69, 95, 120, 193, 264, 326, 399, 474, 595 }}, // https://indico.cern.ch/event/1165351/contributions/4893655/attachments/2451202/4200382/L2Res_05_2022-2.pdf
+  {"DiJet_forward_UL18_Jindrich",       { 95, 120, 144, 215, 282, 388 }}, // https://indico.cern.ch/event/1165351/contributions/4893655/attachments/2451202/4200382/L2Res_05_2022-2.pdf
+  // UL18 AK8
+  {"SingleJet_central_AK8_UL18",        { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // https://indico.cern.ch/event/983310/contributions/4144228/attachments/2159426/3643048/L2Res_09_12_2020.pdf
+  {"SingleJet_central_AK8_UL18_ptbins", { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }},
+  {"SingleJet_forward_AK8_UL18",        { 65, 103, 115, 179, 252, 317, 410, 519 }}, // https://indico.cern.ch/event/983310/contributions/4144228/attachments/2159426/3643048/L2Res_09_12_2020.pdf
+  {"SingleJet_forward_AK8_UL18_ptbins", { 65, 103, 115, 179, 252, 317, 410, 519 }},
 };
-
 
 // RunII pt-bins used in LumiHist, Reco-GEN matched plots and L2Res analysis (2nd step)
 //2018

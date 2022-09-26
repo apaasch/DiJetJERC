@@ -6,7 +6,6 @@
 #include "UHH2/core/include/Event.h"
 #include "UHH2/core/include/EventHelper.h"
 #include "UHH2/core/include/Jet.h"
-#include "UHH2/core/include/L1Jet.h"
 #include "UHH2/core/include/Utils.h"
 #include "UHH2/common/include/CommonModules.h"
 #include "UHH2/common/include/DetectorCleaning.h"
@@ -19,6 +18,8 @@
 #include "UHH2/common/include/MuonIds.h"
 #include "UHH2/common/include/ElectronIds.h"
 #include "UHH2/common/include/PrintingModules.h"
+#include <UHH2/common/include/ElectronHists.h>
+#include <UHH2/common/include/MuonHists.h>
 
 #include "UHH2/DiJetJERC/include/JECAnalysisHists.h"
 #include "UHH2/DiJetJERC/include/JECCrossCheckHists.h"
@@ -163,11 +164,6 @@ protected:
   Event::Handle<long long> tt_evID;
   Event::Handle<int> tt_lumiSec;
 
-  Event::Handle<int> tt_jet1_l1bx;
-  Event::Handle<int> tt_jet2_l1bx;
-  Event::Handle<int> tt_jet3_l1bx;
-
-
   std::unique_ptr<JECAnalysisRecoGenMatchedHistsFractions> h_matched_all;//uses PF and GEN fractions only
   std::unique_ptr<JECAnalysisRecoGenMatchedHistsFractions> h_matched_pt[n_pt-1];//uses PF and GEN fractions only
 
@@ -205,15 +201,19 @@ protected:
   std::unique_ptr<LuminosityHists> h_lumi_TrigHF40, h_lumi_TrigHF60, h_lumi_TrigHF80, h_lumi_TrigHF100, h_lumi_TrigHF140, h_lumi_TrigHF160, h_lumi_TrigHF200, h_lumi_TrigHF220, h_lumi_TrigHF260, h_lumi_TrigHF300, h_lumi_TrigHF320, h_lumi_TrigHF400;
   std::unique_ptr<LumiHists> h_monitoring_final;
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
-  std::unique_ptr<JECCrossCheckHists> h_input,h_lumisel, h_beforeCleaner,h_afterCleaner,h_2jets,h_beforeJEC,h_afterJEC,h_afterJER,h_afterMET,h_beforeTriggerData,h_afterTriggerData,h_beforeFlatFwd,h_afterFlatFwd,h_afterPtEtaReweight,h_afterLumiReweight,h_afterUnflat,h_afternVts;
+  std::unique_ptr<JECCrossCheckHists> h_input, h_lumisel, h_beforeCleaner, h_afterCleaner, h_afterHEM, h_2jets, h_beforeJEC, h_afterJEC, h_afterJER, h_afterMET, h_beforeTriggerData, h_afterTriggerData, h_beforeFlatFwd, h_afterFlatFwd, h_afterPtEtaReweight, h_afterLumiReweight, h_afterUnflat, h_afternVts;
+  std::unique_ptr<JECCrossCheckHists> h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
+  std::unique_ptr<MuonHists> h_Muon, h_Muon_before;
+  std::unique_ptr<ElectronHists> h_Elec, h_Elec_before;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
   std::unique_ptr<Selection> HEMEventCleaner_Selection;
 
 
   //useful booleans
   bool debug, no_genp;
-  bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_L1seed_from_bx1_filter, apply_PUid;
+  bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_PUid;
   bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18;
+  bool switchTrigger_UL16, switchTrigger_UL17;
   std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL16preVFP", runPeriodsUL16preVFP}, {"UL16postVFP", runPeriodsUL16postVFP}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
   std::string year;
   bool isAK8, ispuppi;
@@ -245,8 +245,6 @@ protected:
 
   std::vector<uhh2DiJetJERC::run_lumi_ev>  unprefirableSummary;
   bool useUnprefireable;
-
-  uhh2::GenericEvent::Handle<std::vector<L1Jet>> handle_l1jet_seeds;
 
 };
 
@@ -361,9 +359,6 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   tt_run        = ctx.declare_event_output<int>("run");
   tt_evID       = ctx.declare_event_output<long long>("eventID");
   tt_lumiSec    = ctx.declare_event_output<int>("lumi_sec");
-  tt_jet1_l1bx  = ctx.declare_event_output<int>("jet1_l1bx");
-  tt_jet2_l1bx  = ctx.declare_event_output<int>("jet1_l2bx");
-  tt_jet3_l1bx  = ctx.declare_event_output<int>("jet1_l3bx");
 
   tt_trigger40  = ctx.declare_event_output<int>("trigger40");
   tt_trigger60  = ctx.declare_event_output<int>("trigger60");
@@ -419,10 +414,24 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
 
 void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
   h_runnr_input.reset(new JECRunnumberHists(ctx,"Runnr_input"));
+
+  h_Muon_before.reset(new MuonHists(ctx, "MuonHists_beforeCleaning"));
+  h_Muon.reset(new MuonHists(ctx, "MuonHists"));
+  h_Elec_before.reset(new ElectronHists(ctx, "ElecHists_beforeCleaning"));
+  h_Elec.reset(new ElectronHists(ctx, "ElecHists"));
+
   h_input.reset(new JECCrossCheckHists(ctx,"CrossCheck_input"));
   h_lumisel.reset(new JECCrossCheckHists(ctx,"CrossCheck_lumisel"));
   h_beforeCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeCleaner"));
   h_afterCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterCleaner"));
+
+  h_afterMuonCleaning.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterMuonCleaning"));
+  h_afterElecCleaning.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterElecCleaning"));
+  h_beforeJetID.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeJetID"));
+  h_beforePUid.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforePUid"));
+  h_afterPUid.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterPUid"));
+
+  h_afterHEM.reset(new JECCrossCheckHists(ctx,"CrossCheck_HEM"));
   h_2jets.reset(new JECCrossCheckHists(ctx,"CrossCheck_2jets"));
   h_beforeJEC.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeJEC"));
   h_afterJEC.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterJEC"));
@@ -435,7 +444,6 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
   h_afterPtEtaReweight.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterPtEtaReweight"));
   h_afterLumiReweight.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterLumiReweight"));
   h_afterUnflat.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterUnflat"));
-  h_afternVts.reset(new JECCrossCheckHists(ctx,"CrossCheck_afternVts"));
   h_matched_all.reset(new JECAnalysisRecoGenMatchedHistsFractions(ctx,"MatchedRecoGen_all"));
   for(int i=0;i<n_pt-1;i++){
     TString ptname = pt_range[i]; ptname +="_"; ptname +=pt_range[i+1];
@@ -576,9 +584,9 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   // apply_EtaPhi_HCAL = string2bool(ctx.get("EtaPhi_HCAL", "false"));
   isThreshold = string2bool(ctx.get("isThreshold", "false"));
   apply_PUid = string2bool(ctx.get("Apply_PUid_3rdjet", "false"));
+  cout << apply_PUid << endl;
   cout << "Dataset is " << ((isMC) ? " mc " : " data") << endl;
 
-  apply_L1seed_from_bx1_filter =  (ctx.get("Apply_L1Seed_From_BX1_Filter","false") == "true" && !isMC);
   is2016v2      = (dataset_version.find("2016v2")      != std::string::npos);
   is2016v3      = (dataset_version.find("2016v3")      != std::string::npos);
   is2017        = (dataset_version.find("2017")        != std::string::npos);
@@ -690,20 +698,30 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   trigger_fwd     = (ctx.get("Trigger_FWD") == "true");
   //    ts  = (ctx.get("Trigger_Single") == "true"); //if true use single jet trigger, if false di jet trigger TODO collapse the SiJet and DiJEt AnalysisModules into one?
 
-  bool isUL16_fortrigger = (isUL16preVFP || isUL16postVFP);
+  switchTrigger_UL16 = (
+    isUL16 &&
+    dataset_version.find("RunB") != std::string::npos
+  )?true:false;
+
+  // Change PtBinsTrigger for 2017 RunB&C hier so the correct pt bins are selected in the processor
+  switchTrigger_UL17 = (
+    isUL17 &&
+    !isAK8 &&
+    ( dataset_version.find("RunB") != std::string::npos || dataset_version.find("RunC") != std::string::npos )
+  )?true:false;
+
   if(!isMC){
     for (std::string mode: {"central", "forward"}) {
       std::string triggerModeName = PtBinsTrigger+"_"+mode;
       for (size_t i = 0; i < pt_indexes.at(triggerModeName).size() ; i++) {
         std::string trg_xml = PtBinsTrigger+"_"+pt_indexes.at(triggerModeName)[i];
         if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) trg_xml = TString(trg_xml).ReplaceAll("550","500");
-        if (isAK8) trg_xml += "_AK8";
-        if ((is2017 || isUL17) && ((dataset_version.find("RunB") != std::string::npos) || (dataset_version.find("RunC") != std::string::npos))){
-          trg_xml = TString(trg_xml).ReplaceAll("DiJet","SingleJet");
-        }
+        if (isAK8 && !switchTrigger_UL16) trg_xml += "_AK8";
+        if (switchTrigger_UL17) trg_xml = TString(trg_xml).ReplaceAll("DiJet", "SingleJet"); // to get SingleJet AK4 trigger
         const std::string& trg_name = ctx.get( trg_xml , "NULL");
         if (debug) {
           std::cout << "mode: " << mode << " i: " << i << '\n';
+          std::cout << "trg_mode " << triggerModeName << '\n';
           std::cout << "trg_xml " << trg_xml << '\n';
           std::cout << "trg_name " << trg_name << '\n';
         }
@@ -717,8 +735,6 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
       }
     }
   }
-
-
 
   //JER Smearing for corresponding JEC-Version
   if(JERClosureTest && isMC) {
@@ -796,8 +812,6 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   upper_binborders_runnrs.push_back(last_entry); //this is not exactly an UPPER limit because it is equal to the highest possible entry, not greater than it...created exception for this case.
   lumi_in_bins.push_back(ilumi_current_bin);
 
-  handle_l1jet_seeds = ctx.declare_event_input< vector< L1Jet>>("L1Jet_seeds");
-
   cout<<"end of AnalyseModule Constructor" << '\n';
 
 };
@@ -837,31 +851,37 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   h_lumi_nocuts->fill(event);
 
   // Do pileup reweighting
+  if(debug) cout << "Lumi Weights" << endl;
   if (apply_lumiweights) if(!LumiWeight_module->process(event)) return false;
 
   // Do pileup reweighting
+  if(debug) cout << "Reweighting" << endl;
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
-
-  // HEM 15/16 issue
-  if(!HEMEventCleaner_Selection->passes(event)) return false;
 
   //Dump Input
   h_input->fill(event);
+
   //LEPTON selection
+  h_Muon_before->fill(event);
+  if(debug) cout << "Muon Cleaner" << endl;
   muoSR_cleaner->process(event);
   sort_by_pt<Muon>(*event.muons);
   if(debug )std::cout<<"#muons = "<<event.muons->size()<<std::endl;
+  h_afterMuonCleaning->fill(event);
+  h_Muon->fill(event);
 
+  h_Elec_before->fill(event);
   eleSR_cleaner->process(event);
   sort_by_pt<Electron>(*event.electrons);
   if(debug) std::cout<<"#electrons = "<<event.electrons->size()<<std::endl;
+  h_afterElecCleaning->fill(event);
+  h_Elec->fill(event);
 
   if (event.electrons->size()>0 || event.muons->size()>0) return false; //veto events with leptons
 
   h_runnr_input->fill(event);
   // PrimaryVertexV Cleaner
   if (!PVCleaner->process(event)) return false;
-  h_afternVts->fill(event);
 
   // CMS-certified luminosity sections
   if(event.isRealData){
@@ -895,6 +915,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   h_beforeCleaner->fill(event);
 
   //############### Jet Cleaner and First Selection (N_Jets >=2) ##############################
+  // cout<<"##################################################################################"<<endl;
   int n_jets_beforeCleaner = ak4jets->size();
   if(debug) cout<<"#jets before clean "<<n_jets_beforeCleaner<<endl;
 
@@ -903,16 +924,20 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(jet_n<2) return false;
   if(debug) cout<<"#jets starting process "<<n_jets_beforeCleaner<<endl;
 
+  h_beforeJetID->fill(event);
   jetID->process(event); //TODO FixME: make sure JetID works for AK8
-  if(debug) cout<<"after jet ID"<<endl;
 
+  h_beforePUid->fill(event);
   if(apply_PUid) jetPUid->process(event);
+  h_afterPUid->fill(event);
+
   int n_jets_afterCleaner = ak4jets->size();
   // TODO discard events if not all jets fulfill JetID instead of just discarding single jets
   if(debug) cout<<"#jets after clean "<<n_jets_afterCleaner<<endl;
   sort_by_pt<Jet>(*ak4jets);
   jet_n = ak4jets->size();
   if(jet_n<2) return false;
+
 
   //discard events if not all jets fulfill JetID instead of just discarding single jets
   //    if (n_jets_beforeCleaner != n_jets_afterCleaner) return false;
@@ -930,6 +955,11 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   //   if(apply_PUid)
   // 	if(ak4jets->at(2).get_tag(ak4jets->at(2).tagname2tag("pileup_tight"))<1) return false;//TEST
   // }
+
+  //############### HEM issue ############################################################
+
+  if(!HEMEventCleaner_Selection->passes(event)) return false;
+  if(!isMC) h_afterHEM->fill(event);
 
   //####################  Select and Apply proper JEC-Versions for every Run ##################
 
@@ -1202,6 +1232,11 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     if (debug) std::cout << "eta_cut_bool " << eta_cut_bool << "\t" << "eta " << std::max(abs(jet1->eta()),abs(jet2->eta())) << "\t" << "trigger_central " << trigger_central<<  "\t" << "trigger_fwd " << trigger_fwd << " eta_cut_bool_HF " << eta_cut_bool_HF << '\n';
 
     if (eta_cut_bool) {
+      // PtBinsTrigger = DiJet/SingleJet
+      // pt_indexes = map in constants {"DiJet_central", {"trigger40", "trigger60", ...}},{xxx:{..., ...}}
+      // trg_thresh = map in constants {"trigger40", 60},
+      // trg_xml = trigger40
+
 
       for (size_t i = 0; i < pt_indexes.at(PtBinsTrigger+"_central").size() ; i++) {
         std::string trg_xml   = pt_indexes.at(PtBinsTrigger+"_central")[i];
@@ -1518,85 +1553,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(useUnprefireable){
     if(!sel->Unprefirable(unprefirableSummary)) return false;
   }
-
-
-  // L1 jet seed cleaning
-  if(apply_L1seed_from_bx1_filter){
-    if(debug) cout << "before the L1 seed filter" << endl;
-    if(!sel->L1JetBXcleanSmart()){
-      if(debug) cout << "L1 seed filtered" << endl;
-      return false;
-    }
-    if(debug) cout << "after the first L1 seed filter" << endl;
-  }
-
-  //get the corresponding L1 Jet and save the bx
-  std::vector< L1Jet>* l1jets = &event.get(handle_l1jet_seeds);
-
-  if(debug) cout << "declared L1Jet seeds" << endl;
-
-  int jet1_l1bx, jet2_l1bx, jet3_l1bx;
-
-  unsigned int n_l1jets =l1jets->size();
-  if(debug) cout << "l1jets size is "<<n_l1jets<<endl;
-  if(n_l1jets>0){
-    double dRmin = 100.;
-    int dRmin_seed_idx = -1;
-    float dR;
-    if(debug) cout << "before first L1Jet seeds dR loop" << endl;
-    for(unsigned int i = 0; i<n_l1jets; i++){
-      dR=uhh2::deltaR(l1jets->at(i),ak4jets->at(0));
-
-      if(dR < dRmin){
-        dRmin=dR;
-        dRmin_seed_idx = i;
-      }
-    }
-    if( ( l1jets->at(dRmin_seed_idx).pt() / ak4jets->at(0).pt() ) < 0.2 ) jet1_l1bx = -10;
-    else jet1_l1bx = l1jets->at(dRmin_seed_idx).bx();
-  }
-  else jet1_l1bx = 10;
-
-  if(n_l1jets>1){
-    double dRmin = 100.;
-    int dRmin_seed_idx = -1;
-    float dR;
-    for(unsigned int i = 0; i<n_l1jets; i++){
-      dR=uhh2::deltaR(l1jets->at(i),ak4jets->at(1));
-
-      if(dR < dRmin){
-        dRmin=dR;
-        dRmin_seed_idx = i;
-      }
-    }
-    if( ( l1jets->at(dRmin_seed_idx).pt() / ak4jets->at(0).pt() ) < 0.2 ) jet2_l1bx = -10;
-    else jet2_l1bx = l1jets->at(dRmin_seed_idx).bx();
-  }
-  else jet2_l1bx = 10;
-
-  if(ak4jets->size()>2){
-    if(n_l1jets>2){
-      double dRmin = 100.;
-      int dRmin_seed_idx = -1;
-      float dR;
-      for(unsigned int i = 0; i<n_l1jets; i++){
-        dR=uhh2::deltaR(l1jets->at(i),ak4jets->at(2));
-
-        if(dR < dRmin){
-          dRmin=dR;
-          dRmin_seed_idx = i;
-        }
-      }
-      if( ( l1jets->at(dRmin_seed_idx).pt() / ak4jets->at(0).pt() ) < 0.2 ) jet3_l1bx = -10;
-      else jet3_l1bx = l1jets->at(dRmin_seed_idx).bx();
-    }
-    else jet3_l1bx = 10;
-  }
-  else jet3_l1bx = 10;
-
-  event.set(tt_jet1_l1bx,jet1_l1bx);
-  event.set(tt_jet2_l1bx,jet2_l1bx);
-  event.set(tt_jet3_l1bx,jet3_l1bx);
 
   //###############################################################################################
 
