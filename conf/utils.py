@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import os
 import subprocess
@@ -13,8 +15,7 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts))
         else:
-            print '%r  %2.2f s' % \
-                  (method.__name__, (te - ts))
+            print("%r  %2.2f s" % (method.__name__, (te - ts)))
         return result
     return timed
 
@@ -36,7 +37,7 @@ def is_commented(line, filename):
         if beginning[0:4] == "<!--": return True
         else: return False
     else:
-        print "File extension not known!"
+        print("File extension not known!")
         return False
 
 def number_leading_whitespace(line):
@@ -54,10 +55,10 @@ def get_whitespace(n):
 # return the commented line
 def comment_single_line(filename, line):
     if is_commented(line, filename):
-        print "Warning: This line is already commented."
+        print("Warning: This line is already commented.")
         return line
     elif len(line.split())<1:
-        print "Warning: This line is empty."
+        print("Warning: This line is empty.")
         return line
     else:
         n = number_leading_whitespace(line)
@@ -72,7 +73,7 @@ def comment_single_line(filename, line):
 # return the uncommented line
 def uncomment_single_line(filename, line):
     if not is_commented(line, filename):
-        print "Warning: This line is already uncommented."
+        print("Warning: This line is already uncommented.")
         return line
     else:
         if ".c" in filename:
@@ -220,7 +221,7 @@ def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None, time_
           ncompleted += 1
           if not logfiles[idx].closed:
             logfiles[idx].close()
-            print 'Job "%s" has finished.' % logfiles[idx].name
+            print('Job "%s" has finished.' % logfiles[idx].name)
         idx += 1
       if nrunning >= MaxProcess:
         percentage = float(ncompleted)/float(ntotal)*100
@@ -228,7 +229,7 @@ def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None, time_
         sys.stdout.flush()
         time.sleep(5)
       else:
-        print 'only %i jobs are running, going to spawn new ones.' % nrunning
+        print('only %i jobs are running, going to spawn new ones.' % nrunning)
         wait = False
     if condition:
       f = open(list_logfiles[index],'w')
