@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 from utils import *
-from sys
-sys.path.insert(1, '/nfs/dust/cms/user/paaschal/UHH2_DiJet/CMSSW_10_6_28/src/UHH2/common/UHH2-datasets')
+import os, sys
+sys.path.insert(1, os.environ["CMSSW_BASE"]+'/src/UHH2/common/UHH2-datasets')
 from CrossSectionHelper import MCSampleValuesHelper
+
+helper = MCSampleValuesHelper()
 
 newNumber = {
     "DATA_RunB_UL17":        150,
@@ -141,7 +143,7 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
         time = int(filter(lambda x: "TIME" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[5])
     except:
         time = 3
-    FileSplit = filter(lambda x: "FileSplit" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines())[0].split("\"")[3]
+    FileSplit = list(filter(lambda x: "FileSplit" in x, open(original_dir[:original_dir.find("SubmittedJobs")]+original_file).readlines()))[0].split("\"")[3]
     for index_JEC, newJECVersion in enumerate(JECVersions_Data):
         for newJetLabel in JetLabels:
             add_path = newJECVersion+"/"+newJetLabel+extratext+"/"
@@ -149,7 +151,6 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
             if not os.path.exists(path):
                 os.makedirs(path)
             for process in processes:
-                print process
                 if (isMB and not "_MB" in process) or (not isMB and "_MB" in process):
                     continue
                 filename = original_file[:len(original_file)-4]+"_"+process+".xml"
@@ -170,6 +171,11 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 changes.append(["<!ENTITY", "CMSSW_BASE", "CMSSW_BASE", os.environ["CMSSW_BASE"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
+                if "QCD" in process:
+                    lumi = helper.get_lumi(process.replace('_'+year, '').replace('HT','_HT'), '13TeV', year)
+                    changes.append(["<InputData", "Type", "<CrossSection>", "{:.6f}".format(lumi)])
+                    change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
+                    changes = []
                 changes.append(["user", "amalara", "amalara", os.environ["USER"]])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
