@@ -149,14 +149,21 @@ QCDSamples["Legacy"] = ["QCDHT"]
 
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
 JECVersions = {}
+
+# Summer 19 campaign
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
-JECVersions["UL17"] = ["Summer19UL17_V5"]
-# JECVersions["UL18"] = ["Summer20UL18_V2"]
-JECVersions["UL18"] = ["Summer19UL18_V5"]
+# JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
+# JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
+# JECVersions["UL18"] = ["Summer19UL18_V5"]
+# JECVersions["UL17"] = ["Summer19UL17_V5"]
 JECVersions["Legacy"] = ["Summer19Legacy"]
+
+# Summer 20 campaign
+JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
+JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
+JECVersions["UL17"] = ["Summer20UL17_V2"]
+JECVersions["UL18"] = ["Summer20UL18_V2"]
 
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels=["AK4CHS"]
@@ -179,6 +186,7 @@ studies = []
 # studies.append("eta_JER_fine")
 # studies.append("eta_JER_default")
 studies.append("eta_common_default")
+# studies.append("eta_common_fine")
 # studies.append("eta_common_central_fine_v2")
 # studies.append("eta_common")
 # studies.append("eta_simple")
