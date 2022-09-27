@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import argparse
 from createConfigFiles import *
 
 @timeit
@@ -34,7 +33,7 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                             nProcess = 20
                         if internal_option == "":
                             time_ = 0.5
-    print len(list_processes)
+    print(len(list_processes))
     parallelise(list_processes, nProcess, cwd=True, time_=time_)
 
 
@@ -50,7 +49,7 @@ def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                             continue
                         if sys == "JER" and dir != "":
                             continue
-                    	if sys == "JER" and dir == "":
+                        if sys == "JER" and dir == "":
                        	    dir = "nominal"
                         path = userPathSframeOutput+"/"+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
                         if os.path.isdir(path):
@@ -58,7 +57,7 @@ def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                                 if "workdir" in workdir:
                                     cmd = "rm -fr %s" % (path+workdir)
                                     a = os.system(cmd)
-                                    print cmd
+                                    print(cmd)
                         path = original_dir+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
                         if os.path.isdir(path):
                             for workdir in sorted(os.listdir(path)):
@@ -218,12 +217,13 @@ studies = []
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
 # studies.append("eta_JER")
-studies.append("eta_common")
+studies.append("eta_common_test")
+# studies.append("eta_common")
 # studies.append("eta_L2R")
 # studies.append("eta_narrow")
 #studies.append("eta_simple")
 
-print "Running for: ", studies
+print("Running for: ", studies)
 time.sleep(2)
 
 # outdir = "DiJetJERC_DiJetHLT"
@@ -233,10 +233,10 @@ original_dir_ = os.getcwd()
 
 
 # QCDSamples = ["QCDPt","QCDHT", "DATA"]
-# QCDSamples = ["QCDHT", "DATA"]
-QCDSamples = ["DATA"]
+QCDSamples = ["QCDHT", "DATA"]
+# QCDSamples = ["DATA"]
 # QCDSamples = ["QCDHT"]
-processes = filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process)
+processes = list(filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process))
 others = list(set(QCD_process+Data_process)-set(processes))
 
 JECVersions_Data = {}
@@ -266,7 +266,7 @@ JetLabels = ["AK4Puppi"]
 # systematics = ["PU"]
 systematics = [""]
 
-print year,studies, QCDSamples, JECVersions_Data[year], JetLabels, systematics
+print(year,studies, QCDSamples, JECVersions_Data[year], JetLabels, systematics)
 
 for study in studies:
 
