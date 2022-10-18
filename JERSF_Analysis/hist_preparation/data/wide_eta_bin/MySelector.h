@@ -103,7 +103,7 @@ public:
 
   int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE;
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
-  int PtBins_Central, PtBins_HF;
+  int PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins;
 
   std::vector<int> Pt_bins_Central;

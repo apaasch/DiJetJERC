@@ -101,10 +101,10 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
         TString name_pt3 = text+"pt3";  name_pt3 += extraText; name_pt3 += "_eta"; name_pt3 += m+1; name_pt3 += "_pt"; name_pt3 += p+1; name_pt3 += "_alpha"; name_pt3 += r+1;
         TString name_pts = text+"ptspectrum";   name_pts += extraText; name_pts += "_eta"; name_pts += m+1; name_pts += "_pt"; name_pts += p+1; name_pts += "_alpha"; name_pts += r+1;
         TH1F *h1 = new TH1F(name,     name,     160,-0.8, 0.8);   h1->SetXTitle("Asymmetry"); h1->SetYTitle("a.u.");  h1->Sumw2();  temp1.push_back(h1);
-        TH1F *h2 = new TH1F(name_pt,  name_pt,  50,   0,  1500);  h2->SetXTitle("Pt[GeV]");   h2->SetYTitle("a.u.");  h2->Sumw2();  temp1pt.push_back(h2);
+        TH1F *h2 = new TH1F(name_pt,  name_pt,  100,  0,  3000);  h2->SetXTitle("Pt[GeV]");   h2->SetYTitle("a.u.");  h2->Sumw2();  temp1pt.push_back(h2);
         TH1F *h3 = new TH1F(name_rho, name_rho, 100,  0,  100);   h3->SetXTitle("rho");       h3->SetYTitle("a.u.");  h3->Sumw2();  temp1rho.push_back(h3);
-        TH1F *h4 = new TH1F(name_pt3, name_pt3, 50,   0,  1500);  h4->SetXTitle("Pt[GeV]");   h4->SetYTitle("a.u.");  h4->Sumw2();  temp1pt3.push_back(h4);
-        TH1F *h5 = new TH1F(name_pts, name_pts, 1500,   0,  1500);  h5->SetXTitle("Pt[GeV]");   h5->SetYTitle("a.u.");  h5->Sumw2();  temp1pts.push_back(h5);
+        TH1F *h4 = new TH1F(name_pt3, name_pt3, 100,  0,  3000);  h4->SetXTitle("Pt[GeV]");   h4->SetYTitle("a.u.");  h4->Sumw2();  temp1pt3.push_back(h4);
+        TH1F *h5 = new TH1F(name_pts, name_pts, 3000, 0,  3000);  h5->SetXTitle("Pt[GeV]");   h5->SetYTitle("a.u.");  h5->Sumw2();  temp1pts.push_back(h5);
       }
       temp2.push_back(temp1); temp2pt.push_back(temp1pt); temp2rho.push_back(temp1rho);  temp2pt3.push_back(temp1pt3);  temp2pts.push_back(temp1pts);
     }
@@ -162,15 +162,19 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
+  if (year.find("UL18") != std::string::npos) name_pt_bin += "_default"; // DELETE
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
+  if (year.find("UL18") != std::string::npos) name_pt_bin += "_default"; // DELETE
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
-  Pt_bins_Central.push_back(1500);
-  Pt_bins_HF.push_back(1500);
+  Pt_bins_Central.push_back(3000);
+  Pt_bins_HF.push_back(3000);
+
+  PtBins=(PtBins_Central>PtBins_HF)?PtBins_Central:PtBins_HF;
 
   AlphaBins = 6;
   for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30}) Alpha_bins.push_back(alpha);
