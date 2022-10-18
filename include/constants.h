@@ -171,9 +171,13 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
 
   // UL16preVFP AK4
   {"DiJet_central_UL16preVFP",                { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
-  {"DiJet_central_UL16preVFP_ptbins",         { 59, 85, 104, 170, 236, 302, 370, 460, 575 }},
+  {"DiJet_central_UL16preVFP_ptbins",         { 59, 75,  85,  98, 104, 128, 145, 170, 190, 220, 236, 280, 302, 325, 350, 370, 400, 430, 460, 500, 530, 555, 575, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
+  {"DiJet_central_UL16preVFP_ptbins_default", { 59, 85, 104, 170, 236, 302, 370, 460, 575 }},
+  {"DiJet_central_UL16preVFP_ptbins_fine_v1", { 59, 75,  85,  98, 104, 128, 145, 170, 190, 220, 236, 280, 302, 325, 350, 370, 400, 430, 460, 500, 530, 555, 575, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
   {"DiJet_forward_UL16preVFP",                { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
-  {"DiJet_forward_UL16preVFP_ptbins",         { 86, 110, 132, 204, 279, 373 }},
+  {"DiJet_forward_UL16preVFP_ptbins",         { 86, 93, 100, 110, 122, 132, 150, 176, 180, 204, 220, 239, 279, 373 }}, // 14+1 bins
+  {"DiJet_forward_UL16preVFP_ptbins_default", { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  {"DiJet_forward_UL16preVFP_ptbins_common",  { 86, 93, 100, 110, 122, 132, 150, 176, 180, 204, 220, 239, 279, 373 }}, // 14+1 bins
   // UL16preVFP AK8
   {"SingleJet_central_AK8_UL16preVFP",        { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18; Also for SJ AK4 for RunB
   {"SingleJet_central_AK8_UL16preVFP_ptbins", { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18; Also for SJ AK4 for RunB
@@ -181,10 +185,14 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"SingleJet_forward_AK8_UL16preVFP_ptbins", { 65, 103, 115, 179, 252, 317, 410, 519 }}, // Copied from UL18; Also for SJ AK4 for RunB
 
   // UL16postVFP AK4
-  {"DiJet_central_UL16postVFP",               { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
-  {"DiJet_central_UL16postVFP_ptbins",        { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
-  {"DiJet_forward_UL16postVFP",               { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
-  {"DiJet_forward_UL16postVFP_ptbins",        { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  {"DiJet_central_UL16postVFP",                { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
+  {"DiJet_central_UL16postVFP_ptbins",         { 59, 75,  85,  98, 104, 128, 145, 170, 190, 220, 236, 280, 302, 325, 350, 370, 400, 430, 460, 500, 530, 555, 575, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
+  {"DiJet_central_UL16postVFP_ptbins_default", { 59, 85, 104, 170, 236, 302, 370, 460, 575 }}, // from Jindrich
+  {"DiJet_central_UL16postVFP_ptbins_fine_v1", { 59, 75,  85,  98, 104, 128, 145, 170, 190, 220, 236, 280, 302, 325, 350, 370, 400, 430, 460, 500, 530, 555, 575, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
+  {"DiJet_forward_UL16postVFP",                { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  {"DiJet_forward_UL16postVFP_ptbins",         { 86, 93, 100, 110, 122, 132, 150, 176, 180, 204, 220, 239, 279, 373 }}, // 14+1 bins
+  {"DiJet_forward_UL16postVFP_ptbins_default", { 86, 110, 132, 204, 279, 373 }}, // from Jindrich
+  {"DiJet_forward_UL16postVFP_ptbins_common",  { 86, 93, 100, 110, 122, 132, 150, 176, 180, 204, 220, 239, 279, 373 }}, // 14+1 bins
   // UL16 AK8 COPY FROM 2018
   {"SingleJet_central_AK8_UL16postVFP",       { 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18
   {"SingleJet_central_AK8_UL16postVFP_ptbins",{ 77, 96, 117, 190, 256, 321, 386, 473, 526, 581 }}, // Copied from UL18
@@ -199,9 +207,13 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"SingleJet_central_AK8_2017",        { 73, 90, 115, 181, 251, 312, 378, 457, 519, 566 }}, //for Single triggers 94X 17Nov2017
   // UL17 AK4
   {"DiJet_central_UL17",                { 70, 87, 111, 180, 247, 310, 373, 457, 562 }}, // SJ AK4 UL17 (Jindrich); No DJ for B,C
-  {"DiJet_central_UL17_ptbins",         { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318, 373, 457, 562 }},// Combined DJ fwd and SJ central AK4
+  {"DiJet_central_UL17_ptbins",         { 70, 73, 87, 93, 111, 113, 145, 176, 180, 239, 247, 280, 310, 318, 350, 370, 400, 430, 460, 500, 530, 555, 575, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
+  {"DiJet_central_UL17_ptbins_default", { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318, 373, 457, 562 }},// Combined DJ fwd and SJ central AK4
+  {"DiJet_central_UL17_ptbins_fine_v1", { 70, 73, 87, 93, 111, 113, 145, 176, 180, 239, 247, 280, 310, 318, 350, 370, 400, 430, 460, 500, 530, 555, 575, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
   {"DiJet_forward_UL17",                { 73, 93, 113, 176, 239, 318 }}, // Copied from 2017
-  {"DiJet_forward_UL17_ptbins",         { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318}}, // Combined DJ fwd and SJ central AK4
+  {"DiJet_forward_UL17_ptbins",         { 70, 73, 87, 93, 111, 113, 140, 176, 180, 205, 239, 247, 310, 318}}, // 14+1 bins
+  {"DiJet_forward_UL17_ptbins_fine_v1", { 70, 73, 87, 93, 111, 113, 140, 176, 180, 205, 239, 247, 310, 318}}, // 14+1 bins
+  {"DiJet_forward_UL17_ptbins_default", { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318}}, // Combined DJ fwd and SJ central AK4
   {"SingleJet_central_UL17",            { 70, 87, 111, 180, 247, 310, 373, 457, 562 }}, // From Jindrich / Skip trigger 450 since no DiJet trigger
   {"SingleJet_central_UL17_ptbins",     { 70, 73, 87, 93, 111, 113, 176, 180, 239, 247, 310, 318, 373, 457, 562 }},// Combined DJ fwd and SJ central AK4
   // UL17 AK8
@@ -222,15 +234,19 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"SingleJet_forward_AK8_2018_ptbins", { 62, 95, 110, 182, 260, 339, 420, 508 }},
   // UL18 AK4
   {"DiJet_central_UL18",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
-  // {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120}}, // 30 bins
-  {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 31 bins
+  {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1400, 1500, 1600, 2000, 2500}}, // 30+1 bins
   {"DiJet_central_UL18_ptbins_default", { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
   {"DiJet_central_UL18_ptbins_fine",    { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120}}, // 30 bins
-  {"DiJet_central_UL18_ptbins_fine_v1", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 31 bins
+  {"DiJet_central_UL18_ptbins_fine_v1", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
+  {"DiJet_central_UL18_ptbins_fine_v2", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1390, 1670}}, // 31+1 bins
+  {"DiJet_central_UL18_ptbins_fine_v3", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1400, 1500, 1600, 2000, 2500}}, // 33+1 bins
   {"DiJet_forward_UL18",                { 93, 116, 142, 210, 279, 379 }},
-  {"DiJet_forward_UL18_ptbins",         { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins",         { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // 14+1 bins
   {"DiJet_forward_UL18_ptbins_default", { 93, 116, 142, 210, 279, 379 }},
-  {"DiJet_forward_UL18_ptbins_fine",    { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins_fine_v1", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins_fine_v2", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
+  {"DiJet_forward_UL18_ptbins_fine_v3", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
+  {"DiJet_forward_UL18_ptbins_common",  { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // same as fine_v1, but keep for consitency
   {"DiJet_central_UL18_Jindrich",       { 69, 95, 120, 193, 264, 326, 399, 474, 595 }}, // https://indico.cern.ch/event/1165351/contributions/4893655/attachments/2451202/4200382/L2Res_05_2022-2.pdf
   {"DiJet_forward_UL18_Jindrich",       { 95, 120, 144, 215, 282, 388 }}, // https://indico.cern.ch/event/1165351/contributions/4893655/attachments/2451202/4200382/L2Res_05_2022-2.pdf
   // UL18 AK8
