@@ -93,7 +93,9 @@ inputdir = "DiJetJERC_DiJetHLT"
 # year = "UL16postVFP"
 # year = "UL17"
 year = "UL18"
-
+if len(sys.argv)<2:
+    sys.exit("I need at least a year")
+year = sys.argv[1]
 # year = "Legacy"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
@@ -102,9 +104,12 @@ samples = {}
 # samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 # samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL16preVFP_split"] = ["BCD", "EF", "BCDEF"]
-samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
-samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
-samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+# samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
+samples["UL16preVFP"] = ["BCDEF"]
+# samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
+samples["UL16postVFP"] = ["FGH"]
+# samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+samples["UL17"] = ["BCDEF"]
 # samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 # samples["UL18"] = ["A", "B", "C", "ABC"] # for Puppi studies
 samples["UL18"] = ["ABCD"]
@@ -113,21 +118,23 @@ samples["Legacy"] = ["II"]
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
-JECVersions["UL17"] = ["Summer19UL17_V5"]
-JECVersions["UL18"] = ["Summer19UL18_V5"]
+JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
+JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
+JECVersions["UL17"] = ["Summer20UL17_V2"]
+JECVersions["UL18"] = ["Summer20UL18_V2"]
 
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels = ["AK4Puppi_v11"]
 JetLabels = ["AK4Puppi"]
-# systematics = ["", "alpha","PU", "JEC", "JER"]
-systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
+# systematics = ["", "alpha","PU", "JEC", "Prefire"]
+# systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["PU", "JEC", "Prefire"]
 # systematics = ["JER"]
 # systematics = ["", "alpha","PU"]
-# systematics = ["", ]
+systematics = [""]
 
 list_processes = []
 list_logfiles = []
@@ -144,7 +151,11 @@ studies.append("eta_common")
 
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
-    out_path    = common_path+"wide_eta_bin/file/"+study+"/"+year+"/"
+    add = ''
+    if len(sys.argv) == 3:
+        add = '_'+sys.argv[2]
+    out = study+add
+    out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
     path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/"+study+"/"
