@@ -74,6 +74,7 @@ protected:
   std::unique_ptr<uhh2::AnalysisModule> pileupSF, LumiWeight_module;
   std::unique_ptr<AnalysisModule> Jet_printer, GenJet_printer, GenParticles_printer;
 
+  Event::Handle<float> h_weight_prefire, h_weight_prefire_up, h_weight_prefire_down;
 
   Event::Handle<float> tt_jet1_pt;  Event::Handle<float> tt_jet2_pt;  Event::Handle<float> tt_jet3_pt;
   Event::Handle<float> tt_jet4_pt;  Event::Handle<float> tt_jet5_pt;  Event::Handle<float> tt_jet6_pt;  Event::Handle<float> tt_jet7_pt;
@@ -202,7 +203,7 @@ protected:
   std::unique_ptr<LumiHists> h_monitoring_final;
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
   std::unique_ptr<JECCrossCheckHists> h_input, h_lumisel, h_beforeCleaner, h_afterCleaner, h_afterHEM, h_2jets, h_beforeJEC, h_afterJEC, h_afterJER, h_afterMET, h_beforeTriggerData, h_afterTriggerData, h_beforeFlatFwd, h_afterFlatFwd, h_afterPtEtaReweight, h_afterLumiReweight, h_afterUnflat, h_afternVts;
-  std::unique_ptr<JECCrossCheckHists> h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
+  std::unique_ptr<JECCrossCheckHists> h_prefire_check, h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
   std::unique_ptr<MuonHists> h_Muon, h_Muon_before;
   std::unique_ptr<ElectronHists> h_Elec, h_Elec_before;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
@@ -221,6 +222,7 @@ protected:
   bool ispythia8;
   bool ts;
   string SysType_PU;
+  string prefire_direction;
   string dataset_version, jetLabel;
   string JEC_Version, jecTag, jecVer, JEC_Level, jet_coll, jecVar;
   string Study;
@@ -422,6 +424,7 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
   h_input.reset(new JECCrossCheckHists(ctx,"CrossCheck_input"));
   h_lumisel.reset(new JECCrossCheckHists(ctx,"CrossCheck_lumisel"));
+  h_prefire_check.reset(new JECCrossCheckHists(ctx,"CrossCheck_prefire"));
   h_beforeCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeCleaner"));
   h_afterCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterCleaner"));
 
@@ -575,6 +578,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
   JEC_Level = ctx.get("JEC_Level", "L1L2L3Residual");
   jecVar = ctx.get("jecsmear_direction");
+  prefire_direction = ctx.get("prefire_direction","nominal");
 
   Study = ctx.get("Study", "default");
 
@@ -672,6 +676,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   // if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
   // else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
+  if(debug) cout <<  "Applay EtaPhi cut " << apply_EtaPhi_cut << endl;
   if (apply_EtaPhi_cut) {
     if(ispuppi) Jet_PFID = AndId<Jet> (HotZoneVetoId(), JetPFID(JetPFID::WP_TIGHT_PUPPI));
     else Jet_PFID = AndId<Jet> (HotZoneVetoId(), JetPFID(JetPFID::WP_TIGHT_CHS));
@@ -766,6 +771,10 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   GenJet_printer.reset(new GenJetPrinter("GenJet-Printer", 0));
   // if(debug && !no_genp) GenParticles_printer.reset(new GenParticlesPrinter(ctx));
 
+  h_weight_prefire = ctx.get_handle<float>("prefiringWeight");
+  h_weight_prefire_up = ctx.get_handle<float>("prefiringWeightUp");
+  h_weight_prefire_down = ctx.get_handle<float>("prefiringWeightDown");
+
   n_evt = 0;
 
   string lumifile = ctx.get("lumi_file");
@@ -857,6 +866,16 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // Do pileup reweighting
   if(debug) cout << "Reweighting" << endl;
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
+
+  if(debug) cout << "Prefire " << endl;
+  float prefire_weight;
+  if(prefire_direction == "nominal") prefire_weight = event.get(h_weight_prefire);
+  else if(prefire_direction == "up") prefire_weight = event.get(h_weight_prefire_up);
+  else if(prefire_direction == "down") prefire_weight = event.get(h_weight_prefire_down);
+  else throw runtime_error("PostSelection: Wrong prefire weight direction (nominal, up, down)");
+  if(debug) cout << "\t - weight " << prefire_weight << endl;
+  event.weight *= prefire_weight;
+  h_prefire_check->fill(event);
 
   //Dump Input
   h_input->fill(event);
