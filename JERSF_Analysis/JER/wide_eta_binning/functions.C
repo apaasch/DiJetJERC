@@ -34,6 +34,9 @@ int printPt = 6;
 
 int sizeHist = 1700;
 
+TString g_year = "";
+TString g_study = "";
+
 static std::vector<double> usedPtTrigger_central; // Set in mainRun.cxx
 static std::vector<double> usedPtTrigger_forward; // Set in mainRun.cxx
 
@@ -121,7 +124,7 @@ void Fill_Map3D(std::vector< std::vector < std::vector < TH1F* > > > &Asymmetry,
 void make_lin_fit(double & slope, double & d_slope, double & offset, double & d_offset, double min_slope, double max_slope, double min_offset, double max_offset, double & chi2);
 void chi2_linear(Int_t& npar, Double_t* grad, Double_t& fval, Double_t* p, Int_t status);
 double sumSquare(double a, double b);
-double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin);
+double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin, bool print=false);
 void fitLin( TH1F &hist, double &width, double &error );
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 bool removePointsforFit(bool isFE, int m, int p);
@@ -610,11 +613,14 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       double diff_first = abs(offset-offset_first);
       double diff_last = abs(offset-offset_last);
 
-      double offset_err = 0.;
-      if(diff_nom<diff_first && diff_last<diff_first) offset_err = diff_first;
-      else if(diff_first<diff_nom && diff_last<diff_nom) offset_err = diff_nom;
-      else if(diff_nom<diff_last && diff_first<diff_last) offset_err = diff_last;
-      else offset_err = lin_extrapol_mc->GetParError(0);
+      double err_stat = lin_extrapol_mc->GetParError(0);
+      double err_offset = 0.;
+      if(diff_nom<diff_first && diff_last<diff_first) err_offset = diff_first;
+      else if(diff_first<diff_nom && diff_last<diff_nom) err_offset = diff_nom;
+      else if(diff_nom<diff_last && diff_first<diff_last) err_offset = diff_last;
+      else err_offset = err_stat; // When errors are really small down to 0; They are not considered anyway
+
+      double err_total = sumSquare(err_offset, err_stat);
 
       h_chi2_tot->Fill(lin_extrapol_mc->GetChisquare()/lin_extrapol_mc->GetNDF()); // TODO for new method
 
@@ -625,7 +631,7 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       }
 
       temp2.push_back(alpha_new?offset:offset_nom);
-      temp_error2.push_back(alpha_new?offset_err:lin_extrapol_mc->GetParError(0));
+      temp_error2.push_back(alpha_new?err_total:err_stat);
       temp2_graph.push_back(extrapol_MC);
     }
     output.push_back(temp2);
@@ -812,8 +818,31 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
           (m==13&&p==17)|| // 2.7-2.9
           (m==16&&p==12) // 3.1-3.5
         );
+        // bool removeByHand = false;
+        // if( g_year.Contains("UL18") && g_study.Contains("common_fine_v1") ){
+        //   if(m==6){
+        //     if(p==30) removeByHand = true;
+        //   } else if (m==7){
+        //     if(p==30) removeByHand = true;
+        //   } else if (m==8){
+        //     if(p==30||p==29||p==28) removeByHand = true;
+        //   } else if (m==9){
+        //     if(p==30||p==29||p==28) removeByHand = true;
+        //   } else if (m==10){
+        //     if(p==30||p==29||p==28||p==27) removeByHand = true;
+        //   } else if (m==11){
+        //     if(p==30||p==29||p==28||p==27||p==26||p==25) removeByHand = true;
+        //   } else if (m==12){
+        //     if(p==30||p==29||p==28||p==27||p==26||p==25||p==24) removeByHand = true;
+        //   } else if (m==13){
+        //     if(p==30||p==29||p==28||p==27||p==26||p==25||p==24||p==23||p==22||p==21) removeByHand = true;
+        //   } else if (m==16){
+        //     if(p==13) removeByHand = true;
+        //   }
+        // }
 
         if(removeByHand){
+          // cout << "Remove eta bin " << m+1 << " | " << p+1 << " from JER by Hand" << endl;
           if(debug) cout << "Remove eta bin " << m << " | " << p+1 << " from JER by Hand" << endl;
           temp2.push_back(0.);
           temp_error2.push_back(0.);
@@ -1169,15 +1198,21 @@ void findExtreme_gr(std::vector<TT*> vec, double *x_min, double *x_max, double *
 // ===                                                                                                ===
 // ======================================================================================================
 
-double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin) {
+double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin, bool print) {
   double min = 10000;
   double max = 0;
-  for (unsigned int p = 2; p < pt_width.size(); p++) {// TODO It's set to 2 just because in the following steps pt>2"bin are used
+  for (unsigned int p = 2; p < pt_width.size(); p++) { // TODO It's set to 2 just because in the following steps pt>2"bin are used
   double pT = (double)(*std::max_element(pt_width.at(p).begin(),pt_width.at(p).end()));
   if (JER->GetBinContent(JER->FindBin(pT))== 0.) continue;
   min = std::min(min, TMath::Abs(NSC_ratio->Eval(pT) - constfit->Eval(pT)));
   max = std::max(min, TMath::Abs(NSC_ratio->Eval(pT) - constfit->Eval(pT)));
+  if (print){
+    cout << "Max pT " << pT << " and JER " << JER->GetBinContent(JER->FindBin(pT));
+    if(isMin) cout << " min " << min << endl;
+    else      cout << " max " << max << endl;
+  }
 }
+if (debug) cout << endl;
 if (isMin) return min;
 else return max;
 }
