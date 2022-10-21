@@ -6,7 +6,7 @@ import time
 sys.path.append(os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/")
 from utils import *
 
-def main_program(path="", list_path="", out_path="", year="", study="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
+def main_program(path="", list_path="", out_path="", year="", study="", binning="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
   list_path_=list_path
   out_path_=out_path
@@ -74,7 +74,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", JECVersi
             logfilename = "log.txt"
             f = open(logfilename,'w')
             cmd = './Analysis.x %s >> log.txt &' % (run_list)
-            command = [outdir+"Analysis.x", run_list, outdir, year, study]
+            command = [outdir+"Analysis.x", run_list, outdir, year, study, binning]
             list_processes.append(command)
             list_logfiles.append(outdir+"log.txt")
             f.close()
@@ -89,11 +89,13 @@ inputdir = "DiJetJERC_DiJetHLT"
 # year = "2018"
 # year = "UL16preVFP_split"
 # year = "UL16preVFP"
-year = "UL16postVFP"
-# year = "UL17"
-# year = "UL18"
-
+#year = "UL16postVFP"
+#year = "UL17"
+year = "UL18"
 # year = "Legacy"
+if len(sys.argv)<2:
+    sys.exit("I need at least a year")
+year = sys.argv[1]
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/MC/"
 
@@ -118,13 +120,18 @@ JECVersions["UL18"] = ["Summer20UL18_V2"]
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
-JetLabels = ["AK4Puppi", "AK8Puppi"]
-# JetLabels = ["AK4CHS"]
-# systematics = ["", "alpha","PU", "JEC", "JER"]
+# JetLabels = ["AK4Puppi", "AK8Puppi"]
+JetLabels = ["AK4Puppi"]
+# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
+# systematics = ["alpha","PU", "JEC", "Prefire"]
+# systematics = ["", "alpha","PU", "JEC", "Prefire"]
 # systematics = ["", "alpha", "JEC", "JER"]
 # systematics = ["PU", "JEC"]
 # systematics = ["PU"]
 # systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["", "PU", "JEC"]
+# systematics = ["Prefire", "PU", "JEC"]
+# systematics = ["Prefire"]
 systematics = [""]
 
 list_processes = []
@@ -142,12 +149,17 @@ studies.append("eta_common")
 
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
-    out_path    = common_path+"wide_eta_bin/file/"+study+"/"+year+"/"
+    out = study
+    binning = ''
+    if len(sys.argv) == 3:
+        binning = sys.argv[2]
+        out += '_'+binning
+    out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
     path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/"+study+"/"
 
-    main_program(path, list_path, out_path, year, study, JECVersions[year], JetLabels, systematics, samples[year])
+    main_program(path, list_path, out_path, year, study, binning, JECVersions[year], JetLabels, systematics, samples[year])
 
 
 for i in list_processes:
@@ -158,4 +170,4 @@ print len(list_processes)
 # print ""
 # print "LOG - ", list_logfiles
 
-parallelise(list_processes, 2, list_logfiles)
+parallelise(list_processes, 8, list_logfiles)

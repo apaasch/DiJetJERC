@@ -34,7 +34,7 @@ class MySelector : public TSelector {
 public:
 
   TString outdir;
-  std::string year, study;
+  std::string year, study, binning;
   bool isAK8;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -78,7 +78,7 @@ public:
   TBranch *b_rho;
 
 
-  MySelector(TString name, std::string year_, std::string study_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), isAK8(isAK8_) { }
+  MySelector(TString name, std::string year_, std::string study_, std::string binning_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), binning(binning_), isAK8(isAK8_) { }
   virtual ~MySelector() { }
   virtual int   Version() const { return 2; }
   virtual void    Begin(TTree *tree);

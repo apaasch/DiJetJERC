@@ -162,13 +162,13 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   std::string name_pt_bin = triggerName+"_central_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
-  if (year.find("UL18") != std::string::npos) name_pt_bin += "_default"; // DELETE
+  if(binning != "") name_pt_bin += "_"+binning;
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
   name_pt_bin = triggerName+"_forward_";
   if (isAK8) name_pt_bin += "AK8_";
   name_pt_bin += year+"_ptbins";
-  if (year.find("UL18") != std::string::npos) name_pt_bin += "_default"; // DELETE
+  if(binning != "") name_pt_bin += "_"+binning;
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
   Pt_bins_Central.push_back(3000);
