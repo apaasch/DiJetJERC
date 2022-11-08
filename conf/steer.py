@@ -8,16 +8,23 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
     list_processes = []
     nProcess = 48
     time_ = 1
+    dirs_sys = ["", "up", "down"]
+    dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
+    print(dirs_PS)
     for newJECVersion in JECVersions_Data:
         for newJetLabel in JetLabels:
             for sys in systematics:
-                for dir in ["", "up", "down"]:
+                dirs = dirs_PS if "PS" in sys else dirs_sys
+                for dir in dirs:
                     if sys == "" and dir != "":
                         continue
                     if sys == "JER" and dir != "":
                         continue
                     if sys == "JER" and dir == "":
                         dir = "nominal"
+                    if 'PS' in sys:
+                        if 'PS'!=sys and not dir in sys: # Is sys='PS' run all variations
+                            continue
                     path = original_dir+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
                     for sample in sorted(os.listdir(path)):
                         if not ".xml" in sample:
@@ -206,8 +213,8 @@ Data_process.append("DATA_RunD_UL18")
 # systematics = ["", "PU", "JEC", "JER"]
 
 # year = "2018"
-# year = "UL16preVFP"
-# year = "UL16postVFP"
+#year = "UL16preVFP"
+#year = "UL16postVFP"
 # year = "UL17"
 year = "UL18"
 
@@ -217,7 +224,7 @@ studies = []
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
 # studies.append("eta_JER")
-studies.append("eta_common_test")
+studies.append("eta_common")
 # studies.append("eta_common")
 # studies.append("eta_L2R")
 # studies.append("eta_narrow")
@@ -234,8 +241,8 @@ original_dir_ = os.getcwd()
 
 # QCDSamples = ["QCDPt","QCDHT", "DATA"]
 QCDSamples = ["QCDHT", "DATA"]
-# QCDSamples = ["DATA"]
-# QCDSamples = ["QCDHT"]
+#QCDSamples = ["DATA"]
+#QCDSamples = ["QCDHT"]
 processes = list(filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process))
 others = list(set(QCD_process+Data_process)-set(processes))
 
@@ -261,10 +268,11 @@ JetLabels = ["AK4Puppi"]
 # JetLabels = ["AK8Puppi", "AK4Puppi"]
 # JetLabels = [ "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
-# systematics = ["", "PU", "JEC"]
-# systematics = ["PU", "JEC"]
-# systematics = ["PU"]
-systematics = [""]
+# systematics = ["", "PU", "JEC", "Prefire"]
+# systematics = ["PU", "JEC", "Prefire", "PS"]
+#systematics = ["PU", "JEC"]
+systematics = ["PS"]
+# systematics = [""]
 
 print(year,studies, QCDSamples, JECVersions_Data[year], JetLabels, systematics)
 

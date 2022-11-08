@@ -229,13 +229,28 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 #     changes.append(["<!ENTITY", "PILEUP_DIRECTORY ", "MyMCPileupHistogram" , "MyMCPileupHistogram_"+process])
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
 
+                dirs_sys = [up", "down"]
+                dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
                 for sys in systematics:
                     if sys == "":
                         continue
-                    for dir in ["up", "down"]:
+                    if 'PS' in sys:
+                        if "PS" == sys:
+                            for dir in [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]:
+                                changes.append(["<!ENTITY", "PS_WEIGHT", '"nominal"', '"'+dir+'"'])
+                        else:
+                            dir = sys.replace('PS_', '')
+                            changes.append(["<!ENTITY", "PS_WEIGHT", '"nominal"', '"'+dir+'"'])
+                    else:
+                        dummy = 0
+
+                    dirs = dirs_PS if "PS" in sys else dirs_sys
+                    for dir in dirs:
                         if "JER" in sys:
                             dir = "nominal"
                         add_path_sys = sys+"/"+dir+"/"
+                        if 'PS' in sys:
+                            add_path_sys = 'PS/'+dir
                         if not os.path.exists(path+add_path_sys):
                             os.makedirs(path+add_path_sys)
                         newfilename = original_file[:len(original_file)-4]+"_"+process+"_"+sys+dir+".xml"
@@ -252,4 +267,6 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                             changes.append(["<!ENTITY", "jer_closuretest", '"false"', '"true"'])
                         elif "PU" in sys:
                             changes.append(["<!ENTITY", "SYSTYPE_PU", '"central"', '"'+dir+'"'])
+                        elif "Prefire" in sys:
+                            changes.append(["<!ENTITY", "PREFIRE_WEIGHT", '"nominal"', '"'+dir+'"'])
                         change_lines(path+add_path_sys, newfilename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])

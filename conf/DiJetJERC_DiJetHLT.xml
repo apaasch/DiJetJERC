@@ -31,6 +31,12 @@
 <!ENTITY APPLY_PUid_3rdjet    "true">
 <!ENTITY APPLY_L1SEED         "false"> <!-- For L1Seed studies in 2017 data -->
 
+<!-- Prefire -->
+<!ENTITY PREFIRE_WEIGHT  "nominal">
+
+<!-- Parton Shower Weights -->
+<!ENTITY PS_WEIGHTS  "central"> <!-- central, {ISR,FSR} {up,down} {sqrt2,2,4} -->
+
 <!-- MC PuReweighting -->
 <!ENTITY DO_PU_REWEIGHTING          "true">     <!-- true, false -->
 <!ENTITY SYSTYPE_PU                 "central">  <!-- central, up, down -->
@@ -93,20 +99,19 @@
 <!ENTITY DATA_RunE_UL16preVFP        SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL16preVFP/JetHT_Run2016E-HIPM_UL2016_MiniAODv2-v2.xml">
 <!ENTITY DATA_RunF_UL16preVFP        SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL16preVFP/JetHT_Run2016F-HIPM_UL2016_MiniAODv2-v2.xml">
 
-<!ENTITY DATA_RunF_UL16postVFP       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL16postVFP/JetHT_2016F_v1.xml">
-<!ENTITY DATA_RunG_UL16postVFP       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL16postVFP/JetHT_2016G_v1.xml">
-<!ENTITY DATA_RunH_UL16postVFP       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL16postVFP/JetHT_2016H_v1.xml">
+<!ENTITY DATA_RunF_UL16postVFP       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL16postVFP/JetHT_Run2016F-UL2016_MiniAODv2-v2.xml">
+<!ENTITY DATA_RunG_UL16postVFP       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL16postVFP/JetHT_Run2016G-UL2016_MiniAODv2-v2.xml">
+<!ENTITY DATA_RunH_UL16postVFP       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL16postVFP/JetHT_Run2016H-UL2016_MiniAODv2-v2.xml">
 
+<!ENTITY DATA_RunB_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL17/JetHT_Run2017B-UL2017_MiniAODv2-v1.xml">
+<!ENTITY DATA_RunC_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL17/JetHT_Run2017C-UL2017_MiniAODv2-v1.xml">
+<!ENTITY DATA_RunD_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL17/JetHT_Run2017D-UL2017_MiniAODv2-v1.xml">
+<!ENTITY DATA_RunE_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL17/JetHT_Run2017E-UL2017_MiniAODv2-v1.xml">
+<!ENTITY DATA_RunF_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL17/JetHT_Run2017F-UL2017_MiniAODv2-v1.xml">
 
-<!ENTITY DATA_RunB_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL17/JetHT_2017B_v1.xml">
-<!ENTITY DATA_RunC_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL17/JetHT_2017C_v1.xml">
-<!ENTITY DATA_RunD_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL17/JetHT_2017D_v1.xml">
-<!ENTITY DATA_RunE_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL17/JetHT_2017E_v1.xml">
-<!ENTITY DATA_RunF_UL17			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/UL17/JetHT_2017F_v1.xml">
-
-<!ENTITY DATA_RunA_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018A-UL2018_MiniAODv2-v1.xml">
-<!ENTITY DATA_RunB_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018B-UL2018_MiniAODv2-v1.xml">
-<!ENTITY DATA_RunC_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018C-UL2018_MiniAODv2-v1.xml">
+<!ENTITY DATA_RunA_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018A-UL2018_MiniAODv2_GT36-v1.xml">
+<!ENTITY DATA_RunB_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018B-UL2018_MiniAODv2_GT36-v1.xml">
+<!ENTITY DATA_RunC_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018C-UL2018_MiniAODv2_GT36-v1.xml">
 <!ENTITY DATA_RunD_UL18			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/RunII_106X_v2/data/UL18/JetHT_Run2018D-UL2018_MiniAODv2-v2.xml">
 
 
@@ -246,6 +251,9 @@
       <Item Name="Apply_Lumiweights"              Value="&APPLY_LUMIWEIGHTS;"/>
       <Item Name="Apply_Unflattening"             Value="&APPLY_UNFLATTENING;"/>
       <Item Name="EtaPhi_cut"                     Value="&APPLY_EtaPhi_cut;"/>
+      <Item Name="prefire_variation"              Value="&PREFIRE_WEIGHT;" />
+      <Item Name="ps_variation"                   Value="&PS_WEIGHT;" />
+
       <!-- <Item Name="EtaPhi_HCAL"                    Value="&APPLY_EtaPhi_HCAL;"/> -->
       <!-- <Item Name="Cut_dir"                        Value="&Cut_PATH;"/> -->
 
