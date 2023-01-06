@@ -10,6 +10,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
   isRunII = year=="Legacy"
   list_path_=list_path
   out_path_=out_path
+  dirs_sys = ["", "up", "down"]
   for newJECVersion in JECVersions:
     for newJetLabel in JetLabels:
       for sys in set(systematics):
@@ -17,7 +18,8 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
           alpha_cut = 10
         else:
           alpha_cut = 15
-        for dir in ["", "up", "down"]:
+        dirs = dirs_PS if "PS" in sys else dirs_sys
+        for dir in dirs:
           if sys == "JER" and dir != "":
             continue
           if sys == "JER" and dir == "":
@@ -122,7 +124,7 @@ JECVersions["Legacy"] = ["Summer19Legacy"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels = ["AK4Puppi", "AK8Puppi"]
 JetLabels = ["AK4Puppi"]
-# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
+# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire", "PS"]
 # systematics = ["alpha","PU", "JEC", "Prefire"]
 # systematics = ["", "alpha","PU", "JEC", "Prefire"]
 # systematics = ["", "alpha", "JEC", "JER"]
@@ -147,13 +149,20 @@ studies.append("eta_common")
 # studies.append("eta_common")
 # studies.append("eta_simple")
 
+global dirs_PS
+dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2']]
+if 'PS' in systematics:
+    print(dirs_PS)
+
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
     out = study
     binning = ''
-    if len(sys.argv) == 3:
+    if len(sys.argv) >= 3:
         binning = sys.argv[2]
         out += '_'+binning
+    if len(sys.argv) >= 4:
+        out += '_'+sys.argv[3]
     out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
@@ -170,4 +179,4 @@ print len(list_processes)
 # print ""
 # print "LOG - ", list_logfiles
 
-parallelise(list_processes, 8, list_logfiles)
+parallelise(list_processes, 4, list_logfiles)
