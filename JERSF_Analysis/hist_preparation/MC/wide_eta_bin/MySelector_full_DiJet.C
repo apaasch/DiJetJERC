@@ -24,6 +24,7 @@
 //
 
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include <vector>
 #include <TH2.h>
@@ -41,7 +42,6 @@ bool JetInRange(double jet_eta, double min, double max) {
 bool JetInEtaBin(double jet_eta, std::vector<double> bins, int bin) {
   return JetInRange(jet_eta, bins[bin], bins[bin+1]);
 }
-
 
 #define FILL_HISTOS(region,method)                                                                      \
 if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
@@ -149,14 +149,14 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
         TString name_MCTruth2D  = "mctruth2D";        name_MCTruth2D  += extraText; name_MCTruth2D  += "_eta"; name_MCTruth2D += m+1; name_MCTruth2D  += "_pt"; name_MCTruth2D  += p+1; name_MCTruth2D  += "_alpha"; name_MCTruth2D += r+1;
 
         TH1F *h1 = new TH1F(name,     name,     160,-0.8, 0.8);   h1->SetXTitle("Asymmetry"); h1->SetYTitle("a.u.");  h1->Sumw2();  temp1.push_back(h1);
-        TH1F *h2 = new TH1F(name_pt,  name_pt,  100,  0,  3000);  h2->SetXTitle("Pt[GeV]");   h2->SetYTitle("a.u.");  h2->Sumw2();  temp1pt.push_back(h2);
+        TH1F *h2 = new TH1F(name_pt,  name_pt,  100,  0,  7000);  h2->SetXTitle("Pt[GeV]");   h2->SetYTitle("a.u.");  h2->Sumw2();  temp1pt.push_back(h2);
         TH1F *h3 = new TH1F(name_rho, name_rho, 100,  0,  100);   h3->SetXTitle("rho");       h3->SetYTitle("a.u.");  h3->Sumw2();  temp1rho.push_back(h3);
-        TH1F *h4 = new TH1F(name_pt3, name_pt3, 100,  0,  3000);  h4->SetXTitle("Pt[GeV]");   h4->SetYTitle("a.u.");  h4->Sumw2();  temp1pt3.push_back(h4);
-        TH1F *h7 = new TH1F(name_ptf, name_ptf, 3000, 0,  3000);  h7->SetXTitle("Pt[GeV]");   h7->SetYTitle("a.u.");  h7->Sumw2();  temp1ptf.push_back(h7);
+        TH1F *h4 = new TH1F(name_pt3, name_pt3, 100,  0,  7000);  h4->SetXTitle("Pt[GeV]");   h4->SetYTitle("a.u.");  h4->Sumw2();  temp1pt3.push_back(h4);
+        TH1F *h7 = new TH1F(name_ptf, name_ptf, 7000, 0,  7000);  h7->SetXTitle("Pt[GeV]");   h7->SetYTitle("a.u.");  h7->Sumw2();  temp1ptf.push_back(h7);
         TH1F *gen_h1 = new TH1F(gen_name,     gen_name,     160,-0.8, 0.8);   gen_h1->SetXTitle("Asymmetry"); gen_h1->SetYTitle("a.u.");  gen_h1->Sumw2();  gen_temp1.push_back(gen_h1);
-        TH1F *gen_h2 = new TH1F(gen_name_pt,  gen_name_pt,  100,  0,  3000);  gen_h2->SetXTitle("Pt[GeV]");   gen_h2->SetYTitle("a.u.");  gen_h2->Sumw2();  gen_temp1pt.push_back(gen_h2);
+        TH1F *gen_h2 = new TH1F(gen_name_pt,  gen_name_pt,  100,  0,  7000);  gen_h2->SetXTitle("Pt[GeV]");   gen_h2->SetYTitle("a.u.");  gen_h2->Sumw2();  gen_temp1pt.push_back(gen_h2);
         TH1F *gen_h3 = new TH1F(gen_name_rho, gen_name_rho, 100,  0,  100);   gen_h3->SetXTitle("rho");       gen_h3->SetYTitle("a.u.");  gen_h3->Sumw2();  gen_temp1rho.push_back(gen_h3);
-        TH1F *gen_h4 = new TH1F(gen_name_pt3, gen_name_pt3, 100,  0,  3000);  gen_h4->SetXTitle("Pt[GeV]");   gen_h4->SetYTitle("a.u.");  gen_h4->Sumw2();  gen_temp1pt3.push_back(gen_h4);
+        TH1F *gen_h4 = new TH1F(gen_name_pt3, gen_name_pt3, 100,  0,  7000);  gen_h4->SetXTitle("Pt[GeV]");   gen_h4->SetYTitle("a.u.");  gen_h4->Sumw2();  gen_temp1pt3.push_back(gen_h4);
         TH1F *h1_MCTruth    = new TH1F(name_MCTruth,    name_MCTruth,   200, 0, 2.0);               h1_MCTruth->SetXTitle("Response");      h1_MCTruth->SetYTitle("a.u.");          h1_MCTruth->Sumw2();    temp1_MCTruth.push_back(h1_MCTruth);
         TH2F *h2_MCTruth2D  = new TH2F(name_MCTruth2D,  name_MCTruth2D, 200, 0, 2.0, 200, 0, 2.0); h2_MCTruth2D->SetXTitle("Response 1");  h2_MCTruth2D->SetXTitle("Response 2");  h2_MCTruth2D->Sumw2();  temp1_MCTruth2D.push_back(h2_MCTruth2D);
       }
@@ -168,6 +168,27 @@ void MakeHistograms(std::vector< std::vector< std::vector< TH1F* > > > &asymmetr
     gen_asymmetries.push_back(gen_temp2); gen_asymmetries_pt.push_back(gen_temp2pt); gen_asymmetries_rho.push_back(gen_temp2rho); gen_asymmetries_pt3.push_back(gen_temp2pt3);
     MC_Truth_asymmetries.push_back(temp2_MCTruth); MC_Truth_asymmetries_2D.push_back(temp2_MCTruth2D);
     alpha_spectrum.push_back(alpha_temp2); alpha2D.push_back(alpha2D_temp2);
+  }
+}
+
+void MakeEtaInclusiveHistograms(
+  std::vector< std::vector< TH1F* > > &rho,
+  std::vector< std::vector< TH1F* > > &pt,
+  std::vector< std::vector< TH1F* > > &nevents,
+  TString text, int ptBins, int AlphaBins
+) {
+  for( int p = 0; p < ptBins; p++ ) {
+    std::vector< TH1F* > temp_rho, temp_pt, temp_ne;
+    for( int r = 0; r < AlphaBins; r++ ) {
+      TString name_pt  = "ptave";   name_pt  += text; name_pt  += "_pt"; name_pt  += p+1; name_pt  += "_alpha"; name_pt  += r+1;
+      TString name_rho = "rho";     name_rho += text; name_rho += "_pt"; name_rho += p+1; name_rho += "_alpha"; name_rho += r+1;
+      TString name_ne  = "nevents"; name_ne  += text; name_ne  += "_pt"; name_ne  += p+1; name_ne  += "_alpha"; name_ne  += r+1;
+
+      TH1F *h1 = new TH1F(name_pt,  name_pt,  7000, 0, 7000);  h1->SetXTitle("Pt[GeV]");   h1->SetYTitle("Events");  h1->Sumw2();  temp_pt.push_back(h1);
+      TH1F *h2 = new TH1F(name_rho, name_rho,   80, 0,   80);  h2->SetXTitle("rho");       h2->SetYTitle("Events");  h2->Sumw2();  temp_rho.push_back(h2);
+      TH1F *h3 = new TH1F(name_ne,  name_ne,     1, 0,    1);  h3->SetXTitle("");          h3->SetYTitle("Events");  h3->Sumw2();  temp_ne.push_back(h3);
+    }
+    rho.push_back(temp_rho); pt.push_back(temp_pt); nevents.push_back(temp_ne);
   }
 }
 
@@ -230,13 +251,19 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   if(binning != "") name_pt_bin += "_"+binning;
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
-  Pt_bins_Central.push_back(3000);
-  Pt_bins_HF.push_back(3000);
+  Pt_bins_Central.push_back(7000);
+  Pt_bins_HF.push_back(7000);
 
   PtBins=(PtBins_Central>PtBins_HF)?PtBins_Central:PtBins_HF;
 
   AlphaBins = 6;
   for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30}) Alpha_bins.push_back(alpha);
+
+  for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.}) Alpha_bins_Inc.push_back(alpha);
+  AlphaBinsInc = Alpha_bins_Inc.size();
+
+  Alpha_bins = Alpha_bins_Inc;
+  AlphaBins = AlphaBinsInc;
 
   h_JetAvePt_SM = new TH1F("JetAvePt" ,   "Inclusive Jet Ave Pt",   50, 0., 2000);  h_JetAvePt_SM->SetXTitle("Pt_{ave}[GeV]");  h_JetAvePt_SM->SetYTitle("a.u."); h_JetAvePt_SM->Sumw2();
   h_Jet1Pt_SM   = new TH1F("Jet1Pt",      "Inclusive Jet 1 Pt",     50, 0., 2000);  h_Jet1Pt_SM->SetXTitle("Pt_1[GeV]");        h_Jet1Pt_SM->SetYTitle("a.u.");   h_Jet1Pt_SM->Sumw2();
@@ -326,7 +353,13 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   //   gen_asy_dR_probe_FE.push_back(gen_temp1_probe);
   // }
 
+  MakeEtaInclusiveHistograms(inclusive_rho_Central, inclusive_ptave_Central, inclusive_nevents_Central, "_central", PtBins, AlphaBinsInc);
+  MakeEtaInclusiveHistograms(inclusive_rho_Barrel, inclusive_ptave_Barrel, inclusive_nevents_Barrel, "_barrel", PtBins, AlphaBinsInc);
+  MakeEtaInclusiveHistograms(inclusive_rho_Forward, inclusive_ptave_Forward, inclusive_nevents_Forward, "_forward", PtBins, AlphaBinsInc);
+  MakeEtaInclusiveHistograms(inclusive_rho_HF, inclusive_ptave_HF, inclusive_nevents_HF, "_HF", PtBins, AlphaBinsInc);
+
 }
+
 
 bool MySelector::Process(Long64_t entry) {
 
@@ -384,6 +417,39 @@ bool MySelector::Process(Long64_t entry) {
     dofill=true;
     for ( int k = 0 ; k < PtBins_Central ; k++ ) {
       if ((pt_ave > Pt_bins_Central[k]) && (pt_ave < Pt_bins_Central[k+1]) ) {
+
+        // if (!is_JER_SM){ // First only FE
+          // if( JetInRange(barreljet_eta, 0, s_eta_barr) || JetInRange(probejet_eta,  0, s_eta_barr) ) {
+            // for(int a = 0; a<AlphaBinsInc; a++){
+              // if ( alpha < Alpha_bins_Inc[a] ){
+                // inclusive_rho_Central[k][a]->Fill(rho, weight);
+                // inclusive_ptave_Central[k][a]->Fill(pt_ave, weight);
+                // inclusive_nevents_Central[k][a]->Fill(0.5, weight);
+              // }
+            // }
+          // }
+        // }
+
+        if(pt_ave<66) std::cout << std::setw(6) << alpha << std::setw(20) << pt_ave << std::endl;
+        for(int a = 0; a<AlphaBinsInc; a++){
+          if ( alpha < Alpha_bins_Inc[a] ){
+            inclusive_rho_Central[k][a]->Fill(rho, weight);
+            inclusive_ptave_Central[k][a]->Fill(pt_ave, weight);
+            inclusive_nevents_Central[k][a]->Fill(0.5, weight);
+
+            if(TMath::Abs(probejet_eta)<1.305){
+              inclusive_rho_Barrel[k][a]->Fill(rho, weight);
+              inclusive_ptave_Barrel[k][a]->Fill(pt_ave, weight);
+              inclusive_nevents_Barrel[k][a]->Fill(0.5, weight);
+            }
+            else{
+              inclusive_rho_Forward[k][a]->Fill(rho, weight);
+              inclusive_ptave_Forward[k][a]->Fill(pt_ave, weight);
+              inclusive_nevents_Forward[k][a]->Fill(0.5, weight);
+            }
+          }
+        }
+
         for ( int r = 0 ; r < EtaBins_SM ; r++ ) {
           if (!is_JER_SM) continue;
           cond1 = (JetInEtaBin(barreljet_eta, Eta_bins_SM, r) && JetInEtaBin(probejet_eta, Eta_bins_SM, r));
@@ -412,6 +478,19 @@ bool MySelector::Process(Long64_t entry) {
     dofill=false;
     for ( int k = 0 ; k < PtBins_HF ; k++ ) {
       if ((pt_ave > Pt_bins_HF[k]) && (pt_ave < Pt_bins_HF[k+1]) ) {
+
+        if (!is_JER_SM){ // First only FE
+          if(JetInRange(barreljet_eta, 0, s_eta_barr) || JetInRange(probejet_eta,  0, s_eta_barr)){
+            for(int a = 0; a<AlphaBinsInc; a++){
+              if ( alpha < Alpha_bins_Inc[a] ){
+                inclusive_rho_HF[k][a]->Fill(rho, weight);
+                inclusive_ptave_HF[k][a]->Fill(pt_ave, weight);
+                inclusive_nevents_HF[k][a]->Fill(0.5, weight);
+              }
+            }
+          }
+        }
+
         for ( int r = 0 ; r < EtaBins_SM_control; r++ ) {
           if (!is_JER_SM) continue;
           cond1 = (JetInEtaBin(barreljet_eta, Eta_bins_SM_control, r) && JetInEtaBin(probejet_eta, Eta_bins_SM_control, r));
@@ -518,7 +597,30 @@ void MySelector::SlaveTerminate() {
   TFile *f1 = new TFile(outdir+"histograms_mc_incl_full_control.root","RECREATE");
   TFile *f2 = new TFile(outdir+"histograms_mc_incl_full_2D.root","RECREATE");
   TFile *f3 = new TFile(outdir+"histograms_mc_incl_full_2D_dR.root","RECREATE");
+  TFile *f4 = new TFile(outdir+"histograms_mc_incl_full_AlphaCuts.root","RECREATE");
   TFile *f_alpha = new TFile(outdir+"alpha_spectrum.root","RECREATE"); ;
+
+  f4->cd();
+  for( int r = 0; r < AlphaBinsInc; r++ ) {
+    for( int p = 0; p < PtBins_Central; p++ ) {
+      inclusive_rho_Central.at(p).at(r)->Write();
+      inclusive_ptave_Central.at(p).at(r)->Write();
+      inclusive_nevents_Central.at(p).at(r)->Write();
+
+      inclusive_rho_Barrel.at(p).at(r)->Write();
+      inclusive_ptave_Barrel.at(p).at(r)->Write();
+      inclusive_nevents_Barrel.at(p).at(r)->Write();
+
+      inclusive_rho_Forward.at(p).at(r)->Write();
+      inclusive_ptave_Forward.at(p).at(r)->Write();
+      inclusive_nevents_Forward.at(p).at(r)->Write();
+    }
+    for( int p = 0; p < PtBins_HF; p++ ) {
+      inclusive_rho_HF.at(p).at(r)->Write();
+      inclusive_ptave_HF.at(p).at(r)->Write();
+      inclusive_nevents_HF.at(p).at(r)->Write();
+    }
+  }
 
   for( int r = 0; r < AlphaBins; r++ ) {
     for( int p = 0; p < PtBins_Central; p++ ) {
