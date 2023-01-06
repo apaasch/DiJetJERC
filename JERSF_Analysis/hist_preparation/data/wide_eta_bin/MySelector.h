@@ -56,7 +56,13 @@ public:
   float jet3_pt;
   float asymmetry;
   float rho;
+  int HLT;
+  int L1min;
+  int L1max;
   float alpha_;
+  float eventID;
+  int run;
+  int lumi_sec;
 
   TBranch *b_weight;
   TBranch *b_weight_pu;
@@ -76,6 +82,13 @@ public:
   TBranch *b_asymmetry;
   TBranch *b_alpha;
   TBranch *b_rho;
+  TBranch *b_prescale;
+  TBranch *b_L1min;
+  TBranch *b_L1max;
+
+  TBranch *b_eventID;
+  TBranch *b_run;
+  TBranch *b_lumi_sec;
 
 
   MySelector(TString name, std::string year_, std::string study_, std::string binning_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), binning(binning_), isAK8(isAK8_) { }
@@ -104,7 +117,7 @@ public:
   int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE;
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
   int PtBins_Central, PtBins_HF, PtBins;
-  int AlphaBins;
+  int AlphaBins, AlphaBinsInc;
 
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
@@ -113,7 +126,7 @@ public:
   std::vector<double> Eta_bins_FE_reference;
   std::vector<double> Eta_bins_FE_control;
   std::vector<double> Eta_bins_FE;
-  std::vector<double> Alpha_bins;
+  std::vector<double> Alpha_bins, Alpha_bins_Inc;
 
 
 
@@ -128,6 +141,13 @@ public:
 
   std::vector< std::vector< TH1F* > > alpha_spectrum_SM, alpha_spectrum_SM_control, alpha_spectrum_FE_reference, alpha_spectrum_FE_control, alpha_spectrum_FE;
 
+  std::vector< std::vector< TH1F* > > inclusive_rho_Central, inclusive_ptave_Central, inclusive_nevents_Central; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_HF, inclusive_ptave_HF, inclusive_nevents_HF; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_Central_HLT, inclusive_ptave_Central_HLT, inclusive_nevents_Central_HLT; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_HF_HLT, inclusive_ptave_HF_HLT, inclusive_nevents_HF_HLT; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_Central_L1HLT, inclusive_ptave_Central_L1HLT, inclusive_nevents_Central_L1HLT; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_HF_L1HLT, inclusive_ptave_HF_L1HLT, inclusive_nevents_HF_L1HLT; // alpha, pt
+
   TH1F *h_PU;
   TH1F *h_alpha_raw;
   TH1F *h_alpha_sel;
@@ -139,6 +159,8 @@ public:
   TH1F *h_Jet1Pt_FE;
   TH1F *h_Jet2Pt_FE;
   TH1F *h_Jet3Pt_FE;
+
+  TH2F *central_PS_pt, *central_PS_rho;
 };
 
 #endif
@@ -175,6 +197,13 @@ void MySelector::Init(TTree *tree){
   fChain->SetBranchAddress("asymmetry", &asymmetry, &b_asymmetry);
   fChain->SetBranchAddress("alpha", &alpha_, &b_alpha);
   fChain->SetBranchAddress("rho", &rho, &b_rho);
+  fChain->SetBranchAddress("prescale", &HLT, &b_prescale);
+  fChain->SetBranchAddress("prescale_L1min", &L1min, &b_L1min);
+  fChain->SetBranchAddress("prescale_L1max", &L1max, &b_L1max);
+
+  fChain->SetBranchAddress("lumi_sec", &lumi_sec, &b_lumi_sec);
+  fChain->SetBranchAddress("eventID", &eventID, &b_eventID);
+  fChain->SetBranchAddress("run", &run, &b_run);
 }
 
 bool MySelector::Notify(){
