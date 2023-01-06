@@ -50,7 +50,7 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     else:
         os.makedirs(outdir)
     programm ="mainRun"
-    programm ="mainRun_alpha"
+    # programm ="mainRun_alpha"
     # if "AK8" in outdir: programm += "AK8"
     cmd = "cp %s.cxx %s" % (programm, outdir)
     a = os.system(cmd)
