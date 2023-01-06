@@ -10,6 +10,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
   isRunII = year=="Legacy"
   list_path_=list_path
   out_path_=out_path
+  dirs_sys = ["", "up", "down"]
   for newJECVersion in JECVersions:
     for newJetLabel in JetLabels:
       for sys in set(systematics):
@@ -17,7 +18,8 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
           alpha_cut = 10
         else:
           alpha_cut = 15
-        for dir in ["", "up", "down"]:
+        dirs = dirs_PS if "PS" in sys else dirs_sys
+        for dir in dirs:
           if sys == "JER" and dir != "":
             continue
           if sys == "JER" and dir == "":
@@ -104,14 +106,15 @@ samples = {}
 # samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 # samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL16preVFP_split"] = ["BCD", "EF", "BCDEF"]
-# samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
-samples["UL16preVFP"] = ["BCDEF"]
-# samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
-samples["UL16postVFP"] = ["FGH"]
-# samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
-samples["UL17"] = ["BCDEF"]
+samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
+# samples["UL16preVFP"] = ["BCDEF"]
+# samples["UL16preVFP"] = ["C"]
+samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
+# samples["UL16postVFP"] = ["FGH"]
+samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+# samples["UL17"] = ["BCDEF"]
 # samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
-# samples["UL18"] = ["A", "B", "C", "ABC"] # for Puppi studies
+# samples["UL18"] = ["ABCD", "A", "B", "C", "D"]
 samples["UL18"] = ["ABCD"]
 samples["Legacy"] = ["II"]
 
@@ -128,7 +131,7 @@ JECVersions["Legacy"] = ["Summer19Legacy"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels = ["AK4Puppi_v11"]
 JetLabels = ["AK4Puppi"]
-# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
+# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire", "PS"]
 # systematics = ["", "alpha","PU", "JEC", "Prefire"]
 # systematics = ["", "alpha","PU", "JEC"]
 # systematics = ["PU", "JEC", "Prefire"]
@@ -149,13 +152,21 @@ studies = []
 studies.append("eta_common")
 # studies.append("eta_simple")
 
+global dirs_PS
+dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['4', '2']]
+if 'PS' in systematics:
+    print(dirs_PS)
+
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
     out = study
     binning = ''
-    if len(sys.argv) == 3:
+    if len(sys.argv) >= 3:
         binning = sys.argv[2]
         out += '_'+binning
+    if len(sys.argv) >= 4:
+        out += '_'+sys.argv[3]
+    print out
     out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
@@ -169,4 +180,4 @@ for i in list_processes:
 
 print len(list_processes)
 
-parallelise(list_processes, 15, list_logfiles)
+parallelise(list_processes, 10, list_logfiles)
