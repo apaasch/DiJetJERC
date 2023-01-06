@@ -24,15 +24,16 @@
 
 #include <bits/stdc++.h>
 
-bool debug = false;
+bool debug = true;
 bool alpha_new = true;
+bool useRMS = true;
 
 int binHF = 15;
 
 int printEta = 15;
 int printPt = 6;
 
-int sizeHist = 1700;
+int sizeHist = 3000;
 
 TString g_year = "";
 TString g_study = "";
@@ -123,12 +124,13 @@ void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::v
 void Fill_Map3D(std::vector< std::vector < std::vector < TH1F* > > > &Asymmetry, std::vector < TH2F* > &Map, std::vector < double > &eta_bins, std::vector < double > &pt_bins );
 void make_lin_fit(double & slope, double & d_slope, double & offset, double & d_offset, double min_slope, double max_slope, double min_offset, double max_offset, double & chi2);
 void chi2_linear(Int_t& npar, Double_t* grad, Double_t& fval, Double_t* p, Int_t status);
+void chi2_calculation(Double_t& fval, Double_t* p);
+void fitLin( TH1F &hist, double &width, double &error );
 double sumSquare(double a, double b);
 double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1* NSC_ratio, TF1* constfit, bool isMin, bool print=false);
-void fitLin( TH1F &hist, double &width, double &error );
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
+std::vector<double> Confidence(TH1F* hist, double confLevel);
 bool removePointsforFit(bool isFE, int m, int p);
-void chi2_calculation(Double_t& fval, Double_t* p);
 
 TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
 TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, TH1* hist, TString sample, TString method, TString var="nominal");
@@ -330,9 +332,71 @@ void histMeanPt( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry ,
 // ===                                                                                                ===
 // ======================================================================================================
 
+// ======================================================================================================
+// ===                                                                                                ===
+// ======================================================================================================
+
+std::vector<double> Confidence(TH1F* hist, double confLevel)
+{
+  // sigmas = [0.99, 0.98, 0.95, 0.87, 0.68]
+  // conversions = [2.576,2.326,1.960,1.514,0.9945]
+  // for perc, conv in zip(sigmas,conversions):
+  // width = Confidence(hist, confLevel = perc)/(2* conv)
+
+  // 99% confidence is [-2.5sigma,+2.5sigma] so divide by 2*2.576
+  // 98% confidence is [-2.3sigma,+2.3sigma] so divide by 2*2.326
+  // 95% confidence is [-2sigma,+2sigma] so divide by 2*1.960
+  // 87% confidence is [-1.5*sigma,+1.5sigma] so divide by 2*1.514
+  // 68% confidence is [-sigma,+sigma] so divide by 2*0.9945
+
+  double ix = hist->GetXaxis()->FindBin(hist->GetMean());
+  double ixlow = ix;
+  double ixhigh = ix;
+  double nb = hist->GetNbinsX();
+  double ntot = hist->Integral();
+  double nsum = hist->GetBinContent(ix);
+  double width = hist->GetBinWidth(ix);
+  double error = 0;
+  if (ntot==0) return {0,0,0,0};
+  while (nsum < confLevel * ntot){
+    double nlow = ixlow>0?hist->GetBinContent(ixlow-1):0;
+    double nhigh = ixhigh<nb?hist->GetBinContent(ixhigh+1):0;
+    if (nsum+max(nlow,nhigh) < confLevel * ntot){
+      if (nlow>=nhigh && ixlow>0){
+        nsum += nlow;
+        ixlow -=1;
+        width += hist->GetBinWidth(ixlow);
+      }
+      else if (ixhigh<nb){
+        nsum += nhigh;
+        ixhigh+=1;
+        width += hist->GetBinWidth(ixhigh);
+      }
+      else{
+        throw std::runtime_error("BOOM");
+      }
+    }
+    else{
+      if (nlow>nhigh){
+        width += hist->GetBinWidth(ixlow-1) * (confLevel * ntot - nsum) / nlow;
+      }
+      else{
+        width += hist->GetBinWidth(ixhigh+1) * (confLevel * ntot - nsum) / nhigh;
+      }
+      nsum = ntot;
+    }
+  }
+  std::vector<double> results = {width, hist->GetRMSError(), ixlow, ixhigh};
+  return results;
+  // return width;
+}
+
 void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry , std::vector< std::vector< std::vector< double > > > &Widths, std::vector< std::vector< std::vector< double > > > &WidthsError , bool fill_all, double alpha, bool isFE, std::vector< std::vector< std::vector< double > > > &lower_x, std::vector< std::vector< std::vector< double > > > &upper_x, std::vector <double> eta_bins, std::vector <double> alpha_bins) {
+  std::vector<double> asyms;
   double asym;
   double asymerr;
+  std::map<double, double> conversions = { {0.99, 2.576}, {0.985, 2.446}/*TODO*/, {0.98, 2.326}, {0.95, 1.960}, {0.87, 1.514}, {0.68, 0.9945} };
+  // if(isFE && !fill_all) cout << endl << " === NEW ASYMMETRY ===" << endl;
 
   for( unsigned int m = 0; m < Asymmetry.size(); m++ ) {
     std::vector< std::vector< double > > temp2;
@@ -352,15 +416,26 @@ void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetr
               temp_hist->SetBinContent(i,0);
             }
           }
-          temp_hist->ComputeIntegral();
-          Double_t xq[2], yq[2];
-          xq[0] = std::min(alpha, 1.-alpha);
-          xq[1] = std::max(alpha, 1.-alpha);
-          temp_hist->GetQuantiles(2, yq, xq);
-          temp_hist->GetXaxis()->SetRange(temp_hist->FindBin(yq[0]), temp_hist->FindBin(yq[1]));
-          asym = temp_hist->GetRMS();
-          asymerr = temp_hist->GetRMSError();
-          low = temp_hist->GetBinCenter(temp_hist->FindBin(yq[0])); up = temp_hist->GetBinCenter(temp_hist->FindBin(yq[1]));
+
+          if(useRMS){
+            temp_hist->ComputeIntegral();
+            Double_t xq[2], yq[2];
+            xq[0] = std::min(alpha, 1.-alpha);
+            xq[1] = std::max(alpha, 1.-alpha);
+            temp_hist->GetQuantiles(2, yq, xq);
+            temp_hist->GetXaxis()->SetRange(temp_hist->FindBin(yq[0]), temp_hist->FindBin(yq[1]));
+            asym = temp_hist->GetRMS();
+            asymerr = temp_hist->GetRMSError();
+            low = temp_hist->GetBinCenter(temp_hist->FindBin(yq[0])); up = temp_hist->GetBinCenter(temp_hist->FindBin(yq[1]));
+          }
+          else{
+            asyms = Confidence(temp_hist, alpha);
+            asym = asyms[0]/(2*conversions[alpha]);
+            asymerr = asyms[1];
+            low = temp_hist->GetBinCenter(temp_hist->FindBin(asyms[2]));
+            up = temp_hist->GetBinCenter(temp_hist->FindBin(asyms[3]));
+          }
+
         } else { asym = 0.; asymerr = 0.; low = 10.0; up = 10.0;};
 
         if (!fill_all) {
@@ -811,35 +886,57 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
         temp_error = sumSquare(2*Probe*ProbeError, Ref*RefError )/temp;
 
         // Remove ptbins by Hand; How to automate? TODO
-        bool removeByHand = (
-          (m==1&&p==0)|| // 0.3-0.5
-          (m==8&&p==27)|| // 1.9-2.0
-          (m==9&&(p==0||p==1))|| // 2.0-2.2
-          (m==13&&p==17)|| // 2.7-2.9
-          (m==16&&p==12) // 3.1-3.5
-        );
-        // bool removeByHand = false;
-        // if( g_year.Contains("UL18") && g_study.Contains("common_fine_v1") ){
-        //   if(m==6){
-        //     if(p==30) removeByHand = true;
-        //   } else if (m==7){
-        //     if(p==30) removeByHand = true;
-        //   } else if (m==8){
-        //     if(p==30||p==29||p==28) removeByHand = true;
-        //   } else if (m==9){
-        //     if(p==30||p==29||p==28) removeByHand = true;
-        //   } else if (m==10){
-        //     if(p==30||p==29||p==28||p==27) removeByHand = true;
-        //   } else if (m==11){
-        //     if(p==30||p==29||p==28||p==27||p==26||p==25) removeByHand = true;
-        //   } else if (m==12){
-        //     if(p==30||p==29||p==28||p==27||p==26||p==25||p==24) removeByHand = true;
-        //   } else if (m==13){
-        //     if(p==30||p==29||p==28||p==27||p==26||p==25||p==24||p==23||p==22||p==21) removeByHand = true;
-        //   } else if (m==16){
-        //     if(p==13) removeByHand = true;
-        //   }
-        // }
+        // bool removeByHand = (
+        //   (m==1&&p==0)|| // 0.3-0.5
+        //   (m==8&&p==27)|| // 1.9-2.0
+        //   (m==9&&(p==0||p==1))|| // 2.0-2.2
+        //   (m==13&&p==17)|| // 2.7-2.9
+        //   (m==16&&p==12) // 3.1-3.5
+        // );
+        bool removeByHand = false;
+        if( g_year.Contains("UL16post") && g_study.Contains("common_fine_v1") ){
+          if(m==6){
+            int dummy = 0;
+            // if(p==30) removeByHand = true;
+          } else if (m==7){
+            if(p==30||p==29) removeByHand = true;
+          } else if (m==8){
+            if(p==30||p==29||p==28) removeByHand = true;
+          } else if (m==9){
+            if(p==30||p==29||p==28) removeByHand = true;
+          } else if (m==10){
+            if(p==30||p==29||p==28||p==27) removeByHand = true;
+          } else if (m==11){
+            if(p==30||p==29||p==28||p==27||p==26||p==25) removeByHand = true;
+          } else if (m==12){
+            if(p==30||p==29||p==28||p==27||p==26||p==25||p==24) removeByHand = true;
+          } else if (m==13){
+            if(p==30||p==29||p==28||p==27||p==26||p==25||p==24||p==23||p==22||p==21) removeByHand = true;
+          } else if (m==16){
+            if(p==13) removeByHand = true;
+          }
+        }
+        if( g_year.Contains("UL18") && g_study.Contains("common_fine_v1") ){
+          if(m==6){
+            if(p==30) removeByHand = true;
+          } else if (m==7){
+            if(p==30) removeByHand = true;
+          } else if (m==8){
+            if(p==30||p==29||p==28) removeByHand = true;
+          } else if (m==9){
+            if(p==30||p==29||p==28) removeByHand = true;
+          } else if (m==10){
+            if(p==30||p==29||p==28||p==27) removeByHand = true;
+          } else if (m==11){
+            if(p==30||p==29||p==28||p==27||p==26||p==25) removeByHand = true;
+          } else if (m==12){
+            if(p==30||p==29||p==28||p==27||p==26||p==25||p==24) removeByHand = true;
+          } else if (m==13){
+            if(p==30||p==29||p==28||p==27||p==26||p==25||p==24||p==23||p==22||p==21) removeByHand = true;
+          } else if (m==16){
+            if(p==13) removeByHand = true;
+          }
+        }
 
         if(removeByHand){
           // cout << "Remove eta bin " << m+1 << " | " << p+1 << " from JER by Hand" << endl;
