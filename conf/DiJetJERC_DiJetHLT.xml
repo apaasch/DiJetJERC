@@ -35,7 +35,7 @@
 <!ENTITY PREFIRE_WEIGHT  "nominal">
 
 <!-- Parton Shower Weights -->
-<!ENTITY PS_WEIGHTS  "central"> <!-- central, {ISR,FSR} {up,down} {sqrt2,2,4} -->
+<!ENTITY PS_WEIGHT  "central"> <!-- central, {ISR,FSR} {up,down} {sqrt2,2,4} -->
 
 <!-- MC PuReweighting -->
 <!ENTITY DO_PU_REWEIGHTING          "true">     <!-- true, false -->
