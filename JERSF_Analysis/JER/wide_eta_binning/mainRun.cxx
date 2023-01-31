@@ -524,6 +524,10 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
 
     for( unsigned int p = 0; p < h_data.at(m).size(); p++ ){
 
+      if(extenda){
+        if( m<4 && !extendAlpha(p) ) continue;
+      }©
+
       double range = std::max(0.05,removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1));
 
       TString canvName  = h_data.at(m).at(p)->GetTitle();
@@ -1187,6 +1191,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(Trigger.Contains("fine_v2")) name_pt_bin += "_fine_v2";
   if(Trigger.Contains("fine_v3")) name_pt_bin += "_fine_v3";
   if(Trigger.Contains("fine_v4")) name_pt_bin += "_fine_v4";
+  if(Trigger.Contains("fine_v5")) name_pt_bin += "_fine_v5";
   cout << year << " " << name_pt_bin << endl;
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
@@ -1199,11 +1204,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(Trigger.Contains("fine_v2")) name_pt_bin += "_fine_v2";
   if(Trigger.Contains("fine_v3")) name_pt_bin += "_fine_v3";
   if(Trigger.Contains("fine_v4")) name_pt_bin += "_fine_v4";
+  if(Trigger.Contains("fine_v5")) name_pt_bin += "_fine_v5";
   cout << year << " " << name_pt_bin << endl;
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
-  Pt_bins_Central.push_back(3000);
-  Pt_bins_HF.push_back(3000);
+  Pt_bins_Central.push_back(7000);
+  Pt_bins_HF.push_back(7000);
   if(year.find("UL16") != std::string::npos && isAK8 ) Pt_bins_HF = Pt_bins_Central;
 
   if(Trigger.Contains("fine_v2")||Trigger.Contains("fine_v3")||Trigger.Contains("fine_v4")) sizeHist = 2800;
@@ -1236,9 +1242,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // EtaBins_SM       = n_eta_bins - EtaBins_FE - 1;
   // etaShift_FE_control  = eta_bins_edge_FE.size() -1 ;
 
-  std::vector<double> alpha;
-  alpha.push_back(0.05); alpha.push_back(0.1);  alpha.push_back(0.15);
-  alpha.push_back(0.20); alpha.push_back(0.25); alpha.push_back(0.3);
+  std::vector<double> alpha = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+  AlphaBins = alpha.size();
+  cout << "Consider " << AlphaBins << " alpha bins" << endl;
 
   TFile *f, *f_data;
   f = new TFile( filename, "READ");
@@ -1863,33 +1869,32 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
     ////////////////////////////////////////////////////////////////////////////
-    // PLOT_ASY(asymmetries_data_SM,  asymmetries_SM, gen_asymmetries_SM,  asymmetries_width_data_SM, asymmetries_width_SM, gen_asymmetries_width_SM, asymmetries_width_data_SM_error, asymmetries_width_SM_error, gen_asymmetries_width_SM_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_SM, upper_x_data_SM, lower_x_SM, upper_x_SM, gen_lower_x_SM, gen_upper_x_SM);
-    PLOT_ASY(asymmetries_data_FE,  asymmetries_FE, gen_asymmetries_FE,  asymmetries_width_data_FE, asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE_error, asymmetries_width_FE_error, gen_asymmetries_width_FE_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_FE, upper_x_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE);
 
-    // TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
-    // for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
-    //   for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
-    //     for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
-    //       asymmetries_SM.at(m).at(p).at(r) -> Write();
-    //       gen_asymmetries_SM.at(m).at(p).at(r) -> Write();
-    //       asymmetries_data_SM.at(m).at(p).at(r) -> Write();
-    //     }
-    //   }
-    // }
-    // for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
-    //   for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
-    //     for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
-    //       asymmetries_FE.at(m).at(p).at(r) -> Write();
-    //       gen_asymmetries_FE.at(m).at(p).at(r) -> Write();
-    //       asymmetries_data_FE.at(m).at(p).at(r) -> Write();
-    //     }
-    //   }
-    // }
-    // asyroot.Close();
+    if(false){ // Ignore to save time consumption
+      PLOT_ASY(asymmetries_data_SM,  asymmetries_SM, gen_asymmetries_SM,  asymmetries_width_data_SM, asymmetries_width_SM, gen_asymmetries_width_SM, asymmetries_width_data_SM_error, asymmetries_width_SM_error, gen_asymmetries_width_SM_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_SM, upper_x_data_SM, lower_x_SM, upper_x_SM, gen_lower_x_SM, gen_upper_x_SM);
+      PLOT_ASY(asymmetries_data_FE,  asymmetries_FE, gen_asymmetries_FE,  asymmetries_width_data_FE, asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE_error, asymmetries_width_FE_error, gen_asymmetries_width_FE_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_FE, upper_x_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE);
+      TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
+      for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
+        for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
+          for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
+            asymmetries_SM.at(m).at(p).at(r) -> Write();
+            gen_asymmetries_SM.at(m).at(p).at(r) -> Write();
+            asymmetries_data_SM.at(m).at(p).at(r) -> Write();
+          }
+        }
+      }
+      for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
+        for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
+          for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
+            asymmetries_FE.at(m).at(p).at(r) -> Write();
+            gen_asymmetries_FE.at(m).at(p).at(r) -> Write();
+            asymmetries_data_FE.at(m).at(p).at(r) -> Write();
+          }
+        }
+      }
+      asyroot.Close();
+    }
 
-  }
-  // plot_all = true;
-  if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots with widths(alpha)                                              //
     ////////////////////////////////////////////////////////////////////////////
@@ -1899,7 +1904,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     // PLOT_WIDTH(widths_hist_data_SM, widths_hist_SM, gen_widths_hist_SM, outdir+"pdfy/widths/", eta_bins_edge_SM,Pt_bins_Central,Pt_bins_HF);
     // PLOT_WIDTH(widths_hist_data_FE, widths_hist_FE, gen_widths_hist_FE, outdir+"pdfy/widths/", eta_bins_edge_SM,Pt_bins_Central,Pt_bins_HF);
 
-    // PLOT_WIDTH_gr(data_correlated_graphs_SM, MC_correlated_graphs_SM, gen_correlated_graphs_SM, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, false);
+    //PLOT_WIDTH_gr(data_correlated_graphs_SM, MC_correlated_graphs_SM, gen_correlated_graphs_SM, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, false);
     PLOT_WIDTH_gr(data_correlated_graphs_FE, MC_correlated_graphs_FE, gen_correlated_graphs_FE, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, true);
 
     // WIDTHroot.Close();
@@ -1910,23 +1915,25 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     // PLOT_ALLWIDTHS(soft_widths_hist_data_SM, soft_widths_hist_SM, soft_gen_widths_hist_SM,outdir+"pdfy/widths/allPoints_");
     // PLOT_ALLWIDTHS(soft_widths_hist_data_FE, soft_widths_hist_FE, soft_gen_widths_hist_FE,outdir+"pdfy/widths/allPoints_");
 
-    // TFile widthroot(outdir+"output/widths.root","RECREATE");
-    // for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
-    //   for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
-    //     widths_hist_SM.at(m).at(p) -> Write();
-    //     gen_widths_hist_SM.at(m).at(p) -> Write();
-    //     widths_hist_data_SM.at(m).at(p) -> Write();
-    //   }
-    // }
-    // for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
-    //   for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
-    //     widths_hist_FE.at(m).at(p) -> Write();
-    //     gen_widths_hist_FE.at(m).at(p) -> Write();
-    //     widths_hist_data_FE.at(m).at(p) -> Write();
-    //   }
-    // }
-    // h_chi2_tot->Write();
-    // widthroot.Close();
+    TFile widthroot(outdir+"output/widths.root","RECREATE");
+    if(false){ // Ignore to save time consumption
+      for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
+        for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
+          widths_hist_SM.at(m).at(p) -> Write();
+          gen_widths_hist_SM.at(m).at(p) -> Write();
+          widths_hist_data_SM.at(m).at(p) -> Write();
+        }
+      }
+    }
+    for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
+      for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
+        widths_hist_FE.at(m).at(p) -> Write();
+        gen_widths_hist_FE.at(m).at(p) -> Write();
+        widths_hist_data_FE.at(m).at(p) -> Write();
+      }
+    }
+    h_chi2_tot->Write();
+    widthroot.Close();
 
   }
 
@@ -1964,20 +1971,22 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_FE.at(m), "Data", "FE", "nominal"); g -> Write();}
   Dijetroot.Close();
 
-  // TFile JERroot(outdir+"output/JERs.root","RECREATE");
-  // for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_SM.size(); m++ ){           JER_uncorrelated_MC_hist_SM.at(m)           -> Write();}
-  // for( unsigned int m = 0; m < JER_uncorrelated_data_hist_SM.size(); m++ ){         JER_uncorrelated_data_hist_SM.at(m)         -> Write();}
-  // for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE.size(); m++ ){           JER_uncorrelated_MC_hist_FE.at(m)           -> Write();}
-  // for( unsigned int m = 0; m < JER_uncorrelated_data_hist_FE.size(); m++ ){         JER_uncorrelated_data_hist_FE.at(m)         -> Write();}
-  // for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE_control.size(); m++ ){   JER_uncorrelated_MC_hist_FE_control.at(m)   -> Write();}
-  // for( unsigned int m = 0; m < JER_uncorrelated_data_hist_FE_control.size(); m++ ){ JER_uncorrelated_data_hist_FE_control.at(m) -> Write();}
-  // for( unsigned int m = 0; m < JER_correlated_MC_hist_SM.size(); m++ ){             JER_correlated_MC_hist_SM.at(m)             -> Write();}
-  // for( unsigned int m = 0; m < JER_correlated_data_hist_SM.size(); m++ ){           JER_correlated_data_hist_SM.at(m)           -> Write();}
-  // for( unsigned int m = 0; m < JER_correlated_MC_hist_FE.size(); m++ ){             JER_correlated_MC_hist_FE.at(m)             -> Write();}
-  // for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){           JER_correlated_data_hist_FE.at(m)           -> Write();}
-  // for( unsigned int m = 0; m < JER_correlated_MC_hist_FE_control.size(); m++ ){     JER_correlated_MC_hist_FE_control.at(m)     -> Write();}
-  // for( unsigned int m = 0; m < JER_correlated_data_hist_FE_control.size(); m++ ){   JER_correlated_data_hist_FE_control.at(m)   -> Write();}
-  // JERroot.Close();
+  if(false){ // Replaced by dijet_balance file
+    TFile JERroot(outdir+"output/JERs.root","RECREATE");
+    for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_SM.size(); m++ ){           JER_uncorrelated_MC_hist_SM.at(m)           -> Write();}
+    for( unsigned int m = 0; m < JER_uncorrelated_data_hist_SM.size(); m++ ){         JER_uncorrelated_data_hist_SM.at(m)         -> Write();}
+    for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE.size(); m++ ){           JER_uncorrelated_MC_hist_FE.at(m)           -> Write();}
+    for( unsigned int m = 0; m < JER_uncorrelated_data_hist_FE.size(); m++ ){         JER_uncorrelated_data_hist_FE.at(m)         -> Write();}
+    for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE_control.size(); m++ ){   JER_uncorrelated_MC_hist_FE_control.at(m)   -> Write();}
+    for( unsigned int m = 0; m < JER_uncorrelated_data_hist_FE_control.size(); m++ ){ JER_uncorrelated_data_hist_FE_control.at(m) -> Write();}
+    for( unsigned int m = 0; m < JER_correlated_MC_hist_SM.size(); m++ ){             JER_correlated_MC_hist_SM.at(m)             -> Write();}
+    for( unsigned int m = 0; m < JER_correlated_data_hist_SM.size(); m++ ){           JER_correlated_data_hist_SM.at(m)           -> Write();}
+    for( unsigned int m = 0; m < JER_correlated_MC_hist_FE.size(); m++ ){             JER_correlated_MC_hist_FE.at(m)             -> Write();}
+    for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){           JER_correlated_data_hist_FE.at(m)           -> Write();}
+    for( unsigned int m = 0; m < JER_correlated_MC_hist_FE_control.size(); m++ ){     JER_correlated_MC_hist_FE_control.at(m)     -> Write();}
+    for( unsigned int m = 0; m < JER_correlated_data_hist_FE_control.size(); m++ ){   JER_correlated_data_hist_FE_control.at(m)   -> Write();}
+    JERroot.Close();
+  }
 
   TFile gbis(outdir+"output/SFs.root","RECREATE");
 
