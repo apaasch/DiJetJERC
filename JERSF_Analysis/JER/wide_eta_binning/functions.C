@@ -26,6 +26,7 @@
 
 bool debug = true;
 bool alpha_new = true;
+bool extenda = true;
 bool useRMS = true;
 
 int binHF = 15;
@@ -131,6 +132,7 @@ double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1*
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 std::vector<double> Confidence(TH1F* hist, double confLevel);
 bool removePointsforFit(bool isFE, int m, int p);
+inline bool extendAlpha(int p);
 
 TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
 TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, TH1* hist, TString sample, TString method, TString var="nominal");
@@ -286,7 +288,10 @@ void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< 
     for( int p = 0; p < ptBins; p++ ) {
       std::vector< TH1F* > temp1;
       std::vector< TH1F* > temp1gen;
-      for( int r = 0; r < AlphaBins; r++ ) {
+      int alpha = 6;
+      if(extendAlpha(p)) alpha = 13;
+      // for( int r = 0; r < AlphaBins; r++ ) {
+      for( int r = 0; r < alpha; r++ ) {
         TString name = text;                        name    += "_eta"; name     += m+1; name    += "_pt"; name    += p+1; name    += "_alpha"; name     += r+1;
         TString namegen = "gen_"; namegen += text;  namegen += "_eta"; namegen  += m+1; namegen += "_pt"; namegen += p+1; namegen += "_alpha"; namegen  += r+1;
         TH1F* h = (TH1F*)f.Get(name);
@@ -406,8 +411,8 @@ void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetr
       std::vector< double > temp1;
       std::vector< double > temp_error1;
       std::vector< double > temp1_lower_x, temp1_upper_x;
+      // std::cout << setw(5) << m << setw(5) << p << setw(5);
       for( unsigned int r = 0; r < Asymmetry.at(m).at(p).size(); r++ ) {
-        // std::cout << "eta pt alpha bins " << m << ", " << p << ", " << r << std::endl;
         TH1F* temp_hist = (TH1F*) Asymmetry.at(m).at(p).at(r)->Clone();
         double low, up;
         if (temp_hist->Integral() > 0) {
@@ -441,11 +446,15 @@ void histWidthAsym( std::vector< std::vector< std::vector< TH1F* > > > &Asymmetr
         if (!fill_all) {
           if (alpha_bins.at(r)<removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1)) {asym = 0.; asymerr = 0.;}
         }
+
+        // cout << setw(10) << asym << " (" << setw(2) << r << ")";
+
         temp1.push_back( asym );
         temp_error1.push_back( asymerr );
         temp1_lower_x.push_back(low);
         temp1_upper_x.push_back(up);
       }
+      // cout << endl;
       temp2.push_back(temp1);
       temp_error2.push_back(temp_error1);
       temp2_lower_x.push_back(temp1_lower_x);
@@ -491,7 +500,7 @@ void histWidthMCTruth( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry
 // ======================================================================================================
 
 void fill_widths_hists( TString name1, std::vector< std::vector< TH1F* > > &widths , std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError) {
-  double aMax[] = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3 };
+  double aMax[] = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3 , 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
   double temp;
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
     std::vector< TH1F* > temp1;
@@ -500,14 +509,17 @@ void fill_widths_hists( TString name1, std::vector< std::vector< TH1F* > > &widt
       name_width += "_eta"; name_width += m+1; name_width += "_pt"; name_width += p+1;
       // if (name1.Contains("_fe")) { name_width += m+2; }
       // else { name_width += m+1; }
-      TH1F *h1 = new TH1F( name_width, name_width, 50, 0, 0.35 );
+      TH1F *h1 = new TH1F( name_width, name_width, 105, 0, 1.05);
       h1 ->GetYaxis()->SetTitle("#sigma_{A}");	h1 ->GetXaxis()->SetTitle("#alpha_{max}"); h1 ->GetYaxis()->SetTitleOffset(1.);
       h1 -> Sumw2();
+      // cout << setw(3) << m << setw(3) << p;
       for( unsigned int r = 0; r < Widths.at(m).at(p).size(); r++ ) {
+        // cout << setw(3) << r << " (" << setw(3) << h1 -> FindBin( aMax[ r ] ) << ", " << setw(10) << Widths.at(m).at(p).at(r) << ")";
         temp = Widths.at(m).at(p).at(r);
         if ( !(TMath::IsNaN(temp)) && temp != 0) h1 -> SetBinContent( h1 -> FindBin( aMax[ r ] ), Widths.at(m).at(p).at(r) );
         if ( !(TMath::IsNaN(temp)) && temp != 0) h1 -> SetBinError( h1 -> FindBin( aMax[ r ] ), WidthsError.at(m).at(p).at(r) );
       }
+      // cout << endl;
       h1 ->GetYaxis()-> SetRangeUser( 0., 0.3 );
       temp1.push_back(h1);
     }
@@ -615,7 +627,16 @@ void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *l
   lin_extrapol->SetNDF(ndf);
 }
 
+inline bool extendAlpha(int p){
+  // return ( extenda && (p<5) );
+  return ( extenda );
+  // return ( extenda && (p<10 || (20<p && p<25) || 30<p) );
+}
+
 void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< TGraphErrors* > > &output_graph, std::vector< std::vector< double > > &output, std::vector< std::vector< double > > &output_error, bool isFE, bool isMC, TH1F* h_chi2_tot) {
+  std::vector<float> alpha;
+  // std::vector<float> alpha;
+  // alpha.push_back(0.05); alpha.push_back(0.1); alpha.push_back(0.15); alpha.push_back(0.20); alpha.push_back(0.25); alpha.push_back(0.3);
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
     // eta loop
     std::vector<TGraphErrors*> temp2_graph;
@@ -624,18 +645,25 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
 
     for( unsigned int p = 0; p < Widths.at(m).size(); p++ ) {
       // p_T loop
-      std::vector<float> alpha;
-      alpha.push_back(0.05); alpha.push_back(0.1); alpha.push_back(0.15); alpha.push_back(0.20); alpha.push_back(0.25); alpha.push_back(0.3);
       std::vector<double> x,x_e;
+
+      alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3  };
+      if( extendAlpha(p) ) alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
+
+      // cout << setw(5) << m << setw(5) << p;
       for(int ialpha=0; ialpha < alpha.size(); ++ialpha) {
+      // for(int ialpha=0; ialpha < AlphaBins; ++ialpha) {
+      // cout << setw(5) << ialpha;
         x.push_back(alpha.at(ialpha));
         x_e.push_back(0.);
       }
+      // cout << endl;
 
       vector<double> widths     = Widths.at(m).at(p);
       vector<double> widths_err = WidthsError.at(m).at(p);
 
       TMatrixD y_cov_mc;
+      // y_cov_mc.ResizeTo(AlphaBins, AlphaBins);
       y_cov_mc.ResizeTo(alpha.size(), alpha.size());
 
       TMatrixD y_cov_mc_first;
@@ -645,6 +673,7 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
         int index = it-widths_first.begin();
         widths_first[index] = 0.; widths_first_err[index] = 0.;
       }
+      // y_cov_mc_first.ResizeTo(AlphaBins, AlphaBins);
       y_cov_mc_first.ResizeTo(alpha.size(), alpha.size());
 
       TMatrixD y_cov_mc_last;
@@ -653,6 +682,7 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       if(2<CheckNumberAlphaPoints(widths_last)){
         widths_last.pop_back(); widths_last_err.pop_back(); alpha_last.pop_back(); x_last.pop_back();
       }
+      // y_cov_mc_last.ResizeTo(AlphaBins-1, AlphaBins-1);
       y_cov_mc_last.ResizeTo(alpha_last.size(), alpha_last.size());
 
       createCov(widths, widths_err, alpha, y_cov_mc);
@@ -668,16 +698,27 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       extrapol_MC->SetName(name);
 
       // fit linear extrapolation function
-      TF1 *lin_extrapol_mc = new TF1("lin_extrapol_mc","[0]+[1]*x",0,alpha.back()+0.05);
-      TF1 *lin_extrapol_mc_first = new TF1("lin_extrapol_mc_first","[0]+[1]*x",0,alpha.back()+0.05);
-      TF1 *lin_extrapol_mc_last = new TF1("lin_extrapol_mc_last","[0]+[1]*x",0,alpha.back()+0.05);
+      TF1 *lin_extrapol_mc = new TF1("lin_extrapol_mc","[0]+[1]*x",0, 0.35); // alpha.back()+0.05
+      TF1 *lin_extrapol_mc_first = new TF1("lin_extrapol_mc_first","[0]+[1]*x",0, 0.35);
+      TF1 *lin_extrapol_mc_last = new TF1("lin_extrapol_mc_last","[0]+[1]*x",0, 0.35);
+
+      TF1 *log_extrapol_mc = new TF1("log_extrapol_mc","[0]+[1]*log(x)",0,alpha.back()+0.05);
+      TF1 *pol2_extrapol_mc = new TF1("pol2_extrapol_mc","pol2(0)",0,alpha.back()+0.05);
+      TF1 *pol3_extrapol_mc = new TF1("pol3_extrapol_mc","pol3(0)",0,alpha.back()+0.05);
 
       // void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *lin_extrapol, int m, int p, bool isFE, bool isMC){
       SetFit(widths,       x,      y_cov_mc,       lin_extrapol_mc,       m, p, isFE, isMC);
       SetFit(widths_first, x,      y_cov_mc_first, lin_extrapol_mc_first, m, p, isFE, isMC);
       SetFit(widths_last,  x_last, y_cov_mc_last,  lin_extrapol_mc_last,  m, p, isFE, isMC);
 
+      SetFit(widths,       x,      y_cov_mc,       log_extrapol_mc,       m, p, isFE, isMC);
+      SetFit(widths,       x,      y_cov_mc,       pol2_extrapol_mc,      m, p, isFE, isMC);
+      SetFit(widths,       x,      y_cov_mc,       pol3_extrapol_mc,      m, p, isFE, isMC);
+
       extrapol_MC->GetListOfFunctions()->Add(lin_extrapol_mc);
+      extrapol_MC->GetListOfFunctions()->Add(log_extrapol_mc);
+      extrapol_MC->GetListOfFunctions()->Add(pol2_extrapol_mc);
+      extrapol_MC->GetListOfFunctions()->Add(pol3_extrapol_mc);
 
       double offset_nom = lin_extrapol_mc->GetParameter(0);
       double offset_first = lin_extrapol_mc_first->GetParameter(0);
