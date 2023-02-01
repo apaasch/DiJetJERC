@@ -8,10 +8,13 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
     list_processes = []
     nProcess = 48
     time_ = 1
+    dirs_sys = ["", "up", "down"]
+    # dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
     for newJECVersion in JECVersions_Data:
         for newJetLabel in JetLabels:
             for sys in systematics:
-                for dir in ["", "up", "down"]:
+                dirs = dirs_PS if "PS" in sys else dirs_sys
+                for dir in dirs:
                     if sys == "" and dir != "":
                         continue
                     if sys == "JER" and dir != "":
@@ -40,17 +43,23 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
 @timeit
 def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn18_V4", "Autumn18_V4"], JetLabels=["AK4CHS", "AK8Puppi"], systematics=["", "PU", "JEC", "JER"],extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
+    dirs_sys = ["", "up", "down"]
+    # dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
     for sample in ["DATA", "QCD"]:
         for newJECVersion in JECVersions_Data:
             for newJetLabel in JetLabels:
                 for sys in systematics:
-                    for dir in ["", "up", "down"]:
+                    dirs = dirs_PS if "PS" in sys else dirs_sys
+                    for dir in dirs:
                         if sys == "" and dir != "":
                             continue
                         if sys == "JER" and dir != "":
                             continue
                         if sys == "JER" and dir == "":
                        	    dir = "nominal"
+                        if 'PS' in sys:
+                            if 'DATA'==sample:
+                                continue
                         path = userPathSframeOutput+"/"+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
                         if os.path.isdir(path):
                             for workdir in sorted(os.listdir(path)):
@@ -217,7 +226,7 @@ studies = []
 # studies.append("L1L2Residual")
 # studies.append("L1L2")
 # studies.append("eta_JER")
-studies.append("eta_common_test")
+studies.append("eta_common")
 # studies.append("eta_common")
 # studies.append("eta_L2R")
 # studies.append("eta_narrow")
@@ -233,8 +242,8 @@ original_dir_ = os.getcwd()
 
 
 # QCDSamples = ["QCDPt","QCDHT", "DATA"]
-QCDSamples = ["QCDHT", "DATA"]
-# QCDSamples = ["DATA"]
+# QCDSamples = ["QCDHT", "DATA"]
+QCDSamples = ["DATA"]
 # QCDSamples = ["QCDHT"]
 processes = list(filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process))
 others = list(set(QCD_process+Data_process)-set(processes))
@@ -261,12 +270,20 @@ JetLabels = ["AK4Puppi"]
 # JetLabels = ["AK8Puppi", "AK4Puppi"]
 # JetLabels = [ "AK8Puppi"]
 # systematics = ["", "PU", "JEC", "JER"]
-# systematics = ["", "PU", "JEC"]
-# systematics = ["PU", "JEC"]
-# systematics = ["PU"]
+# systematics = ["", "PU", "JEC", "Prefire"]
+# systematics = ["PU", "JEC", "Prefire", "PS"]
+#systematics = ["PU", "JEC"]
+# systematics = ["PS"]
 systematics = [""]
 
+global dirs_PS
+# dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
+dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2']]
+# dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['2']]
+
 print(year,studies, QCDSamples, JECVersions_Data[year], JetLabels, systematics)
+if 'PS' in systematics:
+    print(dirs_PS)
 
 for study in studies:
 

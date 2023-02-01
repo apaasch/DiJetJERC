@@ -589,9 +589,10 @@ void tdrDraw(TGraph* g, string opt, int marker=kFullCircle, int mcolor = kBlack,
   g->Draw((opt+" SAME").c_str());
 }
 
-void tdrDraw(TLine* l, int lstyle=kSolid, int lcolor=kBlack) {
+void tdrDraw(TLine* l, int lstyle=kSolid, int lcolor=kBlack, int lwidth=2) {
   l->SetLineStyle(lstyle);
   l->SetLineColor(lcolor);
+  l->SetLineWidth(lwidth);
   l->Draw("SAME");
 }
 

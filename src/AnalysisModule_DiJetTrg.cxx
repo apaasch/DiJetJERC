@@ -21,6 +21,7 @@
 #include <UHH2/common/include/ElectronHists.h>
 #include <UHH2/common/include/MuonHists.h>
 
+#include "UHH2/DiJetJERC/include/PartonShowerWeight.h"
 #include "UHH2/DiJetJERC/include/JECAnalysisHists.h"
 #include "UHH2/DiJetJERC/include/JECCrossCheckHists.h"
 #include "UHH2/DiJetJERC/include/JECRunnumberHists.h"
@@ -74,6 +75,7 @@ protected:
   std::unique_ptr<uhh2::AnalysisModule> pileupSF, LumiWeight_module;
   std::unique_ptr<AnalysisModule> Jet_printer, GenJet_printer, GenParticles_printer;
 
+  Event::Handle<float> h_weight_prefire, h_weight_prefire_up, h_weight_prefire_down;
 
   Event::Handle<float> tt_jet1_pt;  Event::Handle<float> tt_jet2_pt;  Event::Handle<float> tt_jet3_pt;
   Event::Handle<float> tt_jet4_pt;  Event::Handle<float> tt_jet5_pt;  Event::Handle<float> tt_jet6_pt;  Event::Handle<float> tt_jet7_pt;
@@ -82,6 +84,7 @@ protected:
   Event::Handle<float> tt_jet1_ptRaw;  Event::Handle<float> tt_jet2_ptRaw;  Event::Handle<float> tt_jet3_ptRaw;
   Event::Handle<float> tt_jet1_pt_onoff_Resp;     Event::Handle<float> tt_jet2_pt_onoff_Resp;
   Event::Handle<int> tt_nvertices;
+  Event::Handle<int> tt_prescale, tt_prescale_L1min, tt_prescale_L1max;
   Event::Handle<float> tt_pv0Z;     Event::Handle<float> tt_pv0X; Event::Handle<float> tt_pv0Y;
   Event::Handle<float> tt_probejet_eta;   Event::Handle<float> tt_probejet_phi;   Event::Handle<float> tt_probejet_pt;  Event::Handle<float> tt_probejet_ptRaw;
   Event::Handle<float> tt_barreljet_eta;  Event::Handle<float> tt_barreljet_phi;  Event::Handle<float> tt_barreljet_pt; Event::Handle<float> tt_barreljet_ptRaw;
@@ -202,12 +205,15 @@ protected:
   std::unique_ptr<LumiHists> h_monitoring_final;
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
   std::unique_ptr<JECCrossCheckHists> h_input, h_lumisel, h_beforeCleaner, h_afterCleaner, h_afterHEM, h_2jets, h_beforeJEC, h_afterJEC, h_afterJER, h_afterMET, h_beforeTriggerData, h_afterTriggerData, h_beforeFlatFwd, h_afterFlatFwd, h_afterPtEtaReweight, h_afterLumiReweight, h_afterUnflat, h_afternVts;
-  std::unique_ptr<JECCrossCheckHists> h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
+  std::unique_ptr<JECCrossCheckHists> h_ps_weight, h_prefire_check, h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
   std::unique_ptr<MuonHists> h_Muon, h_Muon_before;
   std::unique_ptr<ElectronHists> h_Elec, h_Elec_before;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
   std::unique_ptr<Selection> HEMEventCleaner_Selection;
+  std::unique_ptr<PartonShowerWeight> ps_weights;
 
+  Event::TriggerIndex trigindex;
+  std::map<string, std::vector<string>> triggernames, triggernames_HF;
 
   //useful booleans
   bool debug, no_genp;
@@ -221,6 +227,7 @@ protected:
   bool ispythia8;
   bool ts;
   string SysType_PU;
+  string prefire_direction;
   string dataset_version, jetLabel;
   string JEC_Version, jecTag, jecVer, JEC_Level, jet_coll, jecVar;
   string Study;
@@ -298,6 +305,9 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   tt_barreljet_muonEF    = ctx.declare_event_output<float>("barreljet_muonEF");
 
   tt_nvertices = ctx.declare_event_output<int>("nvertices");
+  tt_prescale = ctx.declare_event_output<int>("prescale");
+  tt_prescale_L1min = ctx.declare_event_output<int>("prescale_L1min");
+  tt_prescale_L1max = ctx.declare_event_output<int>("prescale_L1max");
   tt_pv0Z = ctx.declare_event_output<float>("pv0Z");
   tt_pv0Y = ctx.declare_event_output<float>("pv0Y");
   tt_pv0X = ctx.declare_event_output<float>("pv0X");
@@ -422,6 +432,8 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
 
   h_input.reset(new JECCrossCheckHists(ctx,"CrossCheck_input"));
   h_lumisel.reset(new JECCrossCheckHists(ctx,"CrossCheck_lumisel"));
+  h_prefire_check.reset(new JECCrossCheckHists(ctx,"CrossCheck_prefire"));
+  h_ps_weight.reset(new JECCrossCheckHists(ctx,"CrossCheck_ps"));
   h_beforeCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeCleaner"));
   h_afterCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterCleaner"));
 
@@ -575,8 +587,15 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
   JEC_Level = ctx.get("JEC_Level", "L1L2L3Residual");
   jecVar = ctx.get("jecsmear_direction");
-
+  prefire_direction = ctx.get("prefire_direction","nominal");
   Study = ctx.get("Study", "default");
+
+  // PS reweighting
+  string PS_variation = "central";
+  PS_variation = ctx.get("ps_variation", "central");
+  cout << "Using PS variation " << PS_variation << endl;
+  ps_weights.reset(new PartonShowerWeight(ctx, PS_variation));
+
 
   JECClosureTest = string2bool(ctx.get("JECClosureTest"));
   JERClosureTest = string2bool(ctx.get("JERClosureTest","false"));
@@ -672,6 +691,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   // if(ispuppi) Jet_PFID = JetPFID(JetPFID::WP_TIGHT_PUPPI);
   // else Jet_PFID = JetPFID(JetPFID::WP_TIGHT_CHS);
+  if(debug) cout <<  "Applay EtaPhi cut " << apply_EtaPhi_cut << endl;
   if (apply_EtaPhi_cut) {
     if(ispuppi) Jet_PFID = AndId<Jet> (HotZoneVetoId(), JetPFID(JetPFID::WP_TIGHT_PUPPI));
     else Jet_PFID = AndId<Jet> (HotZoneVetoId(), JetPFID(JetPFID::WP_TIGHT_CHS));
@@ -713,12 +733,14 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   if(!isMC){
     for (std::string mode: {"central", "forward"}) {
       std::string triggerModeName = PtBinsTrigger+"_"+mode;
+      triggernames[mode] = {};
       for (size_t i = 0; i < pt_indexes.at(triggerModeName).size() ; i++) {
         std::string trg_xml = PtBinsTrigger+"_"+pt_indexes.at(triggerModeName)[i];
         if (is2016v2 || is2016v3 || isUL16 || isUL16preVFP || isUL16postVFP) trg_xml = TString(trg_xml).ReplaceAll("550","500");
         if (isAK8 && !switchTrigger_UL16) trg_xml += "_AK8";
         if (switchTrigger_UL17) trg_xml = TString(trg_xml).ReplaceAll("DiJet", "SingleJet"); // to get SingleJet AK4 trigger
         const std::string& trg_name = ctx.get( trg_xml , "NULL");
+        triggernames[mode].push_back(trg_name);
         if (debug) {
           std::cout << "mode: " << mode << " i: " << i << '\n';
           std::cout << "trg_mode " << triggerModeName << '\n';
@@ -733,6 +755,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
           else trigger_HFJEC_sel.emplace_back(new uhh2::AndSelection(ctx));
         } else {throw std::invalid_argument(mode+" is not implemented"); }
       }
+      if(debug) std::cout << "Number of trigger names " << triggernames[mode].size() << " for mode " << mode << std::endl;
     }
   }
 
@@ -765,6 +788,10 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   Jet_printer.reset(new JetPrinter("Jet-Printer", 0));
   GenJet_printer.reset(new GenJetPrinter("GenJet-Printer", 0));
   // if(debug && !no_genp) GenParticles_printer.reset(new GenParticlesPrinter(ctx));
+
+  h_weight_prefire = ctx.get_handle<float>("prefiringWeight");
+  h_weight_prefire_up = ctx.get_handle<float>("prefiringWeightUp");
+  h_weight_prefire_down = ctx.get_handle<float>("prefiringWeightDown");
 
   n_evt = 0;
 
@@ -857,6 +884,24 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // Do pileup reweighting
   if(debug) cout << "Reweighting" << endl;
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
+
+  if(debug) cout << "Prefire " << endl;
+  float prefire_weight;
+  if(prefire_direction == "nominal") prefire_weight = event.get(h_weight_prefire);
+  else if(prefire_direction == "up") prefire_weight = event.get(h_weight_prefire_up);
+  else if(prefire_direction == "down") prefire_weight = event.get(h_weight_prefire_down);
+  else throw runtime_error("PostSelection: Wrong prefire weight direction (nominal, up, down)");
+  if(debug) cout << "\t - weight " << prefire_weight << endl;
+  event.weight *= prefire_weight;
+  h_prefire_check->fill(event);
+
+  if(isMC){
+    if(debug) cout << "Parton Shower Wieght" << endl;
+    ps_weights->process(event);
+    double w = event.weight;
+    h_ps_weight->fill(event);
+    if(debug) cout << "PS Weight B: " << w << " | A: " << event.weight << endl;
+  }
 
   //Dump Input
   h_input->fill(event);
@@ -1219,8 +1264,11 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   if(debug) cout<<"before trigger pass checks\n";
   int n_trig = 0;
-
+  int trigPre = -1;
+  int trigPreL1min = -1;
+  int trigPreL1max = -1;
   if(event.isRealData){
+
     float probejet_eta = jet_probe->eta();
 
     bool eta_cut_bool = abs(probejet_eta) <  eta_cut;
@@ -1230,6 +1278,8 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     if(!trigger_central) eta_cut_bool_HF = true;
 
     if (debug) std::cout << "eta_cut_bool " << eta_cut_bool << "\t" << "eta " << std::max(abs(jet1->eta()),abs(jet2->eta())) << "\t" << "trigger_central " << trigger_central<<  "\t" << "trigger_fwd " << trigger_fwd << " eta_cut_bool_HF " << eta_cut_bool_HF << '\n';
+
+    string triggername, triggername_HF;
 
     if (eta_cut_bool) {
       // PtBinsTrigger = DiJet/SingleJet
@@ -1248,6 +1298,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
         }
         pass_trigger[trg_xml] = trigger_sel[i]->passes(event) && pt_ave>pt_min && pt_ave<pt_max;
         if (debug) { std::cout << "pass_trigger: " << trg_xml << " index: " << i << " pt_min: " << pt_min << " pt_max: " << pt_max << " passed: " << pass_trigger[trg_xml] << '\n'; }
+        if (pass_trigger[trg_xml]) triggername = triggernames["central"][i];
       }
     }
     //TODO: remove requirement on eta_bool, add one more bin in forward region in
@@ -1265,10 +1316,10 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
         }
         pass_trigger_HFJEC[trg_xml] = trigger_HFJEC_sel[i]->passes(event) && pt_ave>pt_min && pt_ave<pt_max;
         if (debug) { std::cout << "pass_trigger: " << trg_xml << " index: " << i << " pt_min: " << pt_min << " pt_max: " << pt_max << " passed: " << pass_trigger_HFJEC[trg_xml] << '\n'; }
+        if (pass_trigger_HFJEC[trg_xml]) triggername = triggernames["forward"][i];
+
       }
-
     }
-
 
     //HLT Selection
     // bool pass_trigger = false;
@@ -1278,14 +1329,25 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     bool fired_triggers = false;
 
     for (auto const& x : eta_cut_bool? pass_trigger: pass_trigger_HFJEC) {
-      if(debug) std::cout << "fired_triggers " <<  (eta_cut_bool? "central " : "forward ") <<  x.first << ": " << x.second << std::endl ;
+      std::string mode = eta_cut_bool? "central " : "forward ";
+      if(debug) std::cout << "fired_triggers " << mode <<  x.first << ": " << x.second << std::endl ;
       fired_triggers = fired_triggers|| x.second ;
-      if(x.second) n_trig++;
+      if(x.second){
+        n_trig++;
+        trigindex = event.get_trigger_index(triggername);
+        bool passedTrigger = event.passes_trigger(trigindex);
+        string passStr = passedTrigger ? " passed " : " did not pass ";
+        trigPre = event.trigger_prescale(trigindex);
+        trigPreL1min = event.trigger_prescaleL1min(trigindex);
+        trigPreL1max = event.trigger_prescaleL1max(trigindex);
+        if(debug) cout << "event " << event.event << passStr << "trigger " << triggername << " with prescale " << trigPre << " and L1min " << trigPreL1min << " and L1max " << trigPreL1max << endl;
+      }
     }
 
     h_beforeTriggerData->fill(event);
 
     if(!fired_triggers)	return false;
+
   }
 
 
@@ -1353,6 +1415,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   event.set(tt_jet1_pt_onoff_Resp,onoffDummy);
   event.set(tt_jet2_pt_onoff_Resp,onoffDummy);
   event.set(tt_nvertices,nvertices);
+  event.set(tt_prescale,trigPre);
+  event.set(tt_prescale_L1min,trigPreL1min);
+  event.set(tt_prescale_L1max,trigPreL1max);
   event.set(tt_pv0Z,(event.pvs->at(0)).z());
   event.set(tt_pv0X,(event.pvs->at(0)).x());
   event.set(tt_pv0Y,(event.pvs->at(0)).y());

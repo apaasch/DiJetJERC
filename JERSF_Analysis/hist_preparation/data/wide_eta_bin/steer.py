@@ -6,10 +6,11 @@ import time
 sys.path.append(os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/")
 from utils import *
 
-def main_program(path="", list_path="", out_path="", year="", study="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
+def main_program(path="", list_path="", out_path="", year="", study="", binning="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
   list_path_=list_path
   out_path_=out_path
+  dirs_sys = ["", "up", "down"]
   for newJECVersion in JECVersions:
     for newJetLabel in JetLabels:
       for sys in set(systematics):
@@ -17,7 +18,8 @@ def main_program(path="", list_path="", out_path="", year="", study="", JECVersi
           alpha_cut = 10
         else:
           alpha_cut = 15
-        for dir in ["", "up", "down"]:
+        dirs = dirs_PS if "PS" in sys else dirs_sys
+        for dir in dirs:
           if sys == "JER" and dir != "":
             continue
           if sys == "JER" and dir == "":
@@ -75,7 +77,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", JECVersi
             logfilename = "log.txt"
             f = open(logfilename,'w')
             cmd = './Analysis.x %s >> log.txt &' % (run_list)
-            command = [outdir+"Analysis.x", run_list, outdir, year, study]
+            command = [outdir+"Analysis.x", run_list, outdir, year, study, binning]
             list_processes.append(command)
             list_logfiles.append(outdir+"log.txt")
             f.close()
@@ -93,7 +95,9 @@ inputdir = "DiJetJERC_DiJetHLT"
 # year = "UL16postVFP"
 # year = "UL17"
 year = "UL18"
-
+if len(sys.argv)<2:
+    sys.exit("I need at least a year")
+year = sys.argv[1]
 # year = "Legacy"
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
@@ -103,31 +107,37 @@ samples = {}
 # samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL16preVFP_split"] = ["BCD", "EF", "BCDEF"]
 samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
+# samples["UL16preVFP"] = ["BCDEF"]
+# samples["UL16preVFP"] = ["C"]
 samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
+# samples["UL16postVFP"] = ["FGH"]
 samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+# samples["UL17"] = ["BCDEF"]
 # samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
-# samples["UL18"] = ["A", "B", "C", "ABC"] # for Puppi studies
+# samples["UL18"] = ["ABCD", "A", "B", "C", "D"]
 samples["UL18"] = ["ABCD"]
 samples["Legacy"] = ["II"]
 
 JECVersions = {}
 JECVersions["2018"] = ["Autumn18_V19"]
 JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
-JECVersions["UL17"] = ["Summer19UL17_V5"]
-JECVersions["UL18"] = ["Summer19UL18_V5"]
+JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
+JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
+JECVersions["UL17"] = ["Summer20UL17_V2"]
+JECVersions["UL18"] = ["Summer20UL18_V2"]
 
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels = ["AK4Puppi_v11"]
 JetLabels = ["AK4Puppi"]
-# systematics = ["", "alpha","PU", "JEC", "JER"]
-systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire", "PS"]
+# systematics = ["", "alpha","PU", "JEC", "Prefire"]
+# systematics = ["", "alpha","PU", "JEC"]
+# systematics = ["PU", "JEC", "Prefire"]
 # systematics = ["JER"]
 # systematics = ["", "alpha","PU"]
-# systematics = ["", ]
+systematics = [""]
 
 list_processes = []
 list_logfiles = []
@@ -142,14 +152,27 @@ studies = []
 studies.append("eta_common")
 # studies.append("eta_simple")
 
+global dirs_PS
+dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['4', '2']]
+if 'PS' in systematics:
+    print(dirs_PS)
+
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"
-    out_path    = common_path+"wide_eta_bin/file/"+study+"/"+year+"/"
+    out = study
+    binning = ''
+    if len(sys.argv) >= 3:
+        binning = sys.argv[2]
+        out += '_'+binning
+    if len(sys.argv) >= 4:
+        out += '_'+sys.argv[3]
+    print out
+    out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
     path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/"+study+"/"
 
-    main_program(path, list_path, out_path, year, study, JECVersions[year], JetLabels, systematics, samples[year])
+    main_program(path, list_path, out_path, year, study, binning, JECVersions[year], JetLabels, systematics, samples[year])
 
 
 for i in list_processes:
@@ -157,4 +180,4 @@ for i in list_processes:
 
 print len(list_processes)
 
-parallelise(list_processes, 15, list_logfiles)
+parallelise(list_processes, 10, list_logfiles)

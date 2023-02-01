@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 import sys
 import os
 import time
@@ -7,21 +7,22 @@ import numpy as np
 sys.path.append(os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/")
 from utils import *
 
-def getLabel(sample):
-    if sample == "A":
-        LABEL_LUMI_INV_FB = "[MC 106X] Run2018A 14.00 fb^{-1}"
-    elif sample == "B":
-        LABEL_LUMI_INV_FB = "[MC 106X] Run2018B 7.10 fb^{-1}"
-    elif sample == "C":
-        LABEL_LUMI_INV_FB = "[MC 106X] Run2018C 6.94 fb^{-1}"
-    elif sample == "D":
-        LABEL_LUMI_INV_FB = "[MC 106X] Run2018D 31.93 fb^{-1}"
-    elif sample == "ABC":
-        LABEL_LUMI_INV_FB = "[MC 106X] Run2018 28.04 fb^{-1}"
-    elif sample == "ABCD":
-        LABEL_LUMI_INV_FB = "[MC 106X] Run2018 59.97 fb^{-1}"
-    else:
-        LABEL_LUMI_INV_FB = "[MC 106X] (2018)"
+def getLabel(sample, year):
+    LABEL_LUMI_INV_FB = "[MC 106X] "+year
+    # if sample == "A":
+    #     LABEL_LUMI_INV_FB += "Run2018A 14.00 fb^{-1}"
+    # elif sample == "B":
+    #     LABEL_LUMI_INV_FB += "Run2018B 7.10 fb^{-1}"
+    # elif sample == "C":
+    #     LABEL_LUMI_INV_FB += "Run2018C 6.94 fb^{-1}"
+    # elif sample == "D":
+    #     LABEL_LUMI_INV_FB += "Run2018D 31.93 fb^{-1}"
+    # elif sample == "ABC":
+    #     LABEL_LUMI_INV_FB += "Run2018 28.04 fb^{-1}"
+    # elif sample == "ABCD":
+    #     LABEL_LUMI_INV_FB += "Run2018 59.97 fb^{-1}"
+    # else:
+    #     LABEL_LUMI_INV_FB += "(2018)"
     return LABEL_LUMI_INV_FB
 
 
@@ -49,6 +50,7 @@ def main_function(gaustails=False, shiftForPLI="central", gaustail_num = 0.985):
     else:
         os.makedirs(outdir)
     programm ="mainRun"
+    # programm ="mainRun_alpha"
     # if "AK8" in outdir: programm += "AK8"
     cmd = "cp %s.cxx %s" % (programm, outdir)
     a = os.system(cmd)
@@ -168,15 +170,26 @@ JECVersions["UL18"] = ["Summer20UL18_V2"]
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels=["AK4CHS"]
 JetLabels=["AK4Puppi"]
-dirs = ["", "up", "down"]
+
 # systematics=["", "PU", "JEC", "alpha", "JER"]
+#systematics=["", "PU", "JEC", "alpha", "Prefire"]
+# systematics=["", "PLI", "gaus", "PU", "JEC", "alpha", "Prefire", "PS"]
+# systematics=["PLI", "gaus", "PU", "JEC", "alpha", "Prefire"]
+# systematics=["PU", "JEC", "alpha", "Prefire"]
 # systematics=["PU", "JEC", "alpha", "JER"]
 # systematics=["", "JER"]
-# systematics=["JER"]
-# systematics=["JEC"]
+# systematics=["Prefire"]
+# systematics=["JEC", "PU", "Prefire"]
 # systematics=["PU", "alpha"]
 systematics=[""]
+# systematics=["PLI", "gaus"]
 
+dirs_sys = ["", "up", "down"]
+dirs_PS = [p+d+'_'+f for p in ['ISR'] for d in ['up'] for f in ['2']]
+# dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2']]
+if 'PS' in systematics:
+    print(dirs_PS)
+dirs = dirs_sys
 
 studies = []
 # studies.append("Standard")
@@ -185,7 +198,13 @@ studies = []
 # studies.append("eta_JER")
 # studies.append("eta_JER_fine")
 # studies.append("eta_JER_default")
-studies.append("eta_common_default")
+#studies.append("eta_common_default")
+# studies.append("eta_common_fine_v1")
+# studies.append("eta_common_fine_v2")
+# studies.append("eta_common_fine_v3")
+# studies.append("eta_common_fine_v4")
+# studies.append("eta_common_fine_v5_prescale")
+studies.append("eta_common_fine_v5_highalpha")
 # studies.append("eta_common_fine")
 # studies.append("eta_common_central_fine_v2")
 # studies.append("eta_common")
@@ -200,15 +219,16 @@ for extraText in [""]:
         for newJECVersion in JECVersions[year]:
             for newJetLabel in JetLabels:
                 for syst in systematics:
+                    dirs = dirs_PS if "PS" in syst else dirs_sys
                     for dir in dirs:
                         if syst == "JER" and dir != "":
                           continue
                         if syst == "JER" and dir == "":
                           dir = "nominal"
-                        if (syst == "" and dir != "") or (syst == "alpha" and dir != "") or ((syst != "" and syst != "alpha") and dir == ""):
+                        if (syst in ["", "alpha", "PLI", "gaus"] and dir != "") or (not syst in ["", "alpha", "PLI", "gaus"] and dir == ""):
                             continue
                         pattern = year+"/"+newJECVersion+"/"+newJetLabel
-                        if syst == "":
+                        if syst == "" or syst == "PLI" or syst == "gaus":
                             pattern += "/standard/"
                         elif syst == "alpha":
                             pattern += "/"+syst+"/"
@@ -218,19 +238,27 @@ for extraText in [""]:
                         for QCDsample in QCDSamples[year]:
                             for sample in samples[year]:
                                 run = "Run"+sample
-                                LABEL_LUMI_INV_FB=getLabel(sample)
+                                LABEL_LUMI_INV_FB=getLabel(sample, year)
                                 LABEL_LUMI_INV_FB = '\\"'+LABEL_LUMI_INV_FB+'\\"'
                                 MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+QCDsample+"_"+year+extraText+"/histograms_mc_incl_full.root"+'\\"'
+                                if 'prescale' in study:
+                                    MC_file = MC_file.replace("_prescale", "")
+                                    print 'Set back MC input file:\n',MC_file
                                 Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+run+"_"+year+extraText+"/histograms_data_incl_full.root"+'\\"'
+                                if 'PS' in syst:
+                                    Data_file = Data_file.replace("/"+syst+"/"+dir, "")
+                                    print Data_file
                                 print MC_file, Data_file
                                 if not os.path.isfile(str(MC_file.replace("\\","").strip("\""))) or not os.path.isfile(str(Data_file.replace("\\","").strip("\""))):
                                     continue
                                 # print MC_file, Data_file
-                                main_function(gaustails=False)
-                                if syst == "" and len(systematics)!=1:
+                                if not syst in ["PLI", "gaus"]:
+                                  main_function(gaustails=False)
+                                if "PLI" == syst:
                                   main_function(gaustails=False, shiftForPLI="up")
                                   main_function(gaustails=False, shiftForPLI="down")
-                                  main_function(gaustails=True, shiftForPLI="central")
+                                if "gaus" == syst:
                                   main_function(gaustails=True, shiftForPLI="central", gaustail_num = 0.95)
+                                  main_function(gaustails=True, shiftForPLI="central", gaustail_num = 0.87)
                                     ## for gaustail_num in np.arange(0.8,1.0,0.005):
                                     ##    main_function(gaustails=True, shiftForPLI="central", gaustail_num=gaustail_num)

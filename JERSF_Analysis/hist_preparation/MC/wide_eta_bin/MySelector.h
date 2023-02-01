@@ -34,7 +34,7 @@ class MySelector : public TSelector {
 public:
 
   TString outdir;
-  std::string year, study;
+  std::string year, study, binning;
   bool isAK8;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -114,7 +114,7 @@ public:
   TBranch *b_gen_asymmetry;
   TBranch *b_gen_alpha;
 
-  MySelector(TString name, std::string year_, std::string study_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), isAK8(isAK8_) { }
+  MySelector(TString name, std::string year_, std::string study_, std::string binning_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), binning(binning_), isAK8(isAK8_) { }
   virtual ~MySelector() { }
   virtual int   Version() const { return 2; }
   virtual void    Begin(TTree *tree);
@@ -140,7 +140,7 @@ public:
   int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE;
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
   int PtBins_Central, PtBins_HF, PtBins;
-  int AlphaBins;
+  int AlphaBins, AlphaBinsInc;
 
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
@@ -149,7 +149,7 @@ public:
   std::vector<double> Eta_bins_FE_reference;
   std::vector<double> Eta_bins_FE_control;
   std::vector<double> Eta_bins_FE;
-  std::vector<double> Alpha_bins;
+  std::vector<double> Alpha_bins, Alpha_bins_Inc;
 
 
 
@@ -172,6 +172,11 @@ public:
   std::vector< std::vector< TH2F* > > alpha2D_SM, alpha2D_SM_control, alpha2D_FE_reference, alpha2D_FE_control, alpha2D_FE;
   std::vector< std::vector< std::vector< TH1F* > > > MC_Truth_asymmetries_SM, MC_Truth_asymmetries_SM_control, MC_Truth_asymmetries_FE_reference, MC_Truth_asymmetries_FE_control, MC_Truth_asymmetries_FE;
   std::vector< std::vector< std::vector< TH2F* > > > MC_Truth_asymmetries_2D_SM, MC_Truth_asymmetries_2D_SM_control, MC_Truth_asymmetries_2D_FE_reference, MC_Truth_asymmetries_2D_FE_control, MC_Truth_asymmetries_2D_FE;
+
+  std::vector< std::vector< TH1F* > > inclusive_rho_Central, inclusive_ptave_Central, inclusive_nevents_Central; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_Barrel, inclusive_ptave_Barrel, inclusive_nevents_Barrel; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_Forward, inclusive_ptave_Forward, inclusive_nevents_Forward; // alpha, pt
+  std::vector< std::vector< TH1F* > > inclusive_rho_HF, inclusive_ptave_HF, inclusive_nevents_HF; // alpha, pt
 
   std::vector< std::vector< std::vector< TH2F* > > > dR_SM, 					gen_dR_SM,						dR_probe_SM,						gen_dR_probe_SM,            dR_barrel_SM,						gen_dR_barrel_SM;
   std::vector< std::vector< std::vector< TH2F* > > > dR_SM_control, 	gen_dR_SM_control,		dR_probe_SM_control,		gen_dR_probe_SM_control,    dR_barrel_SM_control,		gen_dR_barrel_SM_control;
