@@ -205,7 +205,7 @@ protected:
   std::unique_ptr<LumiHists> h_monitoring_final;
   std::unique_ptr<JECRunnumberHists> h_runnr_input;
   std::unique_ptr<JECCrossCheckHists> h_input, h_lumisel, h_beforeCleaner, h_afterCleaner, h_afterHEM, h_2jets, h_beforeJEC, h_afterJEC, h_afterJER, h_afterMET, h_beforeTriggerData, h_afterTriggerData, h_beforeFlatFwd, h_afterFlatFwd, h_afterPtEtaReweight, h_afterLumiReweight, h_afterUnflat, h_afternVts;
-  std::unique_ptr<JECCrossCheckHists> h_ps_weight, h_prefire_check, h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
+  std::unique_ptr<JECCrossCheckHists> h_prefire_check, h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
   std::unique_ptr<MuonHists> h_Muon, h_Muon_before;
   std::unique_ptr<ElectronHists> h_Elec, h_Elec_before;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
@@ -433,7 +433,6 @@ void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
   h_input.reset(new JECCrossCheckHists(ctx,"CrossCheck_input"));
   h_lumisel.reset(new JECCrossCheckHists(ctx,"CrossCheck_lumisel"));
   h_prefire_check.reset(new JECCrossCheckHists(ctx,"CrossCheck_prefire"));
-  h_ps_weight.reset(new JECCrossCheckHists(ctx,"CrossCheck_ps"));
   h_beforeCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_beforeCleaner"));
   h_afterCleaner.reset(new JECCrossCheckHists(ctx,"CrossCheck_afterCleaner"));
 
