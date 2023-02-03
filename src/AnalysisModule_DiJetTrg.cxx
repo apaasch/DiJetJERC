@@ -20,8 +20,8 @@
 #include "UHH2/common/include/PrintingModules.h"
 #include <UHH2/common/include/ElectronHists.h>
 #include <UHH2/common/include/MuonHists.h>
+#include <UHH2/common/include/PSWeights.h>
 
-#include "UHH2/DiJetJERC/include/PartonShowerWeight.h"
 #include "UHH2/DiJetJERC/include/JECAnalysisHists.h"
 #include "UHH2/DiJetJERC/include/JECCrossCheckHists.h"
 #include "UHH2/DiJetJERC/include/JECRunnumberHists.h"
@@ -210,7 +210,7 @@ protected:
   std::unique_ptr<ElectronHists> h_Elec, h_Elec_before;
   std::unique_ptr<uhh2DiJetJERC::Selection> sel;
   std::unique_ptr<Selection> HEMEventCleaner_Selection;
-  std::unique_ptr<PartonShowerWeight> ps_weights;
+  std::unique_ptr<PSWeights> ps_weights;
 
   Event::TriggerIndex trigindex;
   std::map<string, std::vector<string>> triggernames, triggernames_HF;
@@ -590,13 +590,6 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   prefire_direction = ctx.get("prefire_direction","nominal");
   Study = ctx.get("Study", "default");
 
-  // PS reweighting
-  string PS_variation = "central";
-  PS_variation = ctx.get("ps_variation", "central");
-  cout << "Using PS variation " << PS_variation << endl;
-  ps_weights.reset(new PartonShowerWeight(ctx, PS_variation));
-
-
   JECClosureTest = string2bool(ctx.get("JECClosureTest"));
   JERClosureTest = string2bool(ctx.get("JERClosureTest","false"));
   apply_EtaPhi_cut = string2bool(ctx.get("EtaPhi_cut", "true"));
@@ -774,6 +767,9 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   ctx.undeclare_all_event_output();
   declare_output(ctx);//store only varaibles useful for dijet analysis
 
+  // PS reweighting
+  ps_weights.reset(new PSWeights(ctx, false));
+
   // Do pileup reweighting (define it after undeclaring all other variables to keep the weights in the output)
   apply_lumiweights = string2bool(ctx.get("apply_lumiweights","true"));
   apply_lumiweights = apply_lumiweights && isMC;
@@ -895,13 +891,8 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   event.weight *= prefire_weight;
   h_prefire_check->fill(event);
 
-  if(isMC){
-    if(debug) cout << "Parton Shower Wieght" << endl;
-    ps_weights->process(event);
-    double w = event.weight;
-    h_ps_weight->fill(event);
-    if(debug) cout << "PS Weight B: " << w << " | A: " << event.weight << endl;
-  }
+  if(debug) cout << "Parton Shower Weight" << endl;
+  ps_weights->process(event);
 
   //Dump Input
   h_input->fill(event);
