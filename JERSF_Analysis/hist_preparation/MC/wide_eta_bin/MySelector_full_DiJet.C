@@ -259,11 +259,15 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   AlphaBins = 6;
   for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30}) Alpha_bins.push_back(alpha);
 
-  for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.}) Alpha_bins_Inc.push_back(alpha);
+  for (auto &alpha: {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30,0.325,0.35,0.375,0.40,0.50,0.60,0.70,0.80,0.90,1.}) Alpha_bins_Inc.push_back(alpha);
+  // for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.}) Alpha_bins_Inc.push_back(alpha);
   AlphaBinsInc = Alpha_bins_Inc.size();
 
   Alpha_bins = Alpha_bins_Inc;
   AlphaBins = AlphaBinsInc;
+
+  isPS = (sys.find("FSR") != std::string::npos || sys.find("ISR") != std::string::npos)?true:false;
+  if(isPS) std::cout << "Studing PS weights " << sys << std::endl;
 
   h_JetAvePt_SM = new TH1F("JetAvePt" ,   "Inclusive Jet Ave Pt",   50, 0., 2000);  h_JetAvePt_SM->SetXTitle("Pt_{ave}[GeV]");  h_JetAvePt_SM->SetYTitle("a.u."); h_JetAvePt_SM->Sumw2();
   h_Jet1Pt_SM   = new TH1F("Jet1Pt",      "Inclusive Jet 1 Pt",     50, 0., 2000);  h_Jet1Pt_SM->SetXTitle("Pt_1[GeV]");        h_Jet1Pt_SM->SetYTitle("a.u.");   h_Jet1Pt_SM->Sumw2();
@@ -395,6 +399,30 @@ bool MySelector::Process(Long64_t entry) {
 
   if ( jet3_pt > jet_thr ) alpha = TMath::Abs(alpha_raw);
   else alpha = (njet <3) ? 0. : 1. ;
+
+  if(isPS){
+    double PSweight = 1;
+    if(sys.find("FSR") != std::string::npos){
+      if(sys.find("FSRdown_sqrt2") != std::string::npos) PSweight = weight_fsr_sqrt2_down;
+      else if(sys.find("FSRup_sqrt2") != std::string::npos) PSweight = weight_fsr_sqrt2_up;    
+      else if(sys.find("FSRdown_2") != std::string::npos) PSweight = weight_fsr_2_down;
+      else if(sys.find("FSRup_2") != std::string::npos) PSweight = weight_fsr_2_up; 
+      else if(sys.find("FSRdown_4") != std::string::npos) PSweight = weight_fsr_4_down;
+      else if(sys.find("FSRup_4") != std::string::npos) PSweight = weight_fsr_4_up;  
+      else throw std::runtime_error("<E> Check the given PS variation");
+    }
+    else if(sys.find("ISR") != std::string::npos){
+      if(sys.find("ISRdown_sqrt2") != std::string::npos) PSweight = weight_isr_sqrt2_down;
+      else if(sys.find("ISRup_sqrt2") != std::string::npos) PSweight = weight_isr_sqrt2_up;    
+      else if(sys.find("ISRdown_2") != std::string::npos) PSweight = weight_isr_2_down;
+      else if(sys.find("ISRup_2") != std::string::npos) PSweight = weight_isr_2_up; 
+      else if(sys.find("ISRdown_4") != std::string::npos) PSweight = weight_isr_4_down;
+      else if(sys.find("ISRup_4") != std::string::npos) PSweight = weight_isr_4_up;
+      else throw std::runtime_error("<E> Check the given PS variation");  
+    }
+    else throw std::runtime_error("<E> PS must contain ISR or FSR");
+    weight *= PSweight;
+  }
 
   h_PU->Fill(nPU, 1);
   h_alpha_raw->Fill(alpha_raw, 1);

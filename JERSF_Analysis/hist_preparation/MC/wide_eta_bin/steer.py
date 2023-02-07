@@ -28,7 +28,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
           if (sys == "" and dir != "") or (sys == "alpha" and dir != "") or ((sys != "" and sys != "alpha") and dir == ""):
             continue
           pattern = newJECVersion+"/"+newJetLabel+"/"+sys+"/"+dir+"/"
-          if sys == "" or sys == "alpha":
+          if sys == "" or sys == "alpha" or sys == "PS":
             pattern = newJECVersion+"/"+newJetLabel+"/"
           source_path = path+pattern
           if isRunII:
@@ -37,6 +37,8 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
             continue
           if sys == "alpha":
             pattern = newJECVersion+"/"+newJetLabel+"/"+sys+"/"
+          if sys == "PS":
+            pattern = newJECVersion+"/"+newJetLabel+"/"+sys+"/"+dir+"/"
           if not os.path.isdir(list_path_+pattern):
             os.makedirs(list_path_+pattern)
           for sample in samples:
@@ -76,7 +78,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
             logfilename = "log.txt"
             f = open(logfilename,'w')
             cmd = './Analysis.x %s >> log.txt &' % (run_list)
-            command = [outdir+"Analysis.x", run_list, outdir, year, study, binning]
+            command = [outdir+"Analysis.x", run_list, outdir, year, study, binning, dir]
             list_processes.append(command)
             list_logfiles.append(outdir+"log.txt")
             f.close()
@@ -134,7 +136,7 @@ JetLabels = ["AK4Puppi"]
 # systematics = ["", "PU", "JEC"]
 # systematics = ["Prefire", "PU", "JEC"]
 # systematics = ["Prefire"]
-systematics = [""]
+systematics = ["PS"]
 
 list_processes = []
 list_logfiles = []
@@ -150,7 +152,8 @@ studies.append("eta_common")
 # studies.append("eta_simple")
 
 global dirs_PS
-dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2']]
+# dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2','4','2']]
+dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['down'] for f in ['sqrt2']]
 if 'PS' in systematics:
     print(dirs_PS)
 
@@ -179,4 +182,4 @@ print len(list_processes)
 # print ""
 # print "LOG - ", list_logfiles
 
-parallelise(list_processes, 4, list_logfiles)
+parallelise(list_processes, 6, list_logfiles)
