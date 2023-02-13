@@ -526,7 +526,7 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
 
       if(extenda){
         if( m<4 && !extendAlpha(p) ) continue;
-      }©
+      }
 
       double range = std::max(0.05,removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1));
 
@@ -683,7 +683,7 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     char line[100];
     TLegend *legend;
 
-    if(debug) cout << "In before fitERR " << m << " " << h_fitERR.size() << " " << h_cor.size() << endl;
+    // if(debug) cout << "In before fitERR " << m << " " << h_fitERR.size() << " " << h_cor.size() << endl;
     h_fitERR.at(m)->Draw("E4 same");
 
     if(h_uncor.at(m)->GetFunction("constfit")){
@@ -732,7 +732,6 @@ void PrintFitInfo(TF1* fit, TString function, std::vector<double> range,  std::v
   cout << "S in [" << setw(5) << dtos(S[0], 2) << ", " << setw(4) << dtos(S[1], 2) << "] (S0: " << setw(4) << dtos(initial[1], 2) << ") " << "and ";
   cout << "C in [" << setw(5) << dtos(C[0], 2) << ", " << setw(4) << dtos(C[1], 2) << "] (C0: " << setw(4) << dtos(initial[2], 2) << ") ";
   if(function.Contains("NSxPC")) cout << "and P in [" << setw(5) << dtos(P[0], 2) << ", " << setw(4) << dtos(P[1], 2) << "] (P0: " << setw(4) << dtos(initial[3], 2) << ") ";
-  cout << endl;
 }
 
 // ======================================================================================================
@@ -1104,6 +1103,9 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
 int mainRun(std::string year, bool data_, const char* filename, const char* filename_data, TString lumi, TString label_mc, TString label_data, TString Trigger, TString outdir, double gaustails = 0.985, float shiftForPLI = 0.0, int ref_shift = 3){
 
+  time_t start, end; // TIME
+  double time_taken;
+
   gPrintViaErrorHandler = kTRUE;
   gErrorIgnoreLevel = kFatal;
   double hist_max_value = 0.3;
@@ -1150,7 +1152,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   else if (Trigger.Contains("eta_L2R"))    {binHF=11; eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);}
   else                                     {binHF=11; eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);}
 
-  // eta_bins = {0.000, 0.261, 0.522, 0.783, 1.044, 1.305, 1.566, 5.191}; // DELETE
   int n_eta_bins = eta_bins.size();
 
   int EtaBins_SM            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<eta_cut; });; // st method bins
@@ -1242,9 +1243,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // EtaBins_SM       = n_eta_bins - EtaBins_FE - 1;
   // etaShift_FE_control  = eta_bins_edge_FE.size() -1 ;
 
-  std::vector<double> alpha = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+  alpha = {0.05,0.10,0.15,0.20,0.25,0.30};
+  if(Trigger.Contains("finealpha")) alpha = {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30,0.325,0.35,0.375,0.40};
+  if(Trigger.Contains("highalpha")) alpha = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
   AlphaBins = alpha.size();
-  cout << "Consider " << AlphaBins << " alpha bins" << endl;
+  cout << "Consider " << AlphaBins << " alpha bins;";
+  for(double a:alpha){printf(" %1.3f",a);} cout << endl;
 
   TFile *f, *f_data;
   f = new TFile( filename, "READ");
@@ -1258,6 +1262,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // ------------------------------
   //      loading histograms
   // ------------------------------
+
+  time(&start); // TIME
 
   std::vector< std::vector< std::vector< TH1F* > > > asymmetries_SM, gen_asymmetries_SM, asymmetries_data_SM, MC_Truth_asymmetries_SM;
   std::vector< std::vector< std::vector< TH1F* > > > asymmetries_pt_SM, gen_asymmetries_pt_SM, asymmetries_pt_data_SM;
@@ -1329,9 +1335,15 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // }
   // maps.Close();
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histLoadAsym is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I calculate pt_mean for each alpha and pt bin and eta bin.          //
   ////////////////////////////////////////////////////////////////////////////
+
+  time(&start); // TIME
 
   std::vector< std::vector< std::vector< double > > > width_pt_SM, gen_width_pt_SM, width_pt_data_SM, gen_width_pt_data_SM;
   std::vector< std::vector< std::vector< double > > > width_pt_FE, gen_width_pt_FE, width_pt_data_FE, gen_width_pt_data_FE;
@@ -1353,12 +1365,18 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
 
   // gen_all_data is for running a cross check with smeared MC.
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histMeanPt is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I calculate width of asymmetry distributions only for               //
   //    alpha bins above 10 GeV thresholds (too soft contriubtions)         //
   //    e.g. for bin p_T_ave (55-75) alpha 0.1 corresponds to 57 GeV jets   //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< std::vector< double > > > asymmetries_width_SM, gen_asymmetries_width_SM, asymmetries_width_data_SM, gen_asymmetries_width_data_SM, lower_x_SM, upper_x_SM, gen_lower_x_SM, gen_upper_x_SM, lower_x_data_SM, upper_x_data_SM, gen_lower_x_data_SM, gen_upper_x_data_SM;
   std::vector< std::vector< std::vector< double > > > asymmetries_width_SM_error, gen_asymmetries_width_SM_error, asymmetries_width_data_SM_error, gen_asymmetries_width_data_SM_error;
   std::vector< std::vector< std::vector< double > > > asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE, gen_asymmetries_width_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE, lower_x_data_FE, upper_x_data_FE, gen_lower_x_data_FE, gen_upper_x_data_FE;
@@ -1379,11 +1397,17 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "asymmetries_width_Fe " << asymmetries_width_FE.size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histWidthAsym is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I calculate widths, this time also including                        //
   //    alpha bins below 10GeV threshold                                    //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM, soft_gen_asymmetries_width_SM, soft_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM;
   std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM_error, soft_gen_asymmetries_width_SM_error, soft_asymmetries_width_data_SM_error, soft_gen_asymmetries_width_data_SM_error;
 
@@ -1406,10 +1430,17 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "asymmetries_FE " << asymmetries_FE.size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histWidthAsym add is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
+
   ////////////////////////////////////////////////////////////////////////////
   //    Calculate mcTruth resolution for cross check with dijet calculation //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< std::vector< double > > > mcTruth_res_SM, mcTruth_res_FE;
   std::vector< std::vector< std::vector< double > > > mcTruth_res_SM_error, mcTruth_res_FE_error;
 
@@ -1421,10 +1452,17 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "MC_Truth_asymmetries_FE " << MC_Truth_asymmetries_FE.size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histWidthMCTruth is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
+
   ////////////////////////////////////////////////////////////////////////////
   //     I fill width(alpha_max) histograms                                 //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< TH1F* > > widths_hist_SM, gen_widths_hist_SM, widths_hist_data_SM, gen_widths_hist_data_SM;
   std::vector< std::vector< TH1F* > > widths_hist_FE, gen_widths_hist_FE, widths_hist_data_FE, gen_widths_hist_data_FE;
 
@@ -1443,11 +1481,17 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "widths_hist_FE " << widths_hist_FE.size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by fill_widths_hists is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+  
   ////////////////////////////////////////////////////////////////////////////
   //    I do same for alpha unconstrained widths                            //
   //    one needs these plots to prove which points should be rejected!     //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< TH1F* > > soft_widths_hist_SM, soft_gen_widths_hist_SM, soft_widths_hist_data_SM, soft_gen_widths_hist_data_SM;
   std::vector< std::vector< TH1F* > > soft_widths_hist_FE, soft_gen_widths_hist_FE, soft_widths_hist_data_FE, soft_gen_widths_hist_data_FE;
 
@@ -1459,12 +1503,18 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   fill_widths_hists( "all_widths_fe", soft_widths_hist_FE, soft_asymmetries_width_FE, soft_asymmetries_width_FE_error );
   fill_widths_hists( "all_widths_gen_fe", soft_gen_widths_hist_FE, gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error );
   fill_widths_hists( "all_widths_data_fe", soft_widths_hist_data_FE, soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error );
-  fill_widths_hists( "all_widths_gen_data_fe", soft_gen_widths_hist_data_FE, gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error );
+  fill_widths_hists( "all_widths_gen_data_fe", soft_gen_widths_hist_data_FE, gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error ); 
+  
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by fill_widths_hists 2 is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
 
   ////////////////////////////////////////////////////////////////////////////
   //    I fit line or const to width(alpha_max)                             //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > extrapolated_widths_SM, extrapolated_gen_widths_SM, extrapolated_widths_data_SM, extrapolated_gen_widths_data_SM;
   std::vector< std::vector< double > > extrapolated_widths_SM_error, extrapolated_gen_widths_SM_error, extrapolated_widths_data_SM_error, extrapolated_gen_widths_data_SM_error;
 
@@ -1486,10 +1536,16 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "extrapolated_widths_FE " << extrapolated_widths_FE.size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histLinFit is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    Correlated fit                                                      //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > extrapolated_widths_correlated_SM, extrapolated_gen_widths_correlated_SM, extrapolated_widths_correlated_data_SM, extrapolated_gen_widths_correlated_data_SM;
   std::vector< std::vector< double > > extrapolated_widths_correlated_SM_error, extrapolated_gen_widths_correlated_SM_error, extrapolated_widths_correlated_data_SM_error, extrapolated_gen_widths_correlated_data_SM_error;
 
@@ -1524,19 +1580,31 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     }
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by histLinCorFit is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I make histograms ratio of widths(alpha=0.15)                       //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< TH1F* > widths_015_ratios_SM, widths_015_ratios_FE;
 
   widths_015_ratios( "widths_015_SM_ratios", widths_015_ratios_SM, asymmetries_width_data_SM, asymmetries_width_data_SM_error, asymmetries_width_SM, asymmetries_width_SM_error, width_pt_SM );
   widths_015_ratios( "widths_015_FE_ratios", widths_015_ratios_FE, asymmetries_width_data_FE, asymmetries_width_data_FE_error, asymmetries_width_FE, asymmetries_width_FE_error, width_pt_FE );
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by widths_015_ratios is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I correct for PLI using b parameter from line fit to sigma_A(alpha) //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_SM, JER_uncorrelated_corrected_data_SM;
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_SM_error, JER_uncorrelated_corrected_data_SM_error;
 
@@ -1566,12 +1634,18 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "JER_uncorrelated_corrected_MC_FE_ref " << JER_uncorrelated_corrected_MC_FE_ref.size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by correctJERwithPLI is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    PLI corrected using b parameters                                    //
   ////////////////////////////////////////////////////////////////////////////
   //    Same correction but for correlated fit results                      //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > JER_correlated_corrected_MC_SM, JER_correlated_corrected_data_SM;
   std::vector< std::vector< double > > JER_correlated_corrected_MC_SM_error, JER_correlated_corrected_data_SM_error;
 
@@ -1610,11 +1684,17 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     }
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by correctJERwithPLI 2 is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I do the same for widths at alpha = 0.15                            //
   ////////////////////////////////////////////////////////////////////////////
   if(debug) cout << "LINE " << __LINE__ << endl;
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > JER015_MC_SM, JER015_data_SM;
   std::vector< std::vector< double > > JER015_MC_SM_error, JER015_data_SM_error;
 
@@ -1638,6 +1718,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     correctJERwithPLI015(JER015_data_FE_ref, JER015_data_FE_ref_error, asymmetries_width_data_FE, asymmetries_width_data_FE_error, gen_asymmetries_width_data_FE, gen_asymmetries_width_data_FE_error, shiftForPLI);
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by correctJERwithPLI015 is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
 
   ////////////////////////////////////////////////////////////////////////////
   //    I corrected alpha = 0.15 widhs for PLI correct way                  //
@@ -1646,6 +1729,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   if(debug) cout << "LINE " << __LINE__ << endl;
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_FE, JER_uncorrelated_corrected_data_FE;
   std::vector< std::vector< double > > JER_uncorrelated_corrected_MC_FE_error, JER_uncorrelated_corrected_data_FE_error;
 
@@ -1655,6 +1740,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if (debug) std::cout << "JER_uncorrelated_corrected_MC_FE " << JER_uncorrelated_corrected_MC_FE.size() << '\n';
   if (debug) std::cout << "JER_uncorrelated_corrected_data_FE " << JER_uncorrelated_corrected_data_FE.size() << '\n';
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by correctForRef is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    forward widths corrected for Ref widths!                            //
   ////////////////////////////////////////////////////////////////////////////
@@ -1662,6 +1751,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   if(debug) cout << "LINE " << __LINE__ << endl;
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > JER_correlated_corrected_MC_FE, JER_correlated_corrected_data_FE;
   std::vector< std::vector< double > > JER_correlated_corrected_MC_FE_error, JER_correlated_corrected_data_FE_error;
 
@@ -1681,6 +1772,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     }
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by correctForRef 2 is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    ref region corrected for correlated fit                             //
   ////////////////////////////////////////////////////////////////////////////
@@ -1688,11 +1783,17 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   if(debug) cout << "LINE " << __LINE__ << endl;
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > JER015_MC_FE, JER015_data_FE;
   std::vector< std::vector< double > > JER015_MC_FE_error, JER015_data_FE_error;
 
   correctForRef( "mccorrected015", JER015_MC_FE,   JER015_MC_FE_error,   JER015_MC_FE_ref,   JER015_MC_FE_ref_error,   JER015_MC_SM,   JER015_MC_SM_error,    width_pt_FE, ref_shift, outdir);
   correctForRef( "datacorrect015", JER015_data_FE, JER015_data_FE_error, JER015_data_FE_ref, JER015_data_FE_ref_error, JER015_data_SM, JER015_data_SM_error,  width_pt_FE, ref_shift, outdir);
+
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by correctForRef 3 is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
 
   ////////////////////////////////////////////////////////////////////////////
   //    Ref reg corrected for widths at alpha = 0.15                        //
@@ -1701,6 +1802,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   ////////////////////////////////////////////////////////////////////////////
   if(debug) cout << "LINE " << __LINE__ << endl;
 
+  time(&start); // TIME
+  
   std::vector< std::vector< double > > scales_uncorrelated_SM, scales_uncorrelated_FE, scales_uncorrelated_FE_control;
   std::vector< std::vector< double > > scales_uncorrelated_SM_error, scales_uncorrelated_FE_error, scales_uncorrelated_FE_control_error;
 
@@ -1739,19 +1842,31 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     std::cout << "scales_correlated_FE_control " << scales_correlated_FE_control.size() << " " << scales_correlated_FE_control[0].size() << '\n';
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by makeScales is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I make plots with MCTruth: Res from dijet                           //
   ////////////////////////////////////////////////////////////////////////////
 
+  time(&start); // TIME
+  
   std::vector< TH1F* > JER_MC_Truth_SM, JER_MC_Truth_FE;
 
   fill_mctruth_hist( "MC_Truth"    , JER_MC_Truth_SM, mcTruth_res_SM, mcTruth_res_SM_error, width_pt_SM, hist_max_value);
   fill_mctruth_hist( "MC_Truth_Fwd", JER_MC_Truth_FE, mcTruth_res_FE, mcTruth_res_FE_error, width_pt_FE, hist_max_value);
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by fill_mctruth_hist is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   ////////////////////////////////////////////////////////////////////////////
   //    I make histograms with  JERs and scale factors                      //
   ////////////////////////////////////////////////////////////////////////////
-
+     
+  time(&start); // TIME
+        
   std::vector< TH1F* > JER_uncorrelated_MC_hist_SM,         JER_uncorrelated_data_hist_SM,          JER_uncorrelated_scale_hist_SM,         JER015_uncorrelated_MC_hist_SM;
   std::vector< TH1F* > JER_uncorrelated_MC_hist_FE,         JER_uncorrelated_data_hist_FE,          JER_uncorrelated_scale_hist_FE,         JER015_uncorrelated_MC_hist_FE;
   std::vector< TH1F* > JER_uncorrelated_MC_hist_FE_control, JER_uncorrelated_data_hist_FE_control,  JER_FE_uncorrelated_scale_control_hist, JER015_uncorrelated_MC_hist_SM_control;
@@ -1815,6 +1930,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     }
   }
 
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by fill_hist is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
   //////////////////////////////////////////////////////////////////////////////////////////
   //    store SFs as 2D (pt,eta) histograms                                               //
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -1857,22 +1976,38 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
 
-  std::cout << "START PLOTTING" << '\n';
+  time(&start); // TIME
 
-  TFile fMCTruth("output/MCTruth.root","RECREATE");
-  PLOT_MCT(JER_MC_Truth_SM,JER_uncorrelated_MC_hist_SM,JER_correlated_MC_hist_SM,JER015_uncorrelated_MC_hist_SM,outdir+"pdfy/MCTruth/",eta_bins_edge_SM, false);
-  PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
-  fMCTruth.Close();
+  std::cout << "START PLOTTING" << '\n';
+  if(false){
+    TFile fMCTruth("output/MCTruth.root","RECREATE");
+    PLOT_MCT(JER_MC_Truth_SM,JER_uncorrelated_MC_hist_SM,JER_correlated_MC_hist_SM,JER015_uncorrelated_MC_hist_SM,outdir+"pdfy/MCTruth/",eta_bins_edge_SM, false);
+    PLOT_MCT(JER_MC_Truth_FE,JER_uncorrelated_MC_hist_FE,JER_correlated_MC_hist_FE,JER015_uncorrelated_MC_hist_FE,outdir+"pdfy/MCTruth/",eta_bins_edge_FE, true);
+    fMCTruth.Close();
+  }
+
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by PLOT_MCT is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
 
   bool plot_all = false;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
     ////////////////////////////////////////////////////////////////////////////
-
+    
     if(false){ // Ignore to save time consumption
+
+      time(&start); // TIME
+
       PLOT_ASY(asymmetries_data_SM,  asymmetries_SM, gen_asymmetries_SM,  asymmetries_width_data_SM, asymmetries_width_SM, gen_asymmetries_width_SM, asymmetries_width_data_SM_error, asymmetries_width_SM_error, gen_asymmetries_width_SM_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_SM, upper_x_data_SM, lower_x_SM, upper_x_SM, gen_lower_x_SM, gen_upper_x_SM);
       PLOT_ASY(asymmetries_data_FE,  asymmetries_FE, gen_asymmetries_FE,  asymmetries_width_data_FE, asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE_error, asymmetries_width_FE_error, gen_asymmetries_width_FE_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_FE, upper_x_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE);
+       
+      time(&end); // TIME
+      time_taken = double(end - start);
+      if(debug) cout << "Time taken by PLOT_ASY is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
+      time(&start); // TIME
       TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
       for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
         for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
@@ -1893,11 +2028,18 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
         }
       }
       asyroot.Close();
+
+      time(&end); // TIME
+      time_taken = double(end - start);
+      if(debug) cout << "Time taken by STORE_ASY is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
     }
 
     ////////////////////////////////////////////////////////////////////////////
     //  Plots with widths(alpha)                                              //
     ////////////////////////////////////////////////////////////////////////////
+
+    time(&start); // TIME
 
     // TFile WIDTHroot(outdir+"output/Width.root","RECREATE");
 
@@ -1914,6 +2056,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PLOT_ALLWIDTHS(soft_widths_hist_data_SM, soft_widths_hist_SM, soft_gen_widths_hist_SM,outdir+"pdfy/widths/allPoints_");
     // PLOT_ALLWIDTHS(soft_widths_hist_data_FE, soft_widths_hist_FE, soft_gen_widths_hist_FE,outdir+"pdfy/widths/allPoints_");
+       
+    time(&end); // TIME
+    time_taken = double(end - start);
+    if(debug) cout << "Time taken by PLOT_WIDTH is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
+
+    time(&start); // TIME
 
     TFile widthroot(outdir+"output/widths.root","RECREATE");
     if(false){ // Ignore to save time consumption
@@ -1934,6 +2082,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     }
     h_chi2_tot->Write();
     widthroot.Close();
+       
+    time(&end); // TIME
+    time_taken = double(end - start);
+    if(debug) cout << "Time taken by STORE_WIDTHS is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
 
   }
 
@@ -1948,7 +2100,6 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   PLOT_NSC(JER_uncorrelated_data_hist_FE,JER_uncorrelated_MC_hist_FE,JER_uncorrelated_scale_hist_FE,h_fitERR_uncorrelated_FE,outdir,eta_bins_edge_FE, true, false);
   PLOT_NSC(JER_correlated_data_hist_FE,JER_correlated_MC_hist_FE,JER_correlated_scale_hist_FE,h_fitERR_correlated_FE,outdir,eta_bins_edge_FE, true, true);
   // NSCroot.Close();
-  cout << h_fitERR_correlated_SM.size() << " " << h_fitERR_correlated_FE.size() << endl;
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Extract Widths
@@ -1961,6 +2112,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+  time(&start); // TIME
+
   TFile Dijetroot(outdir+"output/dijet_balance_"+year+".root","RECREATE");
 
   TGraphAsymmErrors* g = new TGraphAsymmErrors();
@@ -1970,6 +2123,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   for( unsigned int m = 0; m < JER_correlated_MC_hist_FE.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_FE.at(m),   "MC",   "FE", "nominal"); g -> Write();}
   for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_FE.at(m), "Data", "FE", "nominal"); g -> Write();}
   Dijetroot.Close();
+       
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken by STORE_DIJET is : " << fixed << time_taken << setprecision(5) << " sec " << endl;
 
   if(false){ // Replaced by dijet_balance file
     TFile JERroot(outdir+"output/JERs.root","RECREATE");

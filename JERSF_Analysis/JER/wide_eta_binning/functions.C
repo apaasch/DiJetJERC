@@ -24,7 +24,7 @@
 
 #include <bits/stdc++.h>
 
-bool debug = true;
+bool debug = false;
 bool alpha_new = true;
 bool extenda = true;
 bool useRMS = true;
@@ -41,6 +41,9 @@ TString g_study = "";
 
 static std::vector<double> usedPtTrigger_central; // Set in mainRun.cxx
 static std::vector<double> usedPtTrigger_forward; // Set in mainRun.cxx
+std::vector<double> alpha;
+//static std::vector<double> alpha = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+//static std::vector<double> alpha = {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30,0.325,0.35,0.375,0.40};
 
 // Code of Andrea Malara
 // Based on code by Marek Niedziela, Matthias Schröder, Kristin Goebel
@@ -288,10 +291,10 @@ void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< 
     for( int p = 0; p < ptBins; p++ ) {
       std::vector< TH1F* > temp1;
       std::vector< TH1F* > temp1gen;
-      int alpha = 6;
-      if(extendAlpha(p)) alpha = 13;
-      // for( int r = 0; r < AlphaBins; r++ ) {
-      for( int r = 0; r < alpha; r++ ) {
+      // int alpha = 6;
+      // if(extendAlpha(p)) alpha = 15;
+      // for( int r = 0; r < alpha; r++ ) {
+      for( int r = 0; r < AlphaBins; r++ ) {
         TString name = text;                        name    += "_eta"; name     += m+1; name    += "_pt"; name    += p+1; name    += "_alpha"; name     += r+1;
         TString namegen = "gen_"; namegen += text;  namegen += "_eta"; namegen  += m+1; namegen += "_pt"; namegen += p+1; namegen += "_alpha"; namegen  += r+1;
         TH1F* h = (TH1F*)f.Get(name);
@@ -500,27 +503,25 @@ void histWidthMCTruth( std::vector<std::vector<std::vector<TH1F*> > > &Asymmetry
 // ======================================================================================================
 
 void fill_widths_hists( TString name1, std::vector< std::vector< TH1F* > > &widths , std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError) {
-  double aMax[] = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3 , 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
+  // double aMax[] = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3 , 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
+  double amax = alpha[alpha.size()-1]+0.05;
   double temp;
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
     std::vector< TH1F* > temp1;
     for( unsigned int p = 0; p < Widths.at(m).size(); p++ ) {
       TString name_width = name1;
       name_width += "_eta"; name_width += m+1; name_width += "_pt"; name_width += p+1;
-      // if (name1.Contains("_fe")) { name_width += m+2; }
-      // else { name_width += m+1; }
-      TH1F *h1 = new TH1F( name_width, name_width, 105, 0, 1.05);
+      TH1F *h1 = new TH1F( name_width, name_width, amax*100, 0, amax);
       h1 ->GetYaxis()->SetTitle("#sigma_{A}");	h1 ->GetXaxis()->SetTitle("#alpha_{max}"); h1 ->GetYaxis()->SetTitleOffset(1.);
       h1 -> Sumw2();
-      // cout << setw(3) << m << setw(3) << p;
       for( unsigned int r = 0; r < Widths.at(m).at(p).size(); r++ ) {
         // cout << setw(3) << r << " (" << setw(3) << h1 -> FindBin( aMax[ r ] ) << ", " << setw(10) << Widths.at(m).at(p).at(r) << ")";
         temp = Widths.at(m).at(p).at(r);
-        if ( !(TMath::IsNaN(temp)) && temp != 0) h1 -> SetBinContent( h1 -> FindBin( aMax[ r ] ), Widths.at(m).at(p).at(r) );
-        if ( !(TMath::IsNaN(temp)) && temp != 0) h1 -> SetBinError( h1 -> FindBin( aMax[ r ] ), WidthsError.at(m).at(p).at(r) );
+        if ( !(TMath::IsNaN(temp)) && temp != 0) h1 -> SetBinContent( h1 -> FindBin( alpha[r] ), Widths.at(m).at(p).at(r) );
+        if ( !(TMath::IsNaN(temp)) && temp != 0) h1 -> SetBinError( h1 -> FindBin( alpha[r] ), WidthsError.at(m).at(p).at(r) );
       }
       // cout << endl;
-      h1 ->GetYaxis()-> SetRangeUser( 0., 0.3 );
+      h1 ->GetYaxis()-> SetRangeUser( 0., amax );
       temp1.push_back(h1);
     }
     widths.push_back(temp1);
@@ -558,7 +559,7 @@ void histLinFit( std::vector< std::vector< TH1F* > > widths_hist_all , std::vect
 // ===                                                                                                ===
 // ======================================================================================================
 
-void createCov( std::vector< double > Widths, std::vector< double > WidthsError, std::vector<float> alpha, TMatrixD &y_cov_mc){
+void createCov( std::vector< double > Widths, std::vector< double > WidthsError, std::vector<double> alpha, TMatrixD &y_cov_mc){
   for(unsigned int ialpha=0; ialpha < alpha.size(); ++ialpha) {
     for (unsigned int jalpha =0; jalpha < alpha.size(); jalpha++) {
       if ( ialpha <= jalpha ) {
@@ -634,7 +635,7 @@ inline bool extendAlpha(int p){
 }
 
 void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< TGraphErrors* > > &output_graph, std::vector< std::vector< double > > &output, std::vector< std::vector< double > > &output_error, bool isFE, bool isMC, TH1F* h_chi2_tot) {
-  std::vector<float> alpha;
+  // std::vector<float> alpha;
   // std::vector<float> alpha;
   // alpha.push_back(0.05); alpha.push_back(0.1); alpha.push_back(0.15); alpha.push_back(0.20); alpha.push_back(0.25); alpha.push_back(0.3);
   for( unsigned int m = 0; m < Widths.size(); m++ ) {
@@ -647,8 +648,9 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       // p_T loop
       std::vector<double> x,x_e;
 
-      alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3  };
-      if( extendAlpha(p) ) alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
+      // alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3  };
+      // // if( extendAlpha(p) ) alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
+      // if( extendAlpha(p) ) alpha = { 0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30,0.325,0.35,0.375,0.40 };
 
       // cout << setw(5) << m << setw(5) << p;
       for(int ialpha=0; ialpha < alpha.size(); ++ialpha) {
@@ -677,7 +679,7 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
       y_cov_mc_first.ResizeTo(alpha.size(), alpha.size());
 
       TMatrixD y_cov_mc_last;
-      vector<float> alpha_last = alpha; vector<double> x_last = x;
+      vector<double> alpha_last = alpha; vector<double> x_last = x;
       vector<double> widths_last = widths; vector<double> widths_last_err = widths_err;
       if(2<CheckNumberAlphaPoints(widths_last)){
         widths_last.pop_back(); widths_last_err.pop_back(); alpha_last.pop_back(); x_last.pop_back();
