@@ -8,12 +8,10 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
     list_processes = []
     nProcess = 48
     time_ = 1
-    dirs_sys = ["", "up", "down"]
-    # dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
     for newJECVersion in JECVersions_Data:
         for newJetLabel in JetLabels:
             for sys in systematics:
-                dirs = dirs_PS if "PS" in sys else dirs_sys
+                dirs = ["", "up", "down"]
                 for dir in dirs:
                     if sys == "" and dir != "":
                         continue
@@ -43,13 +41,11 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
 @timeit
 def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn18_V4", "Autumn18_V4"], JetLabels=["AK4CHS", "AK8Puppi"], systematics=["", "PU", "JEC", "JER"],extratext=""):
     add_name = original_dir[original_dir.find("SubmittedJobs")+len("SubmittedJobs"):-1]
-    dirs_sys = ["", "up", "down"]
-    # dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
     for sample in ["DATA", "QCD"]:
         for newJECVersion in JECVersions_Data:
             for newJetLabel in JetLabels:
                 for sys in systematics:
-                    dirs = dirs_PS if "PS" in sys else dirs_sys
+                    dirs = ["", "up", "down"]
                     for dir in dirs:
                         if sys == "" and dir != "":
                             continue
@@ -217,8 +213,8 @@ Data_process.append("DATA_RunD_UL18")
 # year = "2018"
 # year = "UL16preVFP"
 # year = "UL16postVFP"
-# year = "UL17"
-year = "UL18"
+year = "UL17"
+# year = "UL18"
 
 
 studies = []
@@ -243,8 +239,8 @@ original_dir_ = os.getcwd()
 
 # QCDSamples = ["QCDPt","QCDHT", "DATA"]
 # QCDSamples = ["QCDHT", "DATA"]
-QCDSamples = ["DATA"]
-# QCDSamples = ["QCDHT"]
+# QCDSamples = ["DATA"]
+QCDSamples = ["QCDHT"]
 processes = list(filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process))
 others = list(set(QCD_process+Data_process)-set(processes))
 
@@ -259,6 +255,8 @@ JECVersions_Data["UL17"]        = ["Summer20UL17_V2"]
 JECVersions_MC["UL17"]          = ["Summer20UL17_V2"]
 JECVersions_Data["UL18"]        = ["Summer20UL18_V2"]
 JECVersions_MC["UL18"]          = ["Summer20UL18_V2"]
+# JECVersions_Data["UL18"]        = ["Summer20UL18_V1"]
+# JECVersions_MC["UL18"]          = ["Summer20UL18_V1"]
 
 # JECVersions_Data["UL18"]        = ["Summer19UL18_V5"]
 # JECVersions_MC["UL18"]          = ["Summer19UL18_V5"]
@@ -276,14 +274,7 @@ JetLabels = ["AK4Puppi"]
 # systematics = ["PS"]
 systematics = [""]
 
-global dirs_PS
-# dirs_PS = [p+d+'_'+f for p in ['FSR', 'ISR'] for d in ['up', 'down'] for f in ['sqrt2', '2', '4']]
-dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2']]
-# dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['2']]
-
 print(year,studies, QCDSamples, JECVersions_Data[year], JetLabels, systematics)
-if 'PS' in systematics:
-    print(dirs_PS)
 
 for study in studies:
 

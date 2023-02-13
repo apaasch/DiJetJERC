@@ -34,7 +34,7 @@ class MySelector : public TSelector {
 public:
 
   TString outdir;
-  std::string year, study, binning;
+  std::string year, study, binning, sys;
   bool isAK8;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -45,6 +45,18 @@ public:
   float weight_pu;
   float weight_pu_down;
   float weight_pu_up;
+  float weight_isr_sqrt2_up;
+  float weight_isr_sqrt2_down;
+  float weight_fsr_sqrt2_up;
+  float weight_fsr_sqrt2_down;
+  float weight_isr_2_down;
+  float weight_isr_2_up;
+  float weight_fsr_2_down;
+  float weight_fsr_2_up;
+  float weight_isr_4_down;
+  float weight_isr_4_up;
+  float weight_fsr_4_down;
+  float weight_fsr_4_up;
   float pthat;
   float nPU;
   int njet;
@@ -69,6 +81,18 @@ public:
   TBranch *b_weight_pu;
   TBranch *b_weight_pu_down;
   TBranch *b_weight_pu_up;
+  TBranch *b_weight_isr_sqrt2_down;
+  TBranch *b_weight_isr_sqrt2_up;
+  TBranch *b_weight_fsr_sqrt2_down;
+  TBranch *b_weight_fsr_sqrt2_up;
+  TBranch *b_weight_isr_2_down;
+  TBranch *b_weight_isr_2_up;
+  TBranch *b_weight_fsr_2_down;
+  TBranch *b_weight_fsr_2_up;
+  TBranch *b_weight_isr_4_down;
+  TBranch *b_weight_isr_4_up;
+  TBranch *b_weight_fsr_4_down;
+  TBranch *b_weight_fsr_4_up;
   TBranch *b_pthat;
   TBranch *b_nPU;
   TBranch *b_njet;
@@ -114,7 +138,7 @@ public:
   TBranch *b_gen_asymmetry;
   TBranch *b_gen_alpha;
 
-  MySelector(TString name, std::string year_, std::string study_, std::string binning_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), binning(binning_), isAK8(isAK8_) { }
+  MySelector(TString name, std::string year_, std::string study_, std::string sys_, std::string binning_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), sys(sys_), binning(binning_), isAK8(isAK8_) { }
   virtual ~MySelector() { }
   virtual int   Version() const { return 2; }
   virtual void    Begin(TTree *tree);
@@ -141,6 +165,7 @@ public:
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
   int PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins, AlphaBinsInc;
+  bool isPS;
 
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
@@ -265,6 +290,18 @@ void MySelector::Init(TTree *tree){
   fChain->SetBranchAddress("weight_pu", &weight_pu, &b_weight_pu);
   fChain->SetBranchAddress("weight_pu_down", &weight_pu_down, &b_weight_pu_down);
   fChain->SetBranchAddress("weight_pu_up", &weight_pu_up, &b_weight_pu_up);
+  fChain->SetBranchAddress("weight_isr_sqrt2_down", &weight_isr_sqrt2_down, &b_weight_isr_sqrt2_down);
+  fChain->SetBranchAddress("weight_isr_sqrt2_up", &weight_isr_sqrt2_up, &b_weight_isr_sqrt2_up);
+  fChain->SetBranchAddress("weight_fsr_sqrt2_down", &weight_fsr_sqrt2_down, &b_weight_fsr_sqrt2_down);
+  fChain->SetBranchAddress("weight_fsr_sqrt2_up", &weight_fsr_sqrt2_up, &b_weight_fsr_sqrt2_up);
+  fChain->SetBranchAddress("weight_isr_2_down", &weight_isr_2_down, &b_weight_isr_2_down);
+  fChain->SetBranchAddress("weight_isr_2_up", &weight_isr_2_up, &b_weight_isr_2_up);
+  fChain->SetBranchAddress("weight_fsr_2_down", &weight_fsr_2_down, &b_weight_fsr_2_down);
+  fChain->SetBranchAddress("weight_fsr_2_up", &weight_fsr_2_up, &b_weight_fsr_2_up);
+  fChain->SetBranchAddress("weight_isr_4_down", &weight_isr_4_down, &b_weight_isr_4_down);
+  fChain->SetBranchAddress("weight_isr_4_up", &weight_isr_4_up, &b_weight_isr_4_up);
+  fChain->SetBranchAddress("weight_fsr_4_down", &weight_fsr_4_down, &b_weight_fsr_4_down);
+  fChain->SetBranchAddress("weight_fsr_4_up", &weight_fsr_4_up, &b_weight_fsr_4_up);
   fChain->SetBranchAddress("rho", &rho, &b_rho);
   fChain->SetBranchAddress("dR_GenJet_GenParticle_barrel_matched", &gen_Delta_R_radiation_barrel, &b_gen_Delta_R_radiation_barrel);
   fChain->SetBranchAddress("dR_GenJet_GenParticle_probe_matched", &gen_Delta_R_radiation_probe, &b_gen_Delta_R_radiation_probe);

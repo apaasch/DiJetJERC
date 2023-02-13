@@ -34,9 +34,6 @@
 <!-- Prefire -->
 <!ENTITY PREFIRE_WEIGHT  "nominal">
 
-<!-- Parton Shower Weights -->
-<!ENTITY PS_WEIGHT  "central"> <!-- central, {ISR,FSR} {up,down} {sqrt2,2,4} -->
-
 <!-- MC PuReweighting -->
 <!ENTITY DO_PU_REWEIGHTING          "true">     <!-- true, false -->
 <!ENTITY SYSTYPE_PU                 "central">  <!-- central, up, down -->
@@ -252,7 +249,6 @@
       <Item Name="Apply_Unflattening"             Value="&APPLY_UNFLATTENING;"/>
       <Item Name="EtaPhi_cut"                     Value="&APPLY_EtaPhi_cut;"/>
       <Item Name="prefire_variation"              Value="&PREFIRE_WEIGHT;" />
-      <Item Name="ps_variation"                   Value="&PS_WEIGHT;" />
 
       <!-- <Item Name="EtaPhi_HCAL"                    Value="&APPLY_EtaPhi_HCAL;"/> -->
       <!-- <Item Name="Cut_dir"                        Value="&Cut_PATH;"/> -->
