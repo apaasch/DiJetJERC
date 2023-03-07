@@ -26,12 +26,14 @@ const int n_eta_bins_JERC = 20;
 const int n_eta_bins_common = 18;
 const int n_eta_bins_narrow = 22;
 const int n_eta_bins_simple = 10;
+const int n_eta_bins_calo = 42;
 const double eta_bins_JER[n_eta_bins_JER]       = { 0.000,        0.522, 0.783,        1.131, 1.305,               1.740, 1.930, 2.043,        2.322, 2.500, 2.650, 2.853, 2.964, 3.139,               5.191};
 const double eta_bins_L2R[n_eta_bins_L2R]       = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305, 1.479, 1.653,        1.930,        2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
 const double eta_bins_JERC[n_eta_bins_JERC]     = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305,        1.566, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191}; // old common binning
 const double eta_bins_common[n_eta_bins_common] = { 0.000, 0.261, 0.522, 0.783, 1.044,        1.305,        1.566, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139,               5.191}; // Combine last three bins for statistics
 const double eta_bins_narrow[n_eta_bins_narrow] = { 0.000, 0.261, 0.522, 0.783, 1.044, 1.131, 1.305, 1.479, 1.653, 1.740, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
 const double eta_bins_simple[n_eta_bins_simple] = { 0.000,                                    1.305,                                                  2.500, 2.650, 2.853, 2.964, 3.139, 3.489, 3.839, 5.191};
+const double eta_bins_calo[n_eta_bins_calo]     = { 0.000, 0.087, 0.174, 0.261, 0.348, 0.435, 0.522, 0.609, 0.696, 0.783, 0.879, 0.957, 1.044, 1.131, 1.218, 1.305, 1.392, 1.479, 1.566, 1.653, 1.740, 1.830, 1.930, 2.043, 2.172, 2.322, 2.500, 2.650, 2.853, 2.964, 3.139, 3.314, 3.489, 3.664, 3.839, 4.013, 4.191, 4.363, 4.538, 4.716, 4.889, 5.191};
 
 constexpr static double s_delta_R   = 0.3;
 
@@ -236,24 +238,28 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"DiJet_central_UL18",                { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
   {"DiJet_central_UL18_ptbins",         { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1400, 1500, 1600, 2000, 2500}}, // 30+1 bins
   {"DiJet_central_UL18_ptbins_default", { 66, 93, 118, 189, 257, 325, 391, 478, 585 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
+  {"DiJet_central_UL18_ptbins_quick",   { 66 }}, //for Di triggers 2018, RunABC, ReReco https://indico.cern.ch/event/801509/contributions/3331436/attachments/1801472/2938522/L2Res-Triggers-25Feb2019.pdf
   {"DiJet_central_UL18_ptbins_fine",    { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120}}, // 30 bins
   {"DiJet_central_UL18_ptbins_fine_v1", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 30+1 bins
   {"DiJet_central_UL18_ptbins_fine_v2", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1390, 1670}}, // 31+1 bins
   {"DiJet_central_UL18_ptbins_fine_v3", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1400, 1500, 1600, 2000, 2500}}, // 33+1 bins
   {"DiJet_central_UL18_ptbins_fine_v4", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1240, 1390, 1670}}, // 32+1 bins
   {"DiJet_central_UL18_ptbins_fine_v5", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1240, 1400, 1500, 1600, 2000, 2500}}, // 35+1 bins
+  {"DiJet_central_UL18_ptbins_fine_v6", { 66, 71,  77,  93,  98, 106, 118, 128, 145, 160, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478,  531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1240, 1400, 1500, 1600, 1750, 2000, 2500}}, // 37+1 bins
   // {"DiJet_central_UL18_ptbins_alpha",   { 15, 22, 28, 32, 38, 42, 48, 66, 93, 118, 189, 257, 325, 391, 478, 585, 644, 730, 790, 840, 920, 1020, 1120, 1120, 1400}}, // 24+1 bins
   {"DiJet_central_UL18_ptbins_alpha",   { 15, 66, 71,  77,  93,  98, 106, 118, 128, 145, 189, 203, 223, 257, 291, 325, 358, 391, 434, 478, 531, 546, 563, 585, 644, 730, 790, 840, 920, 1020, 1120, 1400}}, // 31+1 bins
   {"DiJet_forward_UL18",                { 93, 116, 142, 210, 279, 379 }},
   {"DiJet_forward_UL18_ptbins",         { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // 14+1 bins
   {"DiJet_forward_UL18_ptbins_default", { 93, 116, 142, 210, 279, 379 }},
+  {"DiJet_forward_UL18_ptbins_quick",   { 93 }},
   {"DiJet_forward_UL18_ptbins_fine",    { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
   {"DiJet_forward_UL18_ptbins_fine_v1", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }},
   {"DiJet_forward_UL18_ptbins_fine_v2", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
   {"DiJet_forward_UL18_ptbins_fine_v3", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
   {"DiJet_forward_UL18_ptbins_fine_v4", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
   {"DiJet_forward_UL18_ptbins_fine_v5", { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
-  {"DiJet_forward_UL18_ptbins_alpha",   { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in central region
+  {"DiJet_forward_UL18_ptbins_fine_v6", { 93, 96,  99, 102, 106, 111, 116, 119, 122, 125, 130, 135, 142, 146, 154, 160, 172, 185, 210, 220, 240, 279, 379 }}, // only change in central region
+  {"DiJet_forward_UL18_ptbins_alpha",   { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // only change in forward region
   {"DiJet_forward_UL18_ptbins_common",  { 93, 99, 106, 116, 122, 130, 142, 154, 172, 210, 220, 240, 279, 379 }}, // same as fine_v1, but keep for consitency
   {"DiJet_central_UL18_Jindrich",       { 69, 95, 120, 193, 264, 326, 399, 474, 595 }}, // https://indico.cern.ch/event/1165351/contributions/4893655/attachments/2451202/4200382/L2Res_05_2022-2.pdf
   {"DiJet_forward_UL18_Jindrich",       { 95, 120, 144, 215, 282, 388 }}, // https://indico.cern.ch/event/1165351/contributions/4893655/attachments/2451202/4200382/L2Res_05_2022-2.pdf
