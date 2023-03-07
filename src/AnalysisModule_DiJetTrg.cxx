@@ -1196,6 +1196,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if (Study=="eta_narrow")      eta_bins = vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
   else if (Study=="eta_simple") eta_bins = vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
   else if (Study=="eta_common") eta_bins = vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
+  else if (Study=="eta_calo")   eta_bins = vector<double>(eta_bins_calo, eta_bins_calo + n_eta_bins_calo);
   else if (Study=="eta_L2R")    eta_bins = vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
   else                          eta_bins = vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
 
