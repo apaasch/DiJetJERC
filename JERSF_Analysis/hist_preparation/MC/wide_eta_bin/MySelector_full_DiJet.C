@@ -213,12 +213,14 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   std::vector<double> eta_bins;
 
   if (study=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
-  else if (study=="eta_common") eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
   else if (study=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (study=="eta_common") eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
+  else if (study=="eta_calo")   eta_bins = std::vector<double>(eta_bins_calo, eta_bins_calo + n_eta_bins_calo);
   else if (study=="eta_L2R")    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
   else                          eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
 
   int n_eta_bins = eta_bins.size();
+  EtaBins = n_eta_bins; // For SlaveTerminate
 
   EtaBins_SM            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<eta_cut; });
   EtaBins_SM_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });
@@ -256,14 +258,16 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   PtBins=(PtBins_Central>PtBins_HF)?PtBins_Central:PtBins_HF;
 
-  AlphaBins = 6;
-  for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30}) Alpha_bins.push_back(alpha);
+  Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30}; // default
+  if(abins.find("finealpha") != std::string::npos) Alpha_bins = {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30};
+  if(abins.find("highalpha") != std::string::npos) Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+  AlphaBins = Alpha_bins.size();
 
-  for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.}) Alpha_bins_Inc.push_back(alpha);
+  Alpha_bins_Inc = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
   AlphaBinsInc = Alpha_bins_Inc.size();
 
-  Alpha_bins = Alpha_bins_Inc;
-  AlphaBins = AlphaBinsInc;
+  isPS = (sys.find("FSR") != std::string::npos || sys.find("ISR") != std::string::npos)?true:false;
+  if(isPS) std::cout << "Studing PS weights " << sys << std::endl;
 
   h_JetAvePt_SM = new TH1F("JetAvePt" ,   "Inclusive Jet Ave Pt",   50, 0., 2000);  h_JetAvePt_SM->SetXTitle("Pt_{ave}[GeV]");  h_JetAvePt_SM->SetYTitle("a.u."); h_JetAvePt_SM->Sumw2();
   h_Jet1Pt_SM   = new TH1F("Jet1Pt",      "Inclusive Jet 1 Pt",     50, 0., 2000);  h_Jet1Pt_SM->SetXTitle("Pt_1[GeV]");        h_Jet1Pt_SM->SetYTitle("a.u.");   h_Jet1Pt_SM->Sumw2();
@@ -366,6 +370,9 @@ bool MySelector::Process(Long64_t entry) {
   ++TotalEvents;
   if ( TotalEvents%1000000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
 
+  if(binning=="quick"){ // skip many events
+    if(probejet_pt>160) return kTRUE;
+  }
   // if (weight <= 0 || weight > 1000) weight = 0;
 
   GetEntry(entry);
@@ -396,6 +403,30 @@ bool MySelector::Process(Long64_t entry) {
   if ( jet3_pt > jet_thr ) alpha = TMath::Abs(alpha_raw);
   else alpha = (njet <3) ? 0. : 1. ;
 
+  if(isPS){
+    double PSweight = 1;
+    if(sys.find("FSR") != std::string::npos){
+      if(sys.find("FSRdown_sqrt2") != std::string::npos) PSweight = weight_fsr_sqrt2_down;
+      else if(sys.find("FSRup_sqrt2") != std::string::npos) PSweight = weight_fsr_sqrt2_up;    
+      else if(sys.find("FSRdown_2") != std::string::npos) PSweight = weight_fsr_2_down;
+      else if(sys.find("FSRup_2") != std::string::npos) PSweight = weight_fsr_2_up; 
+      else if(sys.find("FSRdown_4") != std::string::npos) PSweight = weight_fsr_4_down;
+      else if(sys.find("FSRup_4") != std::string::npos) PSweight = weight_fsr_4_up;  
+      else throw std::runtime_error("<E> Check the given PS variation");
+    }
+    else if(sys.find("ISR") != std::string::npos){
+      if(sys.find("ISRdown_sqrt2") != std::string::npos) PSweight = weight_isr_sqrt2_down;
+      else if(sys.find("ISRup_sqrt2") != std::string::npos) PSweight = weight_isr_sqrt2_up;    
+      else if(sys.find("ISRdown_2") != std::string::npos) PSweight = weight_isr_2_down;
+      else if(sys.find("ISRup_2") != std::string::npos) PSweight = weight_isr_2_up; 
+      else if(sys.find("ISRdown_4") != std::string::npos) PSweight = weight_isr_4_down;
+      else if(sys.find("ISRup_4") != std::string::npos) PSweight = weight_isr_4_up;
+      else throw std::runtime_error("<E> Check the given PS variation");  
+    }
+    else throw std::runtime_error("<E> PS must contain ISR or FSR");
+    weight *= PSweight;
+  }
+
   h_PU->Fill(nPU, 1);
   h_alpha_raw->Fill(alpha_raw, 1);
   h_PUweight->Fill(nPU,weight);
@@ -412,6 +443,19 @@ bool MySelector::Process(Long64_t entry) {
 
   bool dofill; int shift;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
+
+  // DELETE LATER - Calculate is_JER_SM for eta_calo since not PreSel was run here
+  if (study=="eta_calo"){
+    is_JER_SM = false;
+    for (unsigned int i = 0; i < EtaBins-1; i++) {
+      if(fabs(barreljet_eta)>=eta_bins[i] && fabs(barreljet_eta)<eta_bins[i+1]) {
+        if (fabs(probejet_eta)>=eta_bins[i] && fabs(probejet_eta)<eta_bins[i+1]) {
+          is_JER_SM = true;
+        }
+      }
+    }
+  }
+  // DELETE LATER - Calculate is_JER_SM for eta_calo since not PreSel was run here
 
   if (!isHF) {
     dofill=true;
@@ -653,7 +697,7 @@ void MySelector::SlaveTerminate() {
   std::vector<double> Pt_bins_Central_D(Pt_bins_Central.begin(), Pt_bins_Central.end());
   std::vector<double> Pt_bins_HF_D(Pt_bins_HF.begin(), Pt_bins_HF.end());
 
-  for (int m = 0; m < 6; m++){
+  for (int m = 0; m < 12; m++){
     h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
     h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
   }
@@ -661,7 +705,7 @@ void MySelector::SlaveTerminate() {
   for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << Pt_bins_Central_D[i];
   std::cout << std::endl;
 
-  for (int r = 0; r < 14; r++) {
+  for (int r = 0; r < 12; r++) {
     for (int m = 0; m < 6; m++){
       for ( int k = 0 ; k < nevents_central.size() ; k++ ) {
         std::cout << "\t" << nevents_central[k][r][m];
@@ -675,7 +719,7 @@ void MySelector::SlaveTerminate() {
   for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << "\t" << Pt_bins_HF_D[i];
   std::cout << std::endl;
 
-  for (int r = 0; r < 14; r++) {
+  for (int r = 0; r < 12; r++) {
     for (int m = 0; m < 6; m++){
       for ( int k = 0 ; k < nevents_HF.size() ; k++ ) {
         std::cout << "\t" << nevents_HF[k][r][m];
@@ -688,6 +732,8 @@ void MySelector::SlaveTerminate() {
   TFile *f_nevents  = new TFile(outdir+"histograms_nevents.root","RECREATE");
   for (int m = 0; m < 6; m++){
     h_nevents_central[m]->Write();
+  }
+  for (int m = 0; m < 6; m++){
     h_nevents_HF[m]->Write();
   }
   f_nevents->Close();

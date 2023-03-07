@@ -26,20 +26,24 @@ int main ( int argc, char *argv[] ) {
   }
 
   bool isAK8 = list_files.Contains("AK8");
-  std::string year, study, binning;
+  std::string year, study, sys, binning, abins;
   TString outdirname = "./";
   if (argc >= 5) {
     outdirname = argv[2];
     year = argv[3];
     study = argv[4];
     binning = argv[5];
+    abins = argv[6];
+    sys = argv[7];
   }
 
   std::cout << list_files << "\t isAK8=" << isAK8 << "\t year=" << year << "\n";
   std::cout << "outdirname: " << outdirname <<std::endl;
   std::cout << "study: " << study <<std::endl;
+  std::cout << "sys: " << sys <<std::endl;
+  std::cout << "binning: " << binning <<std::endl;
 
-  MySelector *A = new MySelector(outdirname, year, study, binning, isAK8);
+  MySelector *A = new MySelector(outdirname, year, study, sys, binning, abins, isAK8);
 
   TChain* ch = new TChain("AnalysisTree");
   //TChain* ch = new TChain("AK4PFCHS/t");
