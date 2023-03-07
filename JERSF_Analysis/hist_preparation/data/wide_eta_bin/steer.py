@@ -6,7 +6,7 @@ import time
 sys.path.append(os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/")
 from utils import *
 
-def main_program(path="", list_path="", out_path="", year="", study="", binning="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
+def main_program(path="", list_path="", out_path="", year="", study="", ptbins="", abins="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
   list_path_=list_path
   out_path_=out_path
@@ -77,7 +77,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", binning=
             logfilename = "log.txt"
             f = open(logfilename,'w')
             cmd = './Analysis.x %s >> log.txt &' % (run_list)
-            command = [outdir+"Analysis.x", run_list, outdir, year, study, binning]
+            command = [outdir+"Analysis.x", run_list, outdir, year, study, ptbins, abins]
             list_processes.append(command)
             list_logfiles.append(outdir+"log.txt")
             f.close()
@@ -131,7 +131,7 @@ JECVersions["Legacy"] = ["Summer19Legacy"]
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels = ["AK4Puppi_v11"]
 JetLabels = ["AK4Puppi"]
-# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire", "PS"]
+# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
 # systematics = ["", "alpha","PU", "JEC", "Prefire"]
 # systematics = ["", "alpha","PU", "JEC"]
 # systematics = ["PU", "JEC", "Prefire"]
@@ -150,6 +150,7 @@ studies = []
 # # studies.append("PuJetId")
 # studies.append("eta_JER")
 studies.append("eta_common")
+# studies.append("eta_calo")
 # studies.append("eta_simple")
 
 global dirs_PS
@@ -158,21 +159,35 @@ if 'PS' in systematics:
     print(dirs_PS)
 
 for study in studies:
+    # eta_bins = "_".join(study.split("_")[:2])
+    # print("Using eta bins:",eta_bins)
     list_path   = common_path+"lists/"+study+"/"+year+"/"
+    # ###############################################
+    # eta bins in PreSelection only for reference jet
+    # Don't need to run PreSel again
+    if "eta_calo" in study:
+      list_path   = common_path+"lists/eta_common/"+year+"/"
     out = study
-    binning = ''
+    ptbins = ''
+    abins = ''
     if len(sys.argv) >= 3:
-        binning = sys.argv[2]
-        out += '_'+binning
+        ptbins = sys.argv[2]
+        out += '_'+ptbins
     if len(sys.argv) >= 4:
+        if "alpha" in sys.argv[3]: 
+          abins = sys.argv[3]
         out += '_'+sys.argv[3]
+    if len(sys.argv) >= 5:
+        out += '_'+sys.argv[4]
     print out
     out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
     path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/"+study+"/"
+    if "eta_calo" in study:
+        path = "/nfs/dust/cms/user/"+USER+"/sframe_all/"+inputdir+"/"+year+"/eta_common/"
 
-    main_program(path, list_path, out_path, year, study, binning, JECVersions[year], JetLabels, systematics, samples[year])
+    main_program(path, list_path, out_path, year, study, ptbins, abins, JECVersions[year], JetLabels, systematics, samples[year])
 
 
 for i in list_processes:

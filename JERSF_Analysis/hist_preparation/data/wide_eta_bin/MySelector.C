@@ -166,13 +166,15 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   std::vector<double> eta_bins;
 
-  if (study=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
-  else if (study=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
-  else if (study=="eta_common") eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
-  else if (study=="eta_L2R")    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
+  if (study.find("eta_narrow") != std::string::npos)      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
+  else if (study.find("eta_simple") != std::string::npos) eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
+  else if (study.find("eta_common") != std::string::npos) eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
+  else if (study.find("eta_calo") != std::string::npos)   eta_bins = std::vector<double>(eta_bins_calo, eta_bins_calo + n_eta_bins_calo);
+  else if (study.find("eta_L2R") != std::string::npos)    eta_bins = std::vector<double>(eta_bins_L2R, eta_bins_L2R + n_eta_bins_L2R);
   else                          eta_bins = std::vector<double>(eta_bins_JER, eta_bins_JER + n_eta_bins_JER);
 
   int n_eta_bins = eta_bins.size();
+  EtaBins = n_eta_bins; // For SlaveTerminate
 
   EtaBins_SM            = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i<eta_cut; });
   EtaBins_SM_control    = std::count_if(&eta_bins[0], &eta_bins[0]+n_eta_bins, [](double i) { return i>eta_cut; });
@@ -210,14 +212,13 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   PtBins=(PtBins_Central>PtBins_HF)?PtBins_Central:PtBins_HF;
 
-  AlphaBins = 6;
-  for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30}) Alpha_bins.push_back(alpha);
+  Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30}; // default
+  if(abins.find("finealpha") != std::string::npos) Alpha_bins = {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30};
+  if(abins.find("highalpha") != std::string::npos) Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+  AlphaBins = Alpha_bins.size();
 
-  for (auto &alpha: {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.}) Alpha_bins_Inc.push_back(alpha);
+  Alpha_bins_Inc = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
   AlphaBinsInc = Alpha_bins_Inc.size();
-
-  Alpha_bins = Alpha_bins_Inc;
-  AlphaBins = AlphaBinsInc;
 
   h_JetAvePt_SM = new TH1F("JetAvePt" ,   "Inclusive Jet Ave Pt",   50, 0., 2000);  h_JetAvePt_SM->SetXTitle("Pt_{ave}[GeV]");  h_JetAvePt_SM->SetYTitle("a.u."); h_JetAvePt_SM->Sumw2();
   h_Jet1Pt_SM   = new TH1F("Jet1Pt",      "Inclusive Jet 1 Pt",     50, 0., 2000);  h_Jet1Pt_SM->SetXTitle("Pt_1[GeV]");        h_Jet1Pt_SM->SetYTitle("a.u.");   h_Jet1Pt_SM->Sumw2();
@@ -314,12 +315,24 @@ bool MySelector::Process(Long64_t entry) {
   bool dofill; int shift;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
-  // Data weighted with prescale
-  if(L1min!=L1max) std::cout << "Warning - More than one L1T Seed - L1min=" << std::setw(7) << L1min <<  " and L1max=" << std::setw(7) << L1max << std::endl;
+  if(L1min!=L1max) std::cout << "Warning - More than one L1T Seed - L1min=" << std::setw(7) << L1min <<  " and L1max=" << std::setw(7) << L1max << std::setw(20) << probejet_pt << std::setw(20) << barreljet_pt << std::endl;
   double w_HLT = weight*HLT;
   double w_prescale = w_HLT*L1max;
 
   // std::cout << std::setw(4) << HLT << std::setw(7) << L1max << std::setw(15) << run << std::setw(15) << lumi_sec << std::setw(15) << pt_ave << std::endl;
+
+  // DELETE LATER - Calculate is_JER_SM for eta_calo since not PreSel was run here
+  if (study=="eta_calo"){
+    is_JER_SM = false;
+    for (unsigned int i = 0; i < EtaBins-1; i++) {
+      if(fabs(barreljet_eta)>=eta_bins[i] && fabs(barreljet_eta)<eta_bins[i+1]) {
+        if (fabs(probejet_eta)>=eta_bins[i] && fabs(probejet_eta)<eta_bins[i+1]) {
+          is_JER_SM = true;
+        }
+      }
+    }
+  }
+  // DELETE LATER - Calculate is_JER_SM for eta_calo since not PreSel was run here
 
   if (!isHF) {
     dofill=true;

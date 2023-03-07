@@ -34,7 +34,7 @@ class MySelector : public TSelector {
 public:
 
   TString outdir;
-  std::string year, study, binning;
+  std::string year, study, binning, abins;
   bool isAK8;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
@@ -91,7 +91,7 @@ public:
   TBranch *b_lumi_sec;
 
 
-  MySelector(TString name, std::string year_, std::string study_, std::string binning_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), binning(binning_), isAK8(isAK8_) { }
+  MySelector(TString name, std::string year_, std::string study_, std::string binning_, std::string abins_, bool isAK8_, TTree * /*tree*/ =0) : fChain(0), outdir(name), year(year_), study(study_), binning(binning_), abins(abins_), isAK8(isAK8_) { }
   virtual ~MySelector() { }
   virtual int   Version() const { return 2; }
   virtual void    Begin(TTree *tree);
@@ -114,7 +114,7 @@ public:
 
   int TotalEvents;
 
-  int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE;
+  int EtaBins_SM, EtaBins_SM_control, EtaBins_FE_reference, EtaBins_FE_control, EtaBins_FE, EtaBins;
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
   int PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins, AlphaBinsInc;
