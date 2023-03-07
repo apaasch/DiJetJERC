@@ -26,7 +26,6 @@
 
 bool debug = false;
 bool alpha_new = true;
-bool extenda = true;
 bool useRMS = true;
 
 int binHF = 15;
@@ -135,7 +134,6 @@ double findMinMax(TH1F* JER, std::vector< std::vector< double > > pt_width, TF1*
 double removePointsforAlphaExtrapolation(bool isFE, double eta, int p);
 std::vector<double> Confidence(TH1F* hist, double confLevel);
 bool removePointsforFit(bool isFE, int m, int p);
-inline bool extendAlpha(int p);
 
 TGraphErrors* TH1toTGraphError(TH1* hist, double extend_err);
 TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, TH1* hist, TString sample, TString method, TString var="nominal");
@@ -285,15 +283,13 @@ void ExtractFitParameters(ofstream& FitPar, TF1* fit, TString info){
 // ======================================================================================================
 
 void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< std::vector< TH1F* > > > &Asymmetry, std::vector< std::vector< std::vector< TH1F* > > > &GenAsymmetry, int etaBins, int ptBins, int AlphaBins, int etaShift) {
+  if(debug) cout << setw(20) << text << " | shift " << setw(3) << etaShift << " and bins " << setw(3) << etaBins << endl; ;  
   for( int m = etaShift; m < etaBins+etaShift; m++ ) {
     std::vector< std::vector< TH1F* > > temp2;
     std::vector< std::vector< TH1F* > > temp2gen;
     for( int p = 0; p < ptBins; p++ ) {
       std::vector< TH1F* > temp1;
       std::vector< TH1F* > temp1gen;
-      // int alpha = 6;
-      // if(extendAlpha(p)) alpha = 15;
-      // for( int r = 0; r < alpha; r++ ) {
       for( int r = 0; r < AlphaBins; r++ ) {
         TString name = text;                        name    += "_eta"; name     += m+1; name    += "_pt"; name    += p+1; name    += "_alpha"; name     += r+1;
         TString namegen = "gen_"; namegen += text;  namegen += "_eta"; namegen  += m+1; namegen += "_pt"; namegen += p+1; namegen += "_alpha"; namegen  += r+1;
@@ -628,12 +624,6 @@ void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *l
   lin_extrapol->SetNDF(ndf);
 }
 
-inline bool extendAlpha(int p){
-  // return ( extenda && (p<5) );
-  return ( extenda );
-  // return ( extenda && (p<10 || (20<p && p<25) || 30<p) );
-}
-
 void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, std::vector< std::vector< std::vector< double > > > WidthsError, std::vector< std::vector< TGraphErrors* > > &output_graph, std::vector< std::vector< double > > &output, std::vector< std::vector< double > > &output_error, bool isFE, bool isMC, TH1F* h_chi2_tot) {
   // std::vector<float> alpha;
   // std::vector<float> alpha;
@@ -647,12 +637,6 @@ void histLinCorFit( std::vector< std::vector< std::vector< double > > > Widths, 
     for( unsigned int p = 0; p < Widths.at(m).size(); p++ ) {
       // p_T loop
       std::vector<double> x,x_e;
-
-      // alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3  };
-      // // if( extendAlpha(p) ) alpha = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1. };
-      // if( extendAlpha(p) ) alpha = { 0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30,0.325,0.35,0.375,0.40 };
-
-      // cout << setw(5) << m << setw(5) << p;
       for(int ialpha=0; ialpha < alpha.size(); ++ialpha) {
       // for(int ialpha=0; ialpha < AlphaBins; ++ialpha) {
       // cout << setw(5) << ialpha;
@@ -847,7 +831,10 @@ void correctJERwithPLI015(std::vector<std::vector<double> > &Output, std::vector
 // void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
 void correctForRef( TString name1, std::vector<std::vector<double> > &Output, std::vector<std::vector<double> > &OutputError, std::vector<std::vector<double> > Input, std::vector<std::vector<double> > InputError, std::vector<std::vector<double> > Input2, std::vector<std::vector<double> > InputError2, std::vector<std::vector<std::vector<double> > > width_pt, int shift, TString outdir) {
   double Ref, Probe, RefError, ProbeError, pT;
-  if(debug) cout << "In correctForRef with " << name1 << endl;
+  if(debug){
+    cout << "In correctForRef with " << name1 << endl;
+    printf("Size of vectors (first entries) %3i %3i\n",(int) Input.size(),(int) Input.at(0).size());
+  }
 
   TH1F *hist = new TH1F( name1+"_hist", name1+"_hist", sizeHist, 0, sizeHist );
   hist ->GetYaxis()->SetTitle("#sigma_{A}");
@@ -904,13 +891,12 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
   for( unsigned int m = shift; m < Input.size() ; m++ ) {
     vector<double> pTbinsValue = (m<binHF)?usedPtTrigger_central:usedPtTrigger_forward;
     vector<double> pTbinsRef = usedPtTrigger_central;
+    if (debug) printf(" -- in eta %3i #bins %3i and #bins in Ref %3i\n",(int) m,(int) pTbinsValue.size(),(int) pTbinsRef.size());
     std::vector< double > temp2;
     std::vector< double > temp_error2;
-
     for( unsigned int p = 0; p < Input.at(m).size(); p++ ) {
       double temp;
       double temp_error;
-
       if ( Input.at(m).at(p) != 0. ) {
         // pT = width_pt.at(m).at(p).at(5) ;
         int index_p = -1; // In order to throw break
@@ -980,7 +966,6 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
             if(p==13) removeByHand = true;
           }
         }
-
         if(removeByHand){
           // cout << "Remove eta bin " << m+1 << " | " << p+1 << " from JER by Hand" << endl;
           if(debug) cout << "Remove eta bin " << m << " | " << p+1 << " from JER by Hand" << endl;
