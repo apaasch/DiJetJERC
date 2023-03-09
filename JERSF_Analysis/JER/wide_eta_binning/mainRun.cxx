@@ -528,10 +528,6 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
 
     for( unsigned int p = 0; p < h_data.at(m).size(); p++ ){
 
-      if(extenda){
-        if( m<4 && !extendAlpha(p) ) continue;
-      }
-
       double range = std::max(0.05,removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1));
 
       TString canvName  = h_data.at(m).at(p)->GetTitle();
