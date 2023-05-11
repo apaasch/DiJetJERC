@@ -210,8 +210,11 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   TString option = GetOption();
 
+  isQuick = (outdir.Contains("quick"))?true:false;
+  std::cout << outdir << std::endl; 
+  if(isQuick) std::cout << "Only run a few events " << std::endl; 
+  
   std::vector<double> eta_bins;
-
   if (study=="eta_narrow")      eta_bins = std::vector<double>(eta_bins_narrow, eta_bins_narrow + n_eta_bins_narrow);
   else if (study=="eta_simple") eta_bins = std::vector<double>(eta_bins_simple, eta_bins_simple + n_eta_bins_simple);
   else if (study=="eta_common") eta_bins = std::vector<double>(eta_bins_common, eta_bins_common + n_eta_bins_common);
@@ -370,8 +373,8 @@ bool MySelector::Process(Long64_t entry) {
   ++TotalEvents;
   if ( TotalEvents%1000000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
 
-  if(binning=="quick"){ // skip many events
-    if(probejet_pt>160) return kTRUE;
+  if(isQuick){ // skip many events
+    if(5000000<TotalEvents) return kTRUE;
   }
   // if (weight <= 0 || weight > 1000) weight = 0;
 

@@ -165,7 +165,7 @@ public:
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
   int PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins, AlphaBinsInc;
-  bool isPS;
+  bool isPS, isQuick;
 
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
