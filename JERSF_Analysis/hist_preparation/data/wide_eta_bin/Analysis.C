@@ -14,7 +14,7 @@
 using namespace std;
 
 int main ( int argc, char *argv[] ) {
-  TString list_files;
+  TString list_files = argv[1]; // for AK8, additional input made lower if-else outdated
   if ( argc > 5 ) { // argc should be 3 for correct execution
     std::cout<<"usage: "<< argv[0] <<" <filename>\n";
   } else {

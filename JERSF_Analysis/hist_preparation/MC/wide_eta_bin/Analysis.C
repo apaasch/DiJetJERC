@@ -24,6 +24,7 @@ int main ( int argc, char *argv[] ) {
     if (!path_to_file_with_list_of_inputfiles.is_open()) std::cout<<"Could not open file\n";
     // the_file is closed implicitly here
   }
+  list_files = argv[1]; // for AK8 jets, since adding input makes lower if-else outdated
 
   bool isAK8 = list_files.Contains("AK8");
   std::string year, study, sys, binning, abins;
