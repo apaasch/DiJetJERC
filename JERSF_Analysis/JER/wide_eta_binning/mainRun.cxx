@@ -2064,9 +2064,31 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
         time(&end); // TIME
         time_taken = double(end - start);
         if(debug) cout << "Time taken by STORE_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
-
     }
 
+    time(&start); // TIME
+    for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
+      for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
+        for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
+          delete asymmetries_SM.at(m).at(p).at(r);
+          delete gen_asymmetries_SM.at(m).at(p).at(r);
+          delete asymmetries_data_SM.at(m).at(p).at(r);
+        }
+      }
+    } 
+    for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
+      for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
+        for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
+          delete asymmetries_FE.at(m).at(p).at(r);
+          delete gen_asymmetries_FE.at(m).at(p).at(r);
+          delete asymmetries_data_FE.at(m).at(p).at(r);
+        }
+      }
+    }
+    time(&end); // TIME
+    time_taken = double(end - start);
+    if(debug) cout << "Time taken to delete asymmetries is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+    
     ////////////////////////////////////////////////////////////////////////////
     //  Plots with widths(alpha)                                              //
     ////////////////////////////////////////////////////////////////////////////
@@ -2105,12 +2127,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
           widths_hist_data_SM.at(m).at(p) -> Write();
         }
       }
-    }
-    for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
-      for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
-        widths_hist_FE.at(m).at(p) -> Write();
-        gen_widths_hist_FE.at(m).at(p) -> Write();
-        widths_hist_data_FE.at(m).at(p) -> Write();
+      for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
+        for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
+          widths_hist_FE.at(m).at(p) -> Write();
+          gen_widths_hist_FE.at(m).at(p) -> Write();
+          widths_hist_data_FE.at(m).at(p) -> Write();
+        }
       }
     }
     h_chi2_tot->Write();
@@ -2122,6 +2144,25 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
 
   }
 
+  time(&start); // TIME
+  for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
+    for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
+        delete widths_hist_SM.at(m).at(p);
+        delete gen_widths_hist_SM.at(m).at(p);
+        delete widths_hist_data_SM.at(m).at(p);
+    }
+  }
+  for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
+    for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
+      delete widths_hist_FE.at(m).at(p);
+      delete gen_widths_hist_FE.at(m).at(p);
+      delete widths_hist_data_FE.at(m).at(p);
+    }
+  }
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken to delete widths is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+  
   std::cout << "plot_all : " << plot_all << '\n';
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -2178,6 +2219,23 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     for( unsigned int m = 0; m < JER_correlated_data_hist_FE_control.size(); m++ ){   JER_correlated_data_hist_FE_control.at(m)   -> Write();}
     JERroot.Close();
   }
+
+  time(&start); // TIME
+  for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_SM.size(); m++ ){           delete JER_uncorrelated_MC_hist_SM.at(m)          ;}
+  for( unsigned int m = 0; m < JER_uncorrelated_data_hist_SM.size(); m++ ){         delete JER_uncorrelated_data_hist_SM.at(m)        ;}
+  for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE.size(); m++ ){           delete JER_uncorrelated_MC_hist_FE.at(m)          ;}
+  for( unsigned int m = 0; m < JER_uncorrelated_data_hist_FE.size(); m++ ){         delete JER_uncorrelated_data_hist_FE.at(m)        ;}
+  for( unsigned int m = 0; m < JER_uncorrelated_MC_hist_FE_control.size(); m++ ){   delete JER_uncorrelated_MC_hist_FE_control.at(m)  ;}
+  for( unsigned int m = 0; m < JER_uncorrelated_data_hist_FE_control.size(); m++ ){ delete JER_uncorrelated_data_hist_FE_control.at(m);}
+  for( unsigned int m = 0; m < JER_correlated_MC_hist_SM.size(); m++ ){             delete JER_correlated_MC_hist_SM.at(m)            ;}
+  for( unsigned int m = 0; m < JER_correlated_data_hist_SM.size(); m++ ){           delete JER_correlated_data_hist_SM.at(m)          ;}
+  for( unsigned int m = 0; m < JER_correlated_MC_hist_FE.size(); m++ ){             delete JER_correlated_MC_hist_FE.at(m)            ;}
+  for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){           delete JER_correlated_data_hist_FE.at(m)          ;}
+  for( unsigned int m = 0; m < JER_correlated_MC_hist_FE_control.size(); m++ ){     delete JER_correlated_MC_hist_FE_control.at(m)    ;}
+  for( unsigned int m = 0; m < JER_correlated_data_hist_FE_control.size(); m++ ){   delete JER_correlated_data_hist_FE_control.at(m)  ;}
+  time(&end); // TIME
+  time_taken = double(end - start);
+  if(debug) cout << "Time taken to delete widths is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
   TFile gbis(outdir+"output/SFs.root","RECREATE");
   
@@ -2239,6 +2297,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   canv_SF->SaveAs(outdir+"output/SF.pdf");
   // canv_SF->SaveAs(outdir+"output/SF.png");
   // canv_SF->SaveAs(outdir+"output/SF.root");
+  delete canv_SF;
 
   //////////////////////////////////////////////////////////////////////////////////////////
   //    SF plots overlayed with ...                                                       //
