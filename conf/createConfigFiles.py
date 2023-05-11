@@ -186,15 +186,15 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 changes.append(["<!ENTITY", "Study", "default", study])
                 if study!= "Standard" and "L1" in study:
                     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", study])
-                if 'DATA' in process and 'UL16' in year: # L2Residual not availble for UL16 in Summer20 yet
-                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
-                if 'DATA' in process and 'UL17' in year: # L2Residual not availble for UL16 in Summer20 yet
-                    changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
-                if 'DATA' in process and 'UL18' in year: # For first iteration
-                    if 'AK8' in newJetLabel:
-                        changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
-                    else:
-                        changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2Residual"])
+                # if 'DATA' in process and 'UL16' in year: # L2Residual not availble for UL16 in Summer20 yet -use from Summer19
+                #     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                # if 'DATA' in process and 'UL17' in year: # L2Residual not availble for UL17 in Summer20 yet -use from Summer19
+                #     changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                # if 'DATA' in process and 'UL18' in year: # For first iteration
+                #     if 'AK8' in newJetLabel:
+                #         changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2"])
+                #     else:
+                #         changes.append(["<!ENTITY", "JEC_LEVEL", "L1L2L3Residual", "L1L2Residual"])
                 # if "17" in year:
                 #     changes.append(["<!ENTITY", "PtBinsTrigger", '"DiJet"', '"SingleJet"'])
                 if "UL17" == year and ("RunB" in process or "RunC" in process):
