@@ -216,6 +216,9 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   PtBins=(PtBins_Central>PtBins_HF)?PtBins_Central:PtBins_HF;
 
+  isPrescale = (outdir.Contains("prescale"))?true:false;
+  if(isPrescale) std::cout << "Apply prescale to data; set weight to combined HLT & L1 seed prescale weight." << std::endl;
+
   Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30}; // default
   if(abins.find("finealpha") != std::string::npos) Alpha_bins = {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30};
   if(abins.find("highalpha") != std::string::npos) Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
@@ -324,11 +327,19 @@ bool MySelector::Process(Long64_t entry) {
   bool dofill; int shift;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
+  // if(isHF) std::cout << std::setw(7) << L1min <<  " and L1max=" << std::setw(7) << L1max << std::setw(20) << probejet_pt << std::setw(20) << barreljet_pt << std::endl;
   if(L1min!=L1max) std::cout << "Warning - More than one L1T Seed - L1min=" << std::setw(7) << L1min <<  " and L1max=" << std::setw(7) << L1max << std::setw(20) << probejet_pt << std::setw(20) << barreljet_pt << std::endl;
   double w_HLT = weight*HLT;
   double w_prescale = w_HLT*L1max;
+  if(isPrescale) weight = w_prescale;
 
-  // std::cout << std::setw(4) << HLT << std::setw(7) << L1max << std::setw(15) << run << std::setw(15) << lumi_sec << std::setw(15) << pt_ave << std::endl;
+  if(weight==w_prescale){
+    if(isHF){
+      // std::cout <<  "HLT PS" << std::setw(4) << HLT <<  " | L1max" << std::setw(8) << L1max <<  " | L1min" << std::setw(8) << L1min <<  " | run" << std::setw(8) << run <<  " | lumi" << std::setw(6) << lumi_sec <<  " | pt ave" << std::setw(10) << pt_ave;
+      // if(run==315705) std::cout << " <----------------------------";
+      // std::cout << std::endl;
+    }
+  }
 
   // DELETE LATER - Calculate is_JER_SM for eta_calo since not PreSel was run here
   if (study=="eta_calo"){
