@@ -216,6 +216,7 @@ TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, 
   }
   TGraphAsymmErrors* MC_graph = new TGraphAsymmErrors(xvalues.size(), &xvalues[0], &yvalues[0], &xerrors_lo[0], &xerrors_hi[0], &yerrors_lo[0], &yerrors_hi[0]);
   // TString names = "TGraph_"+(TString) hist->GetName();
+  if (isFE) m += 1; // For FE first bin is skipt, but index is still 0 
   TString bins = BinToString(eta_bins[m], eta_bins[m+1], 5);
   TString names = "dijet_balance_jer_"+sample+"_";
   names += bins+"_";
