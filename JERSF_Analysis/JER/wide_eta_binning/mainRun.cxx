@@ -1214,6 +1214,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(Trigger.Contains("fine_v4")) name_pt_bin += "_fine_v4";
   if(Trigger.Contains("fine_v5")) name_pt_bin += "_fine_v5";
   if(Trigger.Contains("fine_v6")) name_pt_bin += "_fine_v6";
+  if(Trigger.Contains("fine_v7")) name_pt_bin += "_fine_v7";
+  if(Trigger.Contains("fine_v8")) name_pt_bin += "_fine_v8";
+  if(Trigger.Contains("fine_v9")) name_pt_bin += "_fine_v9";
+  // if(Trigger.Contains("quick")) name_pt_bin += "_quick";
   cout << year << " " << name_pt_bin << endl;
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_Central.push_back(pt);
@@ -1228,6 +1232,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(Trigger.Contains("fine_v4")) name_pt_bin += "_fine_v4";
   if(Trigger.Contains("fine_v5")) name_pt_bin += "_fine_v5";
   if(Trigger.Contains("fine_v6")) name_pt_bin += "_fine_v6";
+  if(Trigger.Contains("fine_v7")) name_pt_bin += "_fine_v7";
+  if(Trigger.Contains("fine_v8")) name_pt_bin += "_fine_v8";
+  if(Trigger.Contains("fine_v9")) name_pt_bin += "_fine_v9";
+  // if(Trigger.Contains("quick")) name_pt_bin += "_quick";
   cout << year << " " << name_pt_bin << endl;
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
   for (auto &pt: pt_trigger_thr.at(name_pt_bin)) Pt_bins_HF.push_back(pt);
