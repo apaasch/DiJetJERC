@@ -247,5 +247,7 @@ def parallelise(list_processes, MaxProcess=10, list_logfiles=[], cwd=None, time_
   for file in logfiles:
     file.close()
   if not condition:
-    # os.remove("log.txt")
-    a = map(os.remove, glob.glob("log_*.txt"))
+    files=glob.glob('./log_*.txt')
+    for f in files:
+        os.remove(f)
+    # a = map(os.remove, glob.glob("log_*.txt"))
