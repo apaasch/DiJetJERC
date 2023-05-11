@@ -1451,10 +1451,45 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
   // PT is meant to be the bin as in the pdf! aka p+1.
   // Values checked for UL
   double check = 0.;
-  if (p>=1)  check = (eta>=eta_cut)? 0.15 : 0.20;
-  if (p>=4)  check = (eta>=eta_cut)? 0.1 : 0.15;
-  if (p>=7)  check = 0.1;
-  if (p>=10) check = (eta>=eta_cut)? 0.1 : 0.05;
+  if( g_year.Contains("UL16preVFP") ){
+    if      (p>=13) check = (eta>=eta_cut)? 0.05 : 0.05;
+    else if (p>=9)  check = (eta>=eta_cut)? 0.1 : 0.05;
+    else if (p>=8)  check = (eta>=eta_cut)? 0.1 : 0.075;
+    else if (p>=7)  check = (eta>=eta_cut)? 0.1 : 0.125;
+    else if (p>=6)  check = (eta>=eta_cut)? 0.125 : 0.125;
+    else if (p>=5)  check =  0.15;
+    else if (p>=3)  check = (eta>=eta_cut)? 0.15 : 0.175;
+    else if (p>=2)  check = (eta>=eta_cut)? 0.175 : 0.225;
+    else if (p>=1)  check = (eta>=eta_cut)? 0.2 : 0.225;
+  }
+  else if( g_year.Contains("UL16postVFP") ){
+    if      (p==35) check = (eta>=eta_cut)? 0.0 : 0.075;
+    else if (p==12) check = (eta>=eta_cut)? 0.0 : 0.075;
+    else if (p>=11) check = (eta>=eta_cut)? 0.1 : 0.05;
+    else if (p>=10) check = 0.1;
+    else if (p>=7)  check = (eta>=eta_cut)? 0.125 : 0.125;
+    else if (p>=4)  check = (eta>=eta_cut)? 0.15 : 0.175;
+    else if (p>=1)  check = (eta>=eta_cut)? 0.15 : 0.20;
+  }
+  else if( g_year.Contains("UL17") ){
+    if      (p>=14) check = (eta>=eta_cut)? 0.05 : 0.05;
+    if      (p>=13) check = (eta>=eta_cut)? 0.05 : 0.1;
+    else if (p>=10) check = 0.1;
+    else if (p>=9)  check = (eta>=eta_cut)? 0.125 : 0.1;
+    else if (p>=7)  check =  0.125;
+    else if (p>=5)  check =  0.15;
+    else if (p>=3)  check = (eta>=eta_cut)? 0.15 : 0.2;
+    else if (p>=2)  check = (eta>=eta_cut)? 0.175 : 0.2;
+    else if (p>=1)  check = (eta>=eta_cut)? 0.2 : 0.225;
+  }
+  else if( g_year.Contains("UL18") ){
+    if      (p==37) check = (eta>=eta_cut)? 0.1 : 0.075;
+    else if (p>=11) check = (eta>=eta_cut)? 0.1 : 0.05;
+    else if (p>=10) check = (eta>=eta_cut)? 0.1 : 0.07;
+    else if (p>=7)  check = 0.1;
+    else if (p>=4)  check = (eta>=eta_cut)? 0.15 : 0.15;
+    else if (p>=1)  check = (eta>=eta_cut)? 0.175 : 0.20;
+  }
 
   // if(eta==2.043 && p==26) check = 0.1;
 
