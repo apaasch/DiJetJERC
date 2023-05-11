@@ -2205,7 +2205,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   for( unsigned int m = 0; m < JER_correlated_data_hist_SM.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_SM.at(m), "Data", "SM", "nominal"); g -> Write();}
   for( unsigned int m = 0; m < JER_correlated_MC_hist_FE.size(); m++ ){   g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_MC_hist_FE.at(m),   "MC",   "FE", "nominal"); g -> Write();}
   for( unsigned int m = 0; m < JER_correlated_data_hist_FE.size(); m++ ){ g = TH1toTGraphAsymmErrors(m, eta_bins, JER_correlated_data_hist_FE.at(m), "Data", "FE", "nominal"); g -> Write();}
+  g = TH1toTGraphAsymmErrors(-1, eta_bins, JER_correlated_MC_hist_FE.at(0), "MC",   "FE", "nominal"); g -> Write(); // Copy 2nd bin for first one. -1 will be changed to 0
+  g = TH1toTGraphAsymmErrors(-1, eta_bins, JER_correlated_data_hist_FE.at(0), "Data", "FE", "nominal"); g -> Write(); // Copy 2nd bin for first one. -1 will be changed to 0
   Dijetroot.Close();
+  delete g;
        
   time(&end); // TIME
   time_taken = double(end - start);
