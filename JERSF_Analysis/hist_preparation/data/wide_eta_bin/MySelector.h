@@ -35,7 +35,7 @@ public:
 
   TString outdir;
   std::string year, study, binning, abins;
-  bool isAK8;
+  bool isAK8,isPrescale, isQuick;
 
   TTree *fChain;   //!pointer to the analyzed TTree or TChain
   // Declaration of leaf types
