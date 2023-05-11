@@ -528,7 +528,7 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
 
     for( unsigned int p = 0; p < h_data.at(m).size(); p++ ){
 
-      double range = std::max(0.05,removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1));
+      double range = std::max(0.05,removePointsforAlphaExtrapolation(isFE, eta_bins.at(m), p+1)-0.05); // -0.05 to extend fit a bit to lower values
 
       TString canvName  = h_data.at(m).at(p)->GetTitle();
       TString nameXaxis = "#alpha_{max}";
@@ -562,8 +562,10 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
         Temp = (TF1*) h_MC.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
         Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
 
-        if(alpha_new) f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_MC);
-        if(alpha_new) f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_MC);
+        if(alpha_new){
+          f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_MC); 
+          f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_MC);
+        }
       }
 
       if (h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc")) {
@@ -572,23 +574,32 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
         Temp = (TF1*) h_gen.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
         Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
 
-        if(alpha_new) f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_gen);
-        if(alpha_new) f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_gen);
+        if(alpha_new){
+          f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_gen); gStyle -> SetOptFit(0000);
+          f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_gen); gStyle -> SetOptFit(0000);
+        }
 
         legend = tdrLeg(0.70,0.70,0.90,0.85, 0.025, 42, color_gen);
       }
 
       if (h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc")) {
-
-        f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(2); f->SetLineColor(color_data);
+        f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(0); f->SetLineColor(color_data);
         Temp = (TF1*) h_data.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
         Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
 
-        if(alpha_new) f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_data);
-        if(alpha_new) f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_data);
+        if(alpha_new){
+          f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_data); gStyle -> SetOptFit(0000);
+          f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_data); gStyle -> SetOptFit(0000);
+        }
       }
 
-      TLegend *leg = tdrLeg(0.50,0.70,0.85,0.90, 0.045, 42, kBlack);
+      // Functions will be drawn as red lines otherwise
+      h_MC.at(m).at(p)->GetListOfFunctions()->Delete();
+      h_gen.at(m).at(p)->GetListOfFunctions()->Delete();
+      h_data.at(m).at(p)->GetListOfFunctions()->Delete();
+      canv->Update();
+
+      TLegend *leg = tdrLeg(0.50,0.70,0.89,0.90, 0.045, 42, kBlack);
 
       TLine* first = new TLine(0, 0, 0, 0); first->SetLineColor(kGray+1); first->SetLineStyle(3);
       TLine* last = new TLine(0, 0, 0, 0); last->SetLineColor(kGray+1); last->SetLineStyle(4);
@@ -685,7 +696,7 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     TLegend *legend;
 
     // if(debug) cout << "In before fitERR " << m << " " << h_fitERR.size() << " " << h_cor.size() << endl;
-    h_fitERR.at(m)->Draw("E4 same");
+    // h_fitERR.at(m)->Draw("E4 same");
 
     if(h_uncor.at(m)->GetFunction("constfit")){
       f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);f->SetLineWidth(2);f->Draw("same");
