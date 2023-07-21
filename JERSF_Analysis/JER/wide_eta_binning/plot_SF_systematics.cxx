@@ -18,9 +18,18 @@ typedef std::map<TString, VecTS> MapTS;
 typedef std::map<TString, VecD> MapD;
 typedef std::map<TString, VecDD> MapDD;
 
-VecTS systematics_name_all({"gaustails_0.95","JEC_up","JEC_down","PU_up","PU_down","PLI_up","PLI_down","alpha","pTdep"});
-VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha","pTdep", "others"});
-VecTS systematics_name_minimal({"gaustails_0.95","JEC", "others"});
+// VecTS systematics_name_all({"gaustails_0.95","JEC_up","JEC_down","PU_up","PU_down","PLI_up","PLI_down","alpha","pTdep"});
+// VecTS systematics_name_all({"gaustails_0.95","JEC_up","JEC_down","PU_up","PU_down","PLI_up","PLI_down","alpha"});
+VecTS systematics_name_all({"JEC_up","JEC_down","PLI_up","PLI_down"});
+// VecTS systematics_name_all({"gaustails_0.95","JEC_up","JEC_down","PLI_up","PLI_down"});
+// VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha","pTdep", "others"});
+// VecTS systematics_name_split({"gaustails_0.95","JEC","PU", "PLI", "alpha", "others"});
+VecTS systematics_name_split({"JEC","PLI", "others"});
+// VecTS systematics_name_split({"gaustails_0.95","JEC", "PLI", "others"});
+VecTS systematics_name_minimal({"JEC", "others"});
+// VecTS systematics_name_all({});
+// VecTS systematics_name_split({});
+// VecTS systematics_name_minimal({});
 
 bool dosplit = true; // split source of Uncertainties
 int method = 4; //2-uncorr 4-corr
@@ -28,7 +37,7 @@ int pt_dep_method = 8; //4-min value 5-max value
 
 // NO MERGE SM and FE
 
-int shift_SM = 15; // How many point to skip from the end (11 for eta_JER)
+int shift_SM = 13; // How many point to skip from the end (11 for eta_JER)
 int shift_FE = 4; // How many point to skip from the beginning (3 for eta_JER)
 int shift_barrel = 1; // How many point used to calculate SF in the previous step
 
@@ -894,15 +903,16 @@ void plot_SF_systematics() {
   // studies.push_back("Standard");
   // studies.push_back("L1L2Residual");
   // studies.push_back("PuJetId");
-  studies.push_back("eta_JER");
+  studies.push_back("eta_common_fine_v3");
   // studies.push_back("eta_common_fine");
   // studies.push_back("eta_simple");
 
   MapTS JECs;
-  JECs["UL16preVFP"]  = {"Summer19UL16APV_V3"};
-  JECs["UL16postVFP"] = {"Summer19UL16_V2"};
-  JECs["UL17"]        = {"Summer19UL17_V5"};
-  JECs["UL18"]        = {"Summer19UL18_V5"};
+  JECs["UL16preVFP"]  = {"Summer20UL16APV_V2"};
+  JECs["UL16postVFP"] = {"Summer20UL16_V2"};
+  JECs["UL17"]        = {"Summer20UL17_V2"};
+  JECs["UL18"]        = {"Summer20UL18_V2"};
+  JECs["2022postEE"]  = {"Summer22EEPrompt22_V1"};
   JECs["Legacy"]      = {"Summer19Legacy"};
 
   MapTS DATAS;
@@ -914,6 +924,7 @@ void plot_SF_systematics() {
   DATAS["UL16postVFP"] = {"RunFGH"};
   DATAS["UL17"]        = {"RunBCDEF"};
   DATAS["UL18"]        = {"RunABCD"};
+  DATAS["2022postEE"]  = {"RunFG"};
   DATAS["Legacy"]      = {"RunII"};
 
 
@@ -927,13 +938,13 @@ void plot_SF_systematics() {
 
 
   VecTS JETs;
-  JETs.push_back("AK4CHS");
-  // JETs.push_back("AK4Puppi");
+  // JETs.push_back("AK4CHS");
+  JETs.push_back("AK4Puppi");
   // JETs.push_back("AK8Puppi");
 
   VecTS QCDS;
-  QCDS.push_back("QCDHT");
-  // QCDS.push_back("QCDPt");
+  // QCDS.push_back("QCDHT");
+  QCDS.push_back("QCDPT");
 
 
   for(TString year: years){
