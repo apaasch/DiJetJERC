@@ -1452,7 +1452,22 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
   // PT is meant to be the bin as in the pdf! aka p+1.
   // Values checked for UL
   double check = 0.;
-  if( g_year.Contains("UL16preVFP") ){
+  bool isHF = eta>=eta_cut;
+  vector<double> pt_bins = isHF?usedPtTrigger_forward:usedPtTrigger_central;
+  double pt = pt_bins[p];
+  if( g_year.Contains("202") ){ // 2022 && 2023
+    if(!isHF){
+      if     (pt<=108)  check = 0.2;
+      else if(pt<=177)  check = 0.1;
+      else if(pt<=7000) check = 0.05;
+    }
+    else{
+      if     (pt<=122)  check = 0.2;
+      else if(pt<=194)  check = 0.1;
+      else if(pt<=7000) check = 0.05;
+    }
+  }
+  else if( g_year.Contains("UL16preVFP") ){
     if      (p>=13) check = (eta>=eta_cut)? 0.05 : 0.05;
     else if (p>=9)  check = (eta>=eta_cut)? 0.1 : 0.05;
     else if (p>=8)  check = (eta>=eta_cut)? 0.1 : 0.075;
@@ -1484,6 +1499,14 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
     else if (p>=1)  check = (eta>=eta_cut)? 0.2 : 0.225;
   }
   else if( g_year.Contains("UL18") ){
+    if      (p==37) check = (eta>=eta_cut)? 0.1 : 0.075;
+    else if (p>=11) check = (eta>=eta_cut)? 0.1 : 0.05;
+    else if (p>=10) check = (eta>=eta_cut)? 0.1 : 0.07;
+    else if (p>=7)  check = 0.1;
+    else if (p>=4)  check = (eta>=eta_cut)? 0.15 : 0.15;
+    else if (p>=1)  check = (eta>=eta_cut)? 0.175 : 0.20;
+  }
+  else if( g_year.Contains("2022") ){
     if      (p==37) check = (eta>=eta_cut)? 0.1 : 0.075;
     else if (p>=11) check = (eta>=eta_cut)? 0.1 : 0.05;
     else if (p>=10) check = (eta>=eta_cut)? 0.1 : 0.07;
