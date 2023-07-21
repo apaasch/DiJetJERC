@@ -374,7 +374,7 @@ bool MySelector::Process(Long64_t entry) {
   if ( TotalEvents%1000000 == 0 ) {  std::cout << "\t\tAnalyzing event #" << TotalEvents << std::endl; }
 
   if(isQuick){ // skip many events
-    if(5000000<TotalEvents) return kTRUE;
+    if(probejet_pt>3000) return kTRUE;
   }
   // if (weight <= 0 || weight > 1000) weight = 0;
 
