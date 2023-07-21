@@ -30,8 +30,8 @@
 // double max_fit = 1200.;
 double min_fit = 150.;
 double max_fit = 2700.;
-double min_fit_lin = 150.;
-double max_fit_lin = 2700.;
+double min_fit_lin = 200.;
+double max_fit_lin = 1000.;
 
 bool useBoth = true; // NSxPC for eta <2.5 and NSC for eta >2.5
 bool useP = false; // decides if default is NSC or NSxPC
@@ -516,6 +516,15 @@ void PLOT_WIDTH(std::vector< std::vector< TH1F* > > h_data, std::vector< std::ve
 // ======================================================================================================
 // ===                                                                                                ===
 // ======================================================================================================
+
+void DrawFunction(TCanvas* canv, TF1* func, int style, int color, double rup, double rdown){
+  TF1* Temp = (TF1*) func->Clone();
+  Temp->SetRange(rup,rdown);
+  Temp->SetLineStyle(style); 
+  Temp->SetLineColor(color); 
+  Temp->Draw("same");
+}
+
 void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vector< std::vector< TGraphErrors* > > h_MC, std::vector< std::vector< TGraphErrors* > > h_gen, TString outdir, std::vector<double> eta_bins, std::vector<double> Pt_bins_Central, std::vector<double> Pt_bins_HF, bool isFE) {
   int color_data = kBlue;
   int color_MC = kRed;
@@ -558,38 +567,49 @@ void PLOT_WIDTH_gr(std::vector< std::vector< TGraphErrors* > > h_data, std::vect
       TLegend *legend;
 
       if (h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc")) {
-        f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(2); f->SetLineColor(color_MC);
-        Temp = (TF1*) h_MC.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
-        Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
+        DrawFunction(canv, h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc"), 3, color_MC, 0, 0.345);
+        DrawFunction(canv, h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc"), 1, color_MC, range, 0.33);
+        // f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(2); f->SetLineColor(color_MC);
+        // Temp = (TF1*) h_MC.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
+        // Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
 
         if(alpha_new){
-          f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_MC); 
-          f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_MC);
+          DrawFunction(canv, h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"), 2, color_MC, 0, 0.345);
+          DrawFunction(canv, h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"), 4, color_MC, 0, 0.345);
+          // f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_MC); 
+          // f = h_MC.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_MC);
         }
       }
 
       if (h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc")) {
-
-        f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(2); f->SetLineColor(color_gen);
-        Temp = (TF1*) h_gen.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
-        Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
+        DrawFunction(canv, h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc"), 3, color_gen, 0, 0.345);
+        DrawFunction(canv, h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc"), 1, color_gen, range, 0.33);
+        // f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(2); f->SetLineColor(color_gen);
+        // Temp = (TF1*) h_gen.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
+        // Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
 
         if(alpha_new){
-          f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_gen); gStyle -> SetOptFit(0000);
-          f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_gen); gStyle -> SetOptFit(0000);
+          DrawFunction(canv, h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"), 2, color_gen, 0, 0.345);
+          DrawFunction(canv, h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"), 4, color_gen, 0, 0.345);
+          // f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_gen); gStyle -> SetOptFit(0000);
+          // f = h_gen.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_gen); gStyle -> SetOptFit(0000);
         }
 
         legend = tdrLeg(0.70,0.70,0.90,0.85, 0.025, 42, color_gen);
       }
 
       if (h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc")) {
-        f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(0); f->SetLineColor(color_data);
-        Temp = (TF1*) h_data.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
-        Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
+        DrawFunction(canv, h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc"), 3, color_data, 0, 0.345);
+        DrawFunction(canv, h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc"), 1, color_data, range, 0.33);
+        // f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc"); f->SetLineStyle(0); f->SetLineColor(color_data);
+        // Temp = (TF1*) h_data.at(m).at(p)->GetFunction("lin_extrapol_mc")->Clone(); gStyle -> SetOptFit(0000);
+        // Temp->SetRange(range,0.33); Temp->SetLineStyle(1); Temp->Draw("same");
 
         if(alpha_new){
-          f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_data); gStyle -> SetOptFit(0000);
-          f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_data); gStyle -> SetOptFit(0000);
+          DrawFunction(canv, h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"), 2, color_data, 0, 0.345);
+          DrawFunction(canv, h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"), 4, color_data, 0, 0.345);
+          // f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_first"); f->SetLineStyle(3); f->SetLineColor(color_data); gStyle -> SetOptFit(0000);
+          // f = h_data.at(m).at(p) -> GetFunction("lin_extrapol_mc_last"); f->SetLineStyle(4); f->SetLineColor(color_data); gStyle -> SetOptFit(0000);
         }
       }
 
@@ -931,8 +951,11 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     canv -> Print(outdir+"pdfy/JERs/"+canvName+".pdf","pdf");
 
     if(isFE&&isCorr){
-      // if(debug) cout << "Start comparing plots" << endl;
-      TF1* mcFIT = h_MC.at(m)->GetFunction("mcFIT"); mcFIT->SetLineColor(color_MC+2);
+      if(debug) cout << "Start comparing plots in eta" << m << endl;
+      if(debug) cout << h_MC.at(m)->GetEntries() << endl;
+      TF1* mcFIT = h_MC.at(m)->GetFunction("mcFIT");
+      bool emptyFit = mcFIT==nullptr;
+      if(!emptyFit) mcFIT->SetLineColor(color_MC+2);
 
       bool drawEXT = false; int colorEXT = kGray+2;
       bool drawIND = false; int colorIND = kCyan+1;
@@ -984,10 +1007,10 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
 
       rleg->Draw("same");
       TString default_text = "Default; "+(TString) (useP?"NSxPC":"NSC");
-      DrawLegFit(mcFIT, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color_MC, default_text, "pT in [70, 1200] GeV",  1); // Place==0 for default value
+      if(!emptyFit) DrawLegFit(mcFIT, rleg, vN, vNerr, vS, vSerr, vC, vCerr, vCh, vNDF, color_MC, default_text, "pT in [70, 1200] GeV",  1); // Place==0 for default value
 
       canv2->cd(2); // Ratio Plots
-      TH1F* ratio_MC  = GetMCFitRatio(h_MC.at(m), mcFIT, color_MC, 1);
+      TH1F* ratio_MC  = (!emptyFit)?GetMCFitRatio(h_MC.at(m), mcFIT, color_MC, 1) : new TH1F() ;
       TLine* fit_default = new TLine(0, 1, 1100, 1);
       TH1F* ratio_err = (TH1F*) mcERR->Clone();
 
@@ -1020,9 +1043,9 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
       AddFit(false, kCyan+2,    1, canv2, "mcFITpowdiv", fNSxPCdiv, "NSxPC; C*C/100",     "pT in [70, 1200] GeV",  h_MC.at(m), 70,  1200, {5, 1, 5,-0.8},          {-20.,20.}, {0.,2.}, {0.015,10.}, {-3.,0.});
 
       // void AddFit(bool draw, color, place, canv, TString name, TString function, info1,  info2, graph, ratio, r1, r2, initial, N, S, C, P={0,0}){
-      AddFit(drawIND, kCyan+1, 3, canv2, "mcFITind", fNSC, "NSC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.02,1.});
-      AddFit(drawIND, kBlue+2, 2, canv2, "mcFITindpow", fNSxPC, "NSxPC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.5, 0.8, 0.04, -1}, {-20.,20.}, {0.,2.}, {0.02,1.}, {-3.,0.});
-      AddFit(drawEXT, colorEXT, 4, canv2, "mcFIText", fNSC, "NSC; ", (TString) "syst. error = "+((eta_bins[m+1]>2.5)?"0.001":"0.001"), error_ext, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
+      if(!emptyFit) AddFit(drawIND, kCyan+1, 3, canv2, "mcFITind", fNSC, "NSC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.02,1.});
+      if(!emptyFit) AddFit(drawIND, kBlue+2, 2, canv2, "mcFITindpow", fNSxPC, "NSxPC; ", "Individual", MC_graph, mcFIT, 70, 1200, {0.5, 0.8, 0.04, -1}, {-20.,20.}, {0.,2.}, {0.02,1.}, {-3.,0.});
+      if(!emptyFit) AddFit(drawEXT, colorEXT, 4, canv2, "mcFIText", fNSC, "NSC; ", (TString) "syst. error = "+((eta_bins[m+1]>2.5)?"0.001":"0.001"), error_ext, mcFIT, 70, 1200, {0.00015, 0.8, 0.04}, {0.,10.}, {0.,2.}, {0.,1.});
 
 
       canv2 -> cd(0);
@@ -1035,17 +1058,19 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
         FitPar << "eta in ["+dtos(eta_bins[m],3)+","+dtos(eta_bins[m+1],3)+"]\n";
         FitPar << "====================\n";
         TString info = useP?"NSxPC":"NSC";
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT"), info+"; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITv1"), "NSC; v1; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT200"), "NSC; 200-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT100"), "NSC; 100-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITsig"), "sign(N)NSC; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITold"), "NSC; old; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpow"), "NSxPC; 70-1200 GeV ");
-        ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpowCut"), "NSxPC; 100-1200 GeV ");
-        ExtractFitParameters(FitPar, MC_graph->GetFunction("mcFITind"), "NSC; Individual ");
-        ExtractFitParameters(FitPar, MC_graph->GetFunction("mcFITindpow"), "NSxPC; Individual ");
-        ExtractFitParameters(FitPar, error_ext->GetFunction("mcFIText"), "NSC; 70-1200 GeV; large errors");
+        if(!emptyFit) {
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT"), info+"; 70-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITv1"), "NSC; v1; 70-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT200"), "NSC; 200-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFIT100"), "NSC; 100-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITsig"), "sign(N)NSC; 70-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITold"), "NSC; old; 70-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpow"), "NSxPC; 70-1200 GeV ");
+          ExtractFitParameters(FitPar, h_MC.at(m)->GetFunction("mcFITpowCut"), "NSxPC; 100-1200 GeV ");
+          ExtractFitParameters(FitPar, MC_graph->GetFunction("mcFITind"), "NSC; Individual ");
+          ExtractFitParameters(FitPar, MC_graph->GetFunction("mcFITindpow"), "NSxPC; Individual ");
+          ExtractFitParameters(FitPar, error_ext->GetFunction("mcFIText"), "NSC; 70-1200 GeV; large errors");
+        }
       }
     }
 
@@ -1217,6 +1242,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(Trigger.Contains("fine_v7")) name_pt_bin += "_fine_v7";
   if(Trigger.Contains("fine_v8")) name_pt_bin += "_fine_v8";
   if(Trigger.Contains("fine_v9")) name_pt_bin += "_fine_v9";
+  if(Trigger.Contains("fine_SF")) name_pt_bin += "_fine_SF";
+  if(Trigger.Contains("fine_old")) name_pt_bin += "_fine_old";
+  if(Trigger.Contains("quick")) name_pt_bin += "_quick";
   // if(Trigger.Contains("quick")) name_pt_bin += "_quick";
   cout << year << " " << name_pt_bin << endl;
   PtBins_Central = pt_trigger_thr.at(name_pt_bin).size();
@@ -1235,6 +1263,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(Trigger.Contains("fine_v7")) name_pt_bin += "_fine_v7";
   if(Trigger.Contains("fine_v8")) name_pt_bin += "_fine_v8";
   if(Trigger.Contains("fine_v9")) name_pt_bin += "_fine_v9";
+  if(Trigger.Contains("fine_SF")) name_pt_bin += "_fine_SF";
+  if(Trigger.Contains("fine_old")) name_pt_bin += "_fine_old";
+  if(Trigger.Contains("quick")) name_pt_bin += "_quick";
   // if(Trigger.Contains("quick")) name_pt_bin += "_quick";
   cout << year << " " << name_pt_bin << endl;
   PtBins_HF = pt_trigger_thr.at(name_pt_bin).size();
@@ -1436,33 +1467,33 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //    alpha bins below 10GeV threshold                                    //
   ////////////////////////////////////////////////////////////////////////////
 
-  time(&start); // TIME
+  // time(&start); // TIME
   
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM, soft_gen_asymmetries_width_SM, soft_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM;
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM_error, soft_gen_asymmetries_width_SM_error, soft_asymmetries_width_data_SM_error, soft_gen_asymmetries_width_data_SM_error;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM, soft_gen_asymmetries_width_SM, soft_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM_error, soft_gen_asymmetries_width_SM_error, soft_asymmetries_width_data_SM_error, soft_gen_asymmetries_width_data_SM_error;
 
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE, soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE;
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE_error, gen_soft_asymmetries_width_FE_error, soft_asymmetries_width_data_FE_error, gen_soft_asymmetries_width_data_FE_error;
-  std::vector< std::vector< std::vector< double > > > dummy_vec_x, dummy_vec_y;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE, soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE_error, gen_soft_asymmetries_width_FE_error, soft_asymmetries_width_data_FE_error, gen_soft_asymmetries_width_data_FE_error;
+  // std::vector< std::vector< std::vector< double > > > dummy_vec_x, dummy_vec_y;
 
-  histWidthAsym( asymmetries_SM , soft_asymmetries_width_SM, soft_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_SM , soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( asymmetries_data_SM , soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_data_SM , soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_SM , soft_asymmetries_width_SM, soft_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_SM , soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_data_SM , soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_data_SM , soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
 
-  histWidthAsym( asymmetries_FE , soft_asymmetries_width_FE, soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_FE , gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( asymmetries_data_FE , soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_data_FE , gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_FE , soft_asymmetries_width_FE, soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_FE , gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_data_FE , soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_data_FE , gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
 
-  if (debug) {
-    std::cout << "asymmetries_SM " << asymmetries_SM.size() << '\n';
-    std::cout << "asymmetries_FE " << asymmetries_FE.size() << '\n';
-  }
+  // if (debug) {
+  //   std::cout << "asymmetries_SM " << asymmetries_SM.size() << '\n';
+  //   std::cout << "asymmetries_FE " << asymmetries_FE.size() << '\n';
+  // }
 
-  time(&end); // TIME
-  time_taken = double(end - start);
-  if(debug) cout << "Time taken by histWidthAsym add is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+  // time(&end); // TIME
+  // time_taken = double(end - start);
+  // if(debug) cout << "Time taken by histWidthAsym add is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
 
   ////////////////////////////////////////////////////////////////////////////
@@ -1520,24 +1551,24 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //    one needs these plots to prove which points should be rejected!     //
   ////////////////////////////////////////////////////////////////////////////
 
-  time(&start); // TIME
+  // time(&start); // TIME
   
-  std::vector< std::vector< TH1F* > > soft_widths_hist_SM, soft_gen_widths_hist_SM, soft_widths_hist_data_SM, soft_gen_widths_hist_data_SM;
-  std::vector< std::vector< TH1F* > > soft_widths_hist_FE, soft_gen_widths_hist_FE, soft_widths_hist_data_FE, soft_gen_widths_hist_data_FE;
+  // std::vector< std::vector< TH1F* > > soft_widths_hist_SM, soft_gen_widths_hist_SM, soft_widths_hist_data_SM, soft_gen_widths_hist_data_SM;
+  // std::vector< std::vector< TH1F* > > soft_widths_hist_FE, soft_gen_widths_hist_FE, soft_widths_hist_data_FE, soft_gen_widths_hist_data_FE;
 
-  fill_widths_hists( "all_widths", soft_widths_hist_SM, soft_asymmetries_width_SM, soft_asymmetries_width_SM_error );
-  fill_widths_hists( "all_widths_gen", soft_gen_widths_hist_SM, soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error );
-  fill_widths_hists( "all_widths_data", soft_widths_hist_data_SM, soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error );
-  fill_widths_hists( "all_widths_gen_data", soft_gen_widths_hist_data_SM, soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error );
+  // fill_widths_hists( "all_widths", soft_widths_hist_SM, soft_asymmetries_width_SM, soft_asymmetries_width_SM_error );
+  // fill_widths_hists( "all_widths_gen", soft_gen_widths_hist_SM, soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error );
+  // fill_widths_hists( "all_widths_data", soft_widths_hist_data_SM, soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error );
+  // fill_widths_hists( "all_widths_gen_data", soft_gen_widths_hist_data_SM, soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error );
 
-  fill_widths_hists( "all_widths_fe", soft_widths_hist_FE, soft_asymmetries_width_FE, soft_asymmetries_width_FE_error );
-  fill_widths_hists( "all_widths_gen_fe", soft_gen_widths_hist_FE, gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error );
-  fill_widths_hists( "all_widths_data_fe", soft_widths_hist_data_FE, soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error );
-  fill_widths_hists( "all_widths_gen_data_fe", soft_gen_widths_hist_data_FE, gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error ); 
+  // fill_widths_hists( "all_widths_fe", soft_widths_hist_FE, soft_asymmetries_width_FE, soft_asymmetries_width_FE_error );
+  // fill_widths_hists( "all_widths_gen_fe", soft_gen_widths_hist_FE, gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error );
+  // fill_widths_hists( "all_widths_data_fe", soft_widths_hist_data_FE, soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error );
+  // fill_widths_hists( "all_widths_gen_data_fe", soft_gen_widths_hist_data_FE, gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error ); 
   
-  time(&end); // TIME
-  time_taken = double(end - start);
-  if(debug) cout << "Time taken by fill_widths_hists 2 is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+  // time(&end); // TIME
+  // time_taken = double(end - start);
+  // if(debug) cout << "Time taken by fill_widths_hists 2 is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
   ////////////////////////////////////////////////////////////////////////////
   //    I fit line or const to width(alpha_max)                             //
@@ -2029,6 +2060,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(debug) cout << "Time taken by PLOT_MCT is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
   bool plot_all = false;
+  debug = false;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
@@ -2046,32 +2078,32 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     	time(&end); // TIME
     	time_taken = double(end - start);
     	if(debug) cout << "Time taken by PLOT_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
-
-      	time(&start); // TIME
-      	TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
-      	for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
-          for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
-            for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
-                asymmetries_SM.at(m).at(p).at(r) -> Write();
-                gen_asymmetries_SM.at(m).at(p).at(r) -> Write();
-                asymmetries_data_SM.at(m).at(p).at(r) -> Write();
-              }
-            }
-        } 
-        for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
-          for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
-            for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
-              asymmetries_FE.at(m).at(p).at(r) -> Write();
-              gen_asymmetries_FE.at(m).at(p).at(r) -> Write();
-              asymmetries_data_FE.at(m).at(p).at(r) -> Write();
+    
+      time(&start); // TIME
+      TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
+      for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
+        for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
+          for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
+              asymmetries_SM.at(m).at(p).at(r) -> Write();
+              gen_asymmetries_SM.at(m).at(p).at(r) -> Write();
+              asymmetries_data_SM.at(m).at(p).at(r) -> Write();
             }
           }
-        } 
-        asyroot.Close();
+      } 
+      for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
+        for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
+          for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
+            asymmetries_FE.at(m).at(p).at(r) -> Write();
+            gen_asymmetries_FE.at(m).at(p).at(r) -> Write();
+            asymmetries_data_FE.at(m).at(p).at(r) -> Write();
+          }
+        }
+      } 
+      asyroot.Close();
 
-        time(&end); // TIME
-        time_taken = double(end - start);
-        if(debug) cout << "Time taken by STORE_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+      time(&end); // TIME
+      time_taken = double(end - start);
+      if(debug) cout << "Time taken by STORE_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
     }
 
     time(&start); // TIME
@@ -2126,8 +2158,8 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
        
     time(&start); // TIME
 
-    TFile widthroot(outdir+"output/widths.root","RECREATE");
-    if(false){ // Ignore to save time consumption
+    if(false){
+      TFile widthroot(outdir+"output/widths.root","RECREATE");
       for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
         for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
           widths_hist_SM.at(m).at(p) -> Write();
@@ -2142,31 +2174,31 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
           widths_hist_data_FE.at(m).at(p) -> Write();
         }
       }
+      h_chi2_tot->Write();
+      widthroot.Close();
+        
+      time(&end); // TIME
+      time_taken = double(end - start);
+      if(debug) cout << "Time taken by STORE_WIDTHS is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
     }
-    h_chi2_tot->Write();
-    widthroot.Close();
-       
-    time(&end); // TIME
-    time_taken = double(end - start);
-    if(debug) cout << "Time taken by STORE_WIDTHS is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
   }
 
-  time(&start); // TIME
-  for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
-    for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
-        delete widths_hist_SM.at(m).at(p);
-        delete gen_widths_hist_SM.at(m).at(p);
-        delete widths_hist_data_SM.at(m).at(p);
-    }
-  }
-  for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
-    for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
-      delete widths_hist_FE.at(m).at(p);
-      delete gen_widths_hist_FE.at(m).at(p);
-      delete widths_hist_data_FE.at(m).at(p);
-    }
-  }
+  // time(&start); // TIME
+  // for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
+  //   for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){ 
+  //       delete widths_hist_SM.at(m).at(p);
+  //       delete gen_widths_hist_SM.at(m).at(p);
+  //       delete widths_hist_data_SM.at(m).at(p);
+  //   }
+  // }
+  // for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
+  //   for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
+  //     delete widths_hist_FE.at(m).at(p);
+  //     delete gen_widths_hist_FE.at(m).at(p);
+  //     delete widths_hist_data_FE.at(m).at(p);
+  //   }
+  // }
   time(&end); // TIME
   time_taken = double(end - start);
   if(debug) cout << "Time taken to delete widths is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
@@ -2177,12 +2209,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   // plot with JERs with NSC fit
   /////////////////////////////////////////////////////////////////////////////////////////
   std::vector< TH1F* > h_fitERR_uncorrelated_SM, h_fitERR_correlated_SM, h_fitERR_uncorrelated_FE, h_fitERR_correlated_FE;
-  // TFile NSCroot(outdir+"output/NSC.root","RECREATE");
+  TFile NSCroot(outdir+"output/NSC.root","RECREATE");
   PLOT_NSC(JER_uncorrelated_data_hist_SM,JER_uncorrelated_MC_hist_SM,JER_uncorrelated_scale_hist_SM,h_fitERR_uncorrelated_SM,outdir,eta_bins_edge_SM,false, false);
   PLOT_NSC(JER_correlated_data_hist_SM,JER_correlated_MC_hist_SM,JER_correlated_scale_hist_SM,h_fitERR_correlated_SM,outdir,eta_bins_edge_SM,false, true);
   PLOT_NSC(JER_uncorrelated_data_hist_FE,JER_uncorrelated_MC_hist_FE,JER_uncorrelated_scale_hist_FE,h_fitERR_uncorrelated_FE,outdir,eta_bins_edge_FE, true, false);
   PLOT_NSC(JER_correlated_data_hist_FE,JER_correlated_MC_hist_FE,JER_correlated_scale_hist_FE,h_fitERR_correlated_FE,outdir,eta_bins_edge_FE, true, true);
-  // NSCroot.Close();
+  NSCroot.Close();
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Extract Widths
