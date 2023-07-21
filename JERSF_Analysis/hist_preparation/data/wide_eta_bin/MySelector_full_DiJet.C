@@ -45,7 +45,6 @@ bool JetInEtaBin(double jet_eta, std::vector<double> bins, int bin) {
 
 
 #define FILL_HISTOS(region,method)                                                                          \
-if (TMath::Abs(weight/asy)>5*1e06) continue;                                                                \
 asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                                                \
 asymmetries_pt_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                           \
 asymmetries_rho_##region.at(r).at(k).at(m)->Fill( rho, weight);                                             \
