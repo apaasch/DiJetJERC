@@ -8,6 +8,8 @@ from utils import *
 
 def main_program(path="", list_path="", out_path="", year="", study="", ptbins="", abins="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
+  isRun3 = "202" in year
+  is23 = year=="2023"
   list_path_=list_path
   out_path_=out_path
   dirs_sys = ["", "up", "down"]
@@ -43,9 +45,14 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
             run_list = list_path_+pattern+"file_DataRun"+sample+"_"+year+".txt"
             with open(run_list, "w") as outputfile:
               for file_ in sorted(glob.glob(source_path+"uhh2.AnalysisModuleRunner.DATA.*root")):
-                for el in sample:
-                  if not "Run"+el in file_ and not isRunII: continue
-                  outputfile.write(file_+"\n")
+                if not is23:
+                  for el in sample:
+                    if not "Run"+el in file_ and not isRunII: continue
+                    outputfile.write(file_+"\n")
+                else:
+                    if not "Run"+sample in file_: continue
+                    if sample=="C" and "C_v4" in file_: continue
+                    outputfile.write(file_+"\n")
             if not os.path.isfile(run_list):
               continue
             outdir = out_path_+pattern+"Run"+sample+"_"+year+"/"
@@ -94,7 +101,10 @@ inputdir = "DiJetJERC_DiJetHLT"
 # year = "UL16preVFP"
 # year = "UL16postVFP"
 # year = "UL17"
-year = "UL18"
+# year = "UL18"
+year = "2022"
+# year = "2023"
+
 if len(sys.argv)<2:
     sys.exit("I need at least a year")
 year = sys.argv[1]
@@ -106,16 +116,20 @@ samples = {}
 # samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 # samples["2018"] = ["ABC", "D", "ABCD"]
 samples["UL16preVFP_split"] = ["BCD", "EF", "BCDEF"]
-samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
-# samples["UL16preVFP"] = ["BCDEF"]
+# samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
+samples["UL16preVFP"] = ["BCDEF"]
 # samples["UL16preVFP"] = ["C"]
-samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
-# samples["UL16postVFP"] = ["FGH"]
-samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+# samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
+samples["UL16postVFP"] = ["FGH"]
+# samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
+samples["UL17"] = ["BCDEF"]
 # samples["UL17"] = ["BCDEF"]
 # samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
 # samples["UL18"] = ["ABCD", "A", "B", "C", "D"]
 samples["UL18"] = ["ABCD"]
+samples["2022postEE"] = ["FG"]
+# samples["2023"] = ["C0_v1", "C0_v2", "C0_v3", "C1_v1", "C1_v2", "C1_v3", "C0", "C1"]
+samples["2023"] = ["C", "C_v4"]
 samples["Legacy"] = ["II"]
 
 JECVersions = {}
@@ -125,11 +139,12 @@ JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
 JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
 JECVersions["UL17"] = ["Summer20UL17_V2"]
 JECVersions["UL18"] = ["Summer20UL18_V2"]
+JECVersions["2022postEE"] = ["Summer22EEPrompt22_V1"]
+JECVersions["2023"] = ["Winter23Prompt23_V1"]
 
 JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
-# JetLabels = ["AK4Puppi_v11"]
 JetLabels = ["AK4Puppi"]
 # systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
 # systematics = ["", "alpha","PU", "JEC", "Prefire"]

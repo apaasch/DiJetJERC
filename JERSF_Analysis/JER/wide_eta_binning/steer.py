@@ -120,6 +120,9 @@ samples["UL16preVFP"] = ["BCDEF"]
 samples["UL16postVFP"] = ["FGH"]
 samples["UL17"] = ["BCDEF"]
 samples["UL18"] = ["ABCD"]
+# samples["2022"] = ["FG"]
+samples["2022postEE"] = ["FG"]
+samples["2023"] = ["C", "C_v4"]
 # samples["UL18"] = ["ABC"]
 
 
@@ -147,6 +150,8 @@ QCDSamples["UL16preVFP"] = ["QCDHT"]
 QCDSamples["UL16postVFP"] = ["QCDHT"]
 QCDSamples["UL17"] = ["QCDHT"]
 QCDSamples["UL18"] = ["QCDHT"]
+QCDSamples["2022postEE"] = ["QCDPT"]
+QCDSamples["2023"] = ["QCDHT"]
 QCDSamples["Legacy"] = ["QCDHT"]
 
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
@@ -243,6 +248,10 @@ for extraText in [""]:
                                 MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+QCDsample+"_"+year+extraText+"/histograms_mc_incl_full.root"+'\\"'
                                 if 'prescale' in study:
                                     MC_file = MC_file.replace("_prescale", "")
+                                    print 'Set back MC input file:\n',MC_file
+                                if '2023' in year:
+                                    # MC_file = MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+"/UL18/Summer20UL18_V2/AK4CHS/QCDHT_UL18/histograms_mc_incl_full.root"+'\\"'
+                                    MC_file = MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/eta_common_default/2022/Winter22Run3_V1/AK4Puppi/QCDHT_2022/histograms_mc_incl_full.root"+'\\"'
                                     print 'Set back MC input file:\n',MC_file
                                 Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+run+"_"+year+extraText+"/histograms_data_incl_full.root"+'\\"'
                                 if 'PS' in syst:

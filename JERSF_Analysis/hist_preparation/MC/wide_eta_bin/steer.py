@@ -8,6 +8,8 @@ from utils import *
 
 def main_program(path="", list_path="", out_path="", year="", study="", ptbins="", abins="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
+  isRun3 = "202" in year
+  is23 = year=="2023"
   list_path_=list_path
   out_path_=out_path
   dirs_sys = ["", "up", "down"]
@@ -44,7 +46,8 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
           for sample in samples:
             run_list = list_path_+pattern+"file_QCD"+sample+".txt"
             with open(run_list, "w") as outputfile:
-              for file_ in sorted(glob.glob(source_path+"uhh2.AnalysisModuleRunner.MC.*root")):
+              fname="uhh2.AnalysisModuleRunner.MC.*root"
+              for file_ in sorted(glob.glob(source_path+fname)):
                 if not sample in file_ and not isRunII: continue
                 outputfile.write(file_+"\n")
             if not os.path.isfile(run_list):
@@ -111,6 +114,8 @@ samples["UL16preVFP"] = ["HT"]
 samples["UL16postVFP"] = ["HT"]
 samples["UL17"] = ["HT"]
 samples["UL18"] = ["HT"]
+samples["2022postEE"] = ["PT"]
+samples["2023"] = ["PT"]
 samples["Legacy"] = ["HT"]
 
 JECVersions = {}
@@ -120,6 +125,8 @@ JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
 JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
 JECVersions["UL17"] = ["Summer20UL17_V2"]
 JECVersions["UL18"] = ["Summer20UL18_V2"]
+JECVersions["2022postEE"] = ["Summer22EEPrompt22_V1"]
+JECVersions["2023"] = ["Winter23Prompt23_V1"]
 
 JECVersions["Legacy"] = ["Summer19Legacy"]
 

@@ -217,12 +217,12 @@ protected:
 
   //useful booleans
   bool debug, no_genp;
-  bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_PUid;
-  bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18;
+  bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_PUid, apply_lumisel;
+  bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18, is2022, is2023;
   bool switchTrigger_UL16, switchTrigger_UL17;
-  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL16preVFP", runPeriodsUL16preVFP}, {"UL16postVFP", runPeriodsUL16postVFP}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}};
+  std::unordered_map<std::string, std::vector<std::string>> runs = { {"2016", runPeriods2016}, {"2017", runPeriods2017}, {"UL16preVFP", runPeriodsUL16preVFP}, {"UL16postVFP", runPeriodsUL16postVFP}, {"UL17", runPeriods2017}, {"2018", runPeriods2018},{"UL18", runPeriods2018}, {"2022postEE", runPeriods2022postEE}, {"2022preEE", runPeriods2022preEE}, {"2023", runPeriods2023}};
   std::string year;
-  bool isAK8, ispuppi;
+  bool isAK8, ispuppi, isRun3;
   string PtBinsTrigger;
   bool ispythia8;
   bool ts;
@@ -607,6 +607,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   isUL16postVFP = (dataset_version.find("UL16postVFP") != std::string::npos);
   isUL17        = (dataset_version.find("UL17")        != std::string::npos);
   isUL18        = (dataset_version.find("UL18")        != std::string::npos);
+  is2022        = (dataset_version.find("2022")        != std::string::npos);
+  is2023        = (dataset_version.find("2023")        != std::string::npos);
   year = ctx.get("year");
   std::cout << "year " << year << '\n';
   if (isMC) runs[year] = {"MC"};
@@ -615,7 +617,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   debug = string2bool(ctx.get("Debug","false"));
   // debug= true;
 
-  if (debug) std::cout << "PtBinsTrigger: " << PtBinsTrigger << " isAK8: " << isAK8 << " ispuppi: " << ispuppi << '\n';
+  if (debug) std::cout << "PtBinsTrigger: " << PtBinsTrigger << " isAK8: " << isAK8 << " ispuppi: " << ispuppi << " isRun3: " << isRun3 << '\n';
   ispythia8 = ctx.get("MCgenerator", "Pythia8") == "Pythia8";
   useUnprefireable = string2bool(ctx.get("UseUnprefirable","false"));
 
