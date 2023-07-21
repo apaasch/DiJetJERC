@@ -584,16 +584,20 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   dataset_version = ctx.get("dataset_version");
   isMC = (ctx.get("dataset_type") == "MC");
   jetLabel = ctx.get("JetLabel");
+  JEC_Version = ctx.get("JEC_Version"); // Move up to check for Run3
+  isRun3 = (JEC_Version.find("Run3") != std::string::npos || JEC_Version.find("Prompt23") != std::string::npos);
+
   isAK8 = (jetLabel == "AK8CHS" || jetLabel == "AK8Puppi");
   ispuppi = (jetLabel == "AK4Puppi" || jetLabel == "AK8Puppi");
   jet_coll = isAK8? "AK8" : "AK4"; jet_coll += ispuppi? "PFPuppi" : "PFchs";
-  JEC_Version = ctx.get("JEC_Version");
+  
   jecTag = JEC_Version.substr(0,JEC_Version.find("_V"));
   jecVer = JEC_Version.substr(JEC_Version.find("_V")+2,JEC_Version.size()-JEC_Version.find("_V")-2);
   JEC_Level = ctx.get("JEC_Level", "L1L2L3Residual");
   jecVar = ctx.get("jecsmear_direction");
   prefire_direction = ctx.get("prefire_direction","nominal");
   Study = ctx.get("Study", "default");
+  cout << "Apply JEC level " << JEC_Level << endl;
 
   JECClosureTest = string2bool(ctx.get("JECClosureTest"));
   JERClosureTest = string2bool(ctx.get("JERClosureTest","false"));
@@ -617,6 +621,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   is2023        = (dataset_version.find("2023")        != std::string::npos);
   year = ctx.get("year");
   std::cout << "year " << year << '\n';
+  apply_lumisel = true; // only apply in combi with data, for 2023 Run C, not fully available in json file
   if (isMC) runs[year] = {"MC"};
   PtBinsTrigger = ctx.get("PtBinsTrigger");
 
@@ -665,17 +670,18 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
   PrimaryVertexId pvid = StandardPrimaryVertexId();
   metfilters_sel.reset(new AndSelection(ctx, "metfilters"));
-  metfilters_sel->add<TriggerSelection>("goodVertices", "Flag_goodVertices");
   metfilters_sel->add<NPVSelection>("1 good PV",1,-1,pvid); /* Not a metfilter. Used to select 1 good PV */
-  metfilters_sel->add<TriggerSelection>("globalSuperTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter");
-  metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");
-  metfilters_sel->add<TriggerSelection>("HBHENoiseIsoFilter", "Flag_HBHENoiseIsoFilter");
-  metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter");
-  if (year.find("16") == std::string::npos) metfilters_sel->add<EcalBadCalibSelection>("EcalBadCalibSelection"); /*TODO check 2016*/ // Use this instead of Flag_ecalBadCalibFilter, uses ecalBadCalibReducedMINIAODFilter in ntuple_generator
-  if (year.find("16") == std::string::npos) metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter"); /*TODO check 2016, maybe Extra_BadPFMuonFilter */
-  if (!isMC) metfilters_sel->add<TriggerSelection>("eeBadScFilter", "Flag_eeBadScFilter"); /* TODO Not recommended for MC, but do check */
-  /* metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter"); TODO Not recommended, under review.Separate module in ntuple_generator for 2016v2*/
-
+  if(!isRun3){
+    metfilters_sel->add<TriggerSelection>("goodVertices", "Flag_goodVertices");
+    metfilters_sel->add<TriggerSelection>("globalSuperTightHalo2016Filter", "Flag_globalSuperTightHalo2016Filter");
+    metfilters_sel->add<TriggerSelection>("HBHENoiseFilter", "Flag_HBHENoiseFilter");
+    metfilters_sel->add<TriggerSelection>("HBHENoiseIsoFilter", "Flag_HBHENoiseIsoFilter");
+    metfilters_sel->add<TriggerSelection>("EcalDeadCellTriggerPrimitiveFilter", "Flag_EcalDeadCellTriggerPrimitiveFilter");
+    if (year.find("16") == std::string::npos) metfilters_sel->add<EcalBadCalibSelection>("EcalBadCalibSelection"); /*TODO check 2016*/ // Use this instead of Flag_ecalBadCalibFilter, uses ecalBadCalibReducedMINIAODFilter in ntuple_generator
+    if (year.find("16") == std::string::npos) metfilters_sel->add<TriggerSelection>("BadPFMuonFilter", "Flag_BadPFMuonFilter"); /*TODO check 2016, maybe Extra_BadPFMuonFilter */
+    if (!isMC) metfilters_sel->add<TriggerSelection>("eeBadScFilter", "Flag_eeBadScFilter"); /* TODO Not recommended for MC, but do check */
+    /* metfilters_sel->add<TriggerSelection>("BadChargedCandidateFilter", "Flag_BadChargedCandidateFilter"); TODO Not recommended, under review.Separate module in ntuple_generator for 2016v2*/
+  }
   for (const std::string & run : runs[year]) {
     if (debug) std::cout << "JECS: " << run << " " << jecTag << " " << jecVer << " " << jet_coll << '\n';
     //std::vector<std::string> JEC_corr = (run=="MC")? JERFiles::JECFilesMC(jecTag, jecVer, jet_coll) : JERFiles::JECFilesDATA(jecTag, jecVer, jet_coll, run,JECClosureTest? JERFiles::L1L2L3Residual : JERFiles::L1L2L3);//TODO
@@ -708,8 +714,17 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   genjetcleaner.reset(new GenJetCleaner(ctx, minGenJetPt, 5.2));
 
   //Lepton cleaner
-  const     MuonId muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
-  const ElectronId eleSR(AndId<Electron>(ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wpLoose), PtEtaSCCut(15, 2.4)));
+  if(debug) cout <<  "Lepton Cleaner " << endl;
+  const MuonId muoSR;
+  const ElectronId;
+  if(isRun3){
+    muoSR = AndId<Muon>    (PtEtaCut(15, 2.4), PtEtaCut(15, 2.4));
+    eleSR = AndId<Electron>( PtEtaSCCut(15, 2.4), PtEtaSCCut(15, 2.4));
+  }
+  else{
+    muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
+    eleSR(AndId<Electron>(ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wpLoose), PtEtaSCCut(15, 2.4)));
+  }
   muoSR_cleaner.reset(new     MuonCleaner(muoSR));
   eleSR_cleaner.reset(new ElectronCleaner(eleSR));
 
@@ -775,7 +790,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   declare_output(ctx);//store only varaibles useful for dijet analysis
 
   // PS reweighting
-  ps_weights.reset(new PSWeights(ctx, false));
+  ps_weights.reset(new PSWeights(ctx, false)); // TODO: Run3
 
   // Do pileup reweighting (define it after undeclaring all other variables to keep the weights in the output)
   apply_lumiweights = string2bool(ctx.get("apply_lumiweights","true"));
@@ -870,10 +885,15 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   #define ak4jets event.jets
 
+  if(367554<event.run){ // last run number in 
+    apply_lumisel=false;
+  }
+
   n_evt++;
   if(debug){
     cout << endl << "++++++++++ NEW EVENT +++++++++" << endl << endl;
-    cout << " Evt# "<<event.event<<" Run: "<<event.run<<" Year: " << event.year << endl;
+    cout << " Evt# "<<event.event<<" Run: "<<event.run<<" Year: " << event.year<<" Lumi: " << event.luminosityBlock << endl;
+    cout << "Apply no lumi selection for 2023" << endl;
     //      cout << "pfparticles.size() = " <<event.pfparticles->size()<<endl;
   }
 
@@ -931,7 +951,8 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if (!PVCleaner->process(event)) return false;
 
   // CMS-certified luminosity sections
-  if(event.isRealData){
+  if(event.isRealData && apply_lumisel){
+    if(debug) std::cout<<"Start Lumi selection"<<std::endl;
     if(!lumi_sel->passes(event)) return false;
     else h_lumisel->fill(event);
   }
@@ -943,7 +964,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   double fill_event_integrated_lumi = 0;
   double inst_lumi = -1;
   double int_lumi_event = -1;
-  if(event.isRealData){
+  if(event.isRealData && apply_lumisel){
     run_lumi rl_event{event.run, event.luminosityBlock};
     double lumiblock_lumi = rl2lumi[rl_event];
     inst_lumi = lumiblock_lumi/23;
@@ -988,7 +1009,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   //discard events if not all jets fulfill JetID instead of just discarding single jets
   //    if (n_jets_beforeCleaner != n_jets_afterCleaner) return false;
-  if(!isMC) h_afterCleaner->fill(event);
+  h_afterCleaner->fill(event);
   // if(debug) cout<<"ak4jets->at(0).tagname2tag(pileup_loose) = "<<ak4jets->at(0).tagname2tag("pileup_loose")<<endl;
   // if(debug) cout<<"ak4jets->at(0).tagname2tag(pileup_medium) = "<<ak4jets->at(0).tagname2tag("pileup_medium")<<endl;
   // if(debug) cout<<"ak4jets->at(0).tagname2tag(pileup_tight) = "<<ak4jets->at(0).tagname2tag("pileup_tight")<<endl;
@@ -1019,29 +1040,28 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   bool apply_all = false;
   if (!isMC) {
     for (const std::string & run : runs[year]) {
+      if (debug) cout << " \trun map start with " << run << endl;
       if (run=="MC") continue;
-      if (year.find("UL")!= std::string::npos) {
+      if (year.find("UL")!= std::string::npos || year.find("2022")!= std::string::npos) {
+        if (debug) cout << "Key for runmap: " << "20"+year.substr(2,2) << endl;
         if (run_number_map.at("20"+year.substr(2,2)).at(run).first <= event.run && event.run <= run_number_map.at("20"+year.substr(2,2)).at(run).second) apply_run[run] = true;
       } else {
+        if (debug) cout << "Key for runmap same as year" << endl;
         if (run_number_map.at(year).at(run).first <= event.run && event.run <= run_number_map.at(year).at(run).second) apply_run[run] = true;
+        // cout << run_number_map.at(year).at(run).first << "   " << run_number_map.at(year).at(run).second << "   " << event.run << endl;
       }
       apply_all+=apply_run[run];
     }
   } else {apply_run["MC"] = true; apply_all+=apply_run["MC"];}
   if (apply_all != 1) throw std::runtime_error("In AnalysisModule_DiJetTrg.cxx: Sum of apply_all when applying JECs is not == 1. Fix this.");
 
-
-
-
   h_beforeJEC->fill(event);
-
   for (const std::string run : runs[year]) {
     if (apply_run[run]){
       if(debug){ cout<<"JEC RUN " <<  run <<endl; }
       JetCorr[run]->process(event);
     }
   }
-
   h_afterJEC->fill(event);
 
   //#############################################################################################################
@@ -1349,7 +1369,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     }
 
     h_beforeTriggerData->fill(event);
-
+    // For 2023, ntuple production had a bug in trigger paths for certain runs
+    // const std::vector<std::string> & triggers_vec = event.get_current_triggernames();
+    // if(!fired_triggers && triggers_vec.size()<10) h_trigger_problem->fill(event);
     if(!fired_triggers)	return false;
 
   }
