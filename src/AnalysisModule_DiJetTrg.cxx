@@ -707,6 +707,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   jetPUid.reset(new JetCleaner(ctx, JetPUid(JetPUid::WP_TIGHT)));
 
   //remove low pt jets
+  if(debug) cout <<  "Jet Cleaner " << endl;
   minJetPt = stod(ctx.get("minJetPt","10"));
   minGenJetPt = stod(ctx.get("minGenJetPt","15"));
   qScale_max = stod(ctx.get("qScale","1.5"));
@@ -745,6 +746,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
     ( dataset_version.find("RunB") != std::string::npos || dataset_version.find("RunC") != std::string::npos )
   )?true:false;
 
+  if(debug) cout <<  "Trigger build up " << endl;
   if(!isMC){
     for (std::string mode: {"central", "forward"}) {
       std::string triggerModeName = PtBinsTrigger+"_"+mode;
@@ -802,11 +804,13 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   SysType_PU = ctx.get("SysType_PU");
   if (DO_Pu_ReWeighting) pileupSF.reset(new MCPileupReweight(ctx,SysType_PU));
 
+  if(debug) cout <<  "Init hists " << endl;
   init_hists(ctx);
   Jet_printer.reset(new JetPrinter("Jet-Printer", 0));
   GenJet_printer.reset(new GenJetPrinter("GenJet-Printer", 0));
   // if(debug && !no_genp) GenParticles_printer.reset(new GenParticlesPrinter(ctx));
 
+  if(debug) cout <<  "Prefire weights " << endl;
   h_weight_prefire = ctx.get_handle<float>("prefiringWeight");
   h_weight_prefire_up = ctx.get_handle<float>("prefiringWeightUp");
   h_weight_prefire_down = ctx.get_handle<float>("prefiringWeightDown");
@@ -948,6 +952,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   h_runnr_input->fill(event);
   // PrimaryVertexV Cleaner
+  if(debug) std::cout<<"Start PV Cleaner"<<std::endl;
   if (!PVCleaner->process(event)) return false;
 
   // CMS-certified luminosity sections
@@ -958,6 +963,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   }
 
   // MET filters
+  if(debug) std::cout<<"Start MET filters"<<std::endl;
   if(!metfilters_sel->passes(event)) return false;
 
   int event_in_lumibin = -1;
@@ -1077,7 +1083,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(JERClosureTest && isMC) jet_resolution_smearer->process(event);
   jetcleaner->process(event); //remove low pt jets
   jet_n = ak4jets->size();
-  if(debug) cout<<"#jets after cleanining low pt jets "<<n_jets_afterCleaner<<endl;
+  if(debug) cout<<"#jets after cleanining low pt jets "<<n_jets_afterCleaner <<"; ("<<jet_n<<")"<<endl;
   if(jet_n<2) return false;
   //FixME: do matching to trigger objects instead
   // sort_by_pt<Jet>(*ak4jets);
@@ -1200,7 +1206,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   std::uint32_t seed =  m_nomVar + (lumiNum_uint << 10) + (runNum_uint << 20) + evNum_uint;
   srand(seed);
   int numb = (rand() % 2)+1;
-  if(debug) cout << evNum_uint << "\t" << runNum_uint << "\t" << lumiNum_uint << "\t" << m_nomVar << "\t" << (lumiNum_uint << 10) << "\t" << (runNum_uint << 20) << "\t" << seed << "\t" << numb << endl;
+  if(debug) cout << "Randomize -\t" << numb << "\t" << evNum_uint << "\t" << runNum_uint << "\t" << lumiNum_uint << "\t" << m_nomVar << "\t" << (lumiNum_uint << 10) << "\t" << (runNum_uint << 20) << "\t" << seed << endl;
 
   // std::cout << "RANDOMIZE " << numb << '\n';
   // std::cout << jet_barrel->pt() << " " << jet_barrel->eta() << " " << (fabs(jet1->eta())<s_eta_barr) << " " << '\n';
