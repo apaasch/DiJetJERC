@@ -76,6 +76,7 @@ protected:
   std::unique_ptr<AnalysisModule> Jet_printer, GenJet_printer, GenParticles_printer;
 
   Event::Handle<float> h_weight_prefire, h_weight_prefire_up, h_weight_prefire_down;
+  Event::Handle<float> tt_weight_prefire, tt_weight_prefire_up, tt_weight_prefire_down;
 
   Event::Handle<float> tt_jet1_pt;  Event::Handle<float> tt_jet2_pt;  Event::Handle<float> tt_jet3_pt;
   Event::Handle<float> tt_jet4_pt;  Event::Handle<float> tt_jet5_pt;  Event::Handle<float> tt_jet6_pt;  Event::Handle<float> tt_jet7_pt;
@@ -311,6 +312,11 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   tt_pv0Z = ctx.declare_event_output<float>("pv0Z");
   tt_pv0Y = ctx.declare_event_output<float>("pv0Y");
   tt_pv0X = ctx.declare_event_output<float>("pv0X");
+
+  tt_weight_prefire = ctx.declare_event_output<float>("prefire");
+  tt_weight_prefire_up = ctx.declare_event_output<float>("prefire_up");
+  tt_weight_prefire_down = ctx.declare_event_output<float>("prefire_down");
+
   // tt_nGoodvertices = ctx.declare_event_output<int>("nGoodvertices");
   tt_barreljet_eta          = ctx.declare_event_output<float>("barreljet_eta");
   tt_barreljet_phi          = ctx.declare_event_output<float>("barreljet_phi");
@@ -881,14 +887,10 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
 
   if(debug) cout << "Prefire " << endl;
-  float prefire_weight;
-  if(prefire_direction == "nominal") prefire_weight = event.get(h_weight_prefire);
-  else if(prefire_direction == "up") prefire_weight = event.get(h_weight_prefire_up);
-  else if(prefire_direction == "down") prefire_weight = event.get(h_weight_prefire_down);
-  else throw runtime_error("PostSelection: Wrong prefire weight direction (nominal, up, down)");
-  if(debug) cout << "\t - weight " << prefire_weight << endl;
-  event.weight *= prefire_weight;
-  h_prefire_check->fill(event);
+  float prefire_weight_nom = event.get(h_weight_prefire);
+  float prefire_weight_up = event.get(h_weight_prefire_up);
+  float prefire_weight_down = event.get(h_weight_prefire_down);
+  if(debug) cout << "\t - weight " << setw(10) << prefire_weight_nom << setw(10) << prefire_weight_up << setw(10) << prefire_weight_down << endl;
 
   if(debug) cout << "Parton Shower Weight" << endl;
   ps_weights->process(event);
@@ -1409,6 +1411,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   event.set(tt_prescale,trigPre);
   event.set(tt_prescale_L1min,trigPreL1min);
   event.set(tt_prescale_L1max,trigPreL1max);
+  event.set(tt_weight_prefire,prefire_weight_nom);
+  event.set(tt_weight_prefire_up,prefire_weight_up);
+  event.set(tt_weight_prefire_down,prefire_weight_down);
   event.set(tt_pv0Z,(event.pvs->at(0)).z());
   event.set(tt_pv0X,(event.pvs->at(0)).x());
   event.set(tt_pv0Y,(event.pvs->at(0)).y());
