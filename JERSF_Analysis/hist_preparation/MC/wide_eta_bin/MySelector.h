@@ -74,6 +74,7 @@ public:
   float alpha_;
   float gen_Delta_R_radiation_barrel;
   float gen_Delta_R_radiation_probe;
+  float prefire, prefire_up, prefire_down;
 
   TBranch *b_run;
   TBranch *b_event;
@@ -110,6 +111,9 @@ public:
   TBranch *b_rho;
   TBranch *b_gen_Delta_R_radiation_barrel;
   TBranch *b_gen_Delta_R_radiation_probe;
+  TBranch *b_prefire;
+  TBranch *b_prefire_down;
+  TBranch *b_prefire_up;
 
   int ngenjet;
   float genjet3_pt;
@@ -165,7 +169,7 @@ public:
   int etaShift_SM, etaShift_SM_control, etaShift_FE_reference, etaShift_FE_control, etaShift_FE;
   int PtBins_Central, PtBins_HF, PtBins;
   int AlphaBins, AlphaBinsInc;
-  bool isPS, isQuick;
+  bool isPS, isPrefire, isQuick;
 
   std::vector<int> Pt_bins_Central;
   std::vector<int> Pt_bins_HF;
@@ -270,6 +274,9 @@ void MySelector::Init(TTree *tree){
   fChain->SetBranchAddress("probejet_phi", &probejet_phi, &b_probejet_phi);
   fChain->SetBranchAddress("probejet_eta", &probejet_eta, &b_probejet_eta);
   fChain->SetBranchAddress("probejet_pt", &probejet_pt, &b_probejet_pt);
+  fChain->SetBranchAddress("prefire", &prefire, &b_prefire);
+  fChain->SetBranchAddress("prefire_up", &prefire_up, &b_prefire_up);
+  fChain->SetBranchAddress("prefire_down", &prefire_down, &b_prefire_down);
   fChain->SetBranchAddress("jet3_pt", &jet3_pt, &b_jet3_pt);
   fChain->SetBranchAddress("asymmetry", &asymmetry, &b_asymmetry);
   fChain->SetBranchAddress("alpha", &alpha_, &b_alpha);

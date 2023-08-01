@@ -24,11 +24,10 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
             continue
           if sys == "JER" and dir == "":
             dir = "nominal"
-            print sys, dir
           if (sys == "" and dir != "") or (sys == "alpha" and dir != "") or ((sys != "" and sys != "alpha") and dir == ""):
             continue
           pattern = newJECVersion+"/"+newJetLabel+"/"+sys+"/"+dir+"/"
-          if sys == "" or sys == "alpha" or sys == "PS":
+          if sys == "" or sys == "alpha" or sys == "PS" or sys == "prefire":
             pattern = newJECVersion+"/"+newJetLabel+"/"
           source_path = path+pattern
           if isRunII:
@@ -37,7 +36,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
             continue
           if sys == "alpha":
             pattern = newJECVersion+"/"+newJetLabel+"/"+sys+"/"
-          if sys == "PS":
+          if sys in ["PS", "prefire"]:
             pattern = newJECVersion+"/"+newJetLabel+"/"+sys+"/"+dir+"/"
           if not os.path.isdir(list_path_+pattern):
             os.makedirs(list_path_+pattern)

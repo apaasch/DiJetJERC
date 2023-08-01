@@ -272,6 +272,9 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   isPS = (sys.find("FSR") != std::string::npos || sys.find("ISR") != std::string::npos)?true:false;
   if(isPS) std::cout << "Studing PS weights " << sys << std::endl;
 
+  isPrefire = (sys.find("prefire") != std::string::npos)?true:false;
+  if(isPrefire) std::cout << "Studying prefire " << sys << std::endl;
+
   h_JetAvePt_SM = new TH1F("JetAvePt" ,   "Inclusive Jet Ave Pt",   50, 0., 2000);  h_JetAvePt_SM->SetXTitle("Pt_{ave}[GeV]");  h_JetAvePt_SM->SetYTitle("a.u."); h_JetAvePt_SM->Sumw2();
   h_Jet1Pt_SM   = new TH1F("Jet1Pt",      "Inclusive Jet 1 Pt",     50, 0., 2000);  h_Jet1Pt_SM->SetXTitle("Pt_1[GeV]");        h_Jet1Pt_SM->SetYTitle("a.u.");   h_Jet1Pt_SM->Sumw2();
   h_Jet2Pt_SM   = new TH1F("Jet2Pt",      "Inclusive Jet 2 Pt",     50, 0., 2000);  h_Jet2Pt_SM->SetXTitle("Pt_2[GeV]");        h_Jet2Pt_SM->SetYTitle("a.u.");   h_Jet2Pt_SM->Sumw2();
@@ -429,6 +432,14 @@ bool MySelector::Process(Long64_t entry) {
     else throw std::runtime_error("<E> PS must contain ISR or FSR");
     weight *= PSweight;
   }
+
+  double w_prefire = prefire;
+  if(isPrefire){
+    if(sys.find("prefire/up") != std::string::npos) w_prefire = prefire_up;
+    else if(sys.find("prefire/down") != std::string::npos) w_prefire = prefire_down;
+    else throw std::runtime_error("[ERROR] No prefire variation found in\n\t"+sys);
+  }
+  weight *= w_prefire;
 
   h_PU->Fill(nPU, 1);
   h_alpha_raw->Fill(alpha_raw, 1);
