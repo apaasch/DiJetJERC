@@ -261,12 +261,12 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
 
   PtBins=(PtBins_Central>PtBins_HF)?PtBins_Central:PtBins_HF;
 
-  Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30}; // default
-  if(abins.find("finealpha") != std::string::npos) Alpha_bins = {0.05,0.075,0.10,0.125,0.15,0.175,0.20,0.225,0.25,0.275,0.30};
-  if(abins.find("highalpha") != std::string::npos) Alpha_bins = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+  Alpha_bins = alpha_binning.at("default"); // default
+  if(abins.find("finealpha") != std::string::npos) Alpha_bins = alpha_binning.at("fine");
+  if(abins.find("highalpha") != std::string::npos) Alpha_bins = alpha_binning.at("high");
   AlphaBins = Alpha_bins.size();
 
-  Alpha_bins_Inc = {0.05,0.10,0.15,0.20,0.25,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.};
+  Alpha_bins_Inc = alpha_binning.at("high");
   AlphaBinsInc = Alpha_bins_Inc.size();
 
   isPS = (sys.find("FSR") != std::string::npos || sys.find("ISR") != std::string::npos)?true:false;
