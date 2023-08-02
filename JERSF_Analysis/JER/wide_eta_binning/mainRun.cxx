@@ -2018,45 +2018,39 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     //  Plots Asymmetries                                                     //
     ////////////////////////////////////////////////////////////////////////////
     
+    time(&start); // TIME
 
-
-    if(true){ // Ignore to save time consumption
+    PLOT_ASY(asymmetries_data_SM,  asymmetries_SM, gen_asymmetries_SM,  asymmetries_width_data_SM, asymmetries_width_SM, gen_asymmetries_width_SM, asymmetries_width_data_SM_error, asymmetries_width_SM_error, gen_asymmetries_width_SM_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_SM, upper_x_data_SM, lower_x_SM, upper_x_SM, gen_lower_x_SM, gen_upper_x_SM);
+    PLOT_ASY(asymmetries_data_FE,  asymmetries_FE, gen_asymmetries_FE,  asymmetries_width_data_FE, asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE_error, asymmetries_width_FE_error, gen_asymmetries_width_FE_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_FE, upper_x_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE);
     
-	    time(&start); // TIME
-    
-    	PLOT_ASY(asymmetries_data_SM,  asymmetries_SM, gen_asymmetries_SM,  asymmetries_width_data_SM, asymmetries_width_SM, gen_asymmetries_width_SM, asymmetries_width_data_SM_error, asymmetries_width_SM_error, gen_asymmetries_width_SM_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_SM, upper_x_data_SM, lower_x_SM, upper_x_SM, gen_lower_x_SM, gen_upper_x_SM);
-    	PLOT_ASY(asymmetries_data_FE,  asymmetries_FE, gen_asymmetries_FE,  asymmetries_width_data_FE, asymmetries_width_FE, gen_asymmetries_width_FE, asymmetries_width_data_FE_error, asymmetries_width_FE_error, gen_asymmetries_width_FE_error, outdir+"output/asymmetries/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, alpha, lower_x_data_FE, upper_x_data_FE, lower_x_FE, upper_x_FE, gen_lower_x_FE, gen_upper_x_FE);
-      
-    	time(&end); // TIME
-    	time_taken = double(end - start);
-    	if(debug) cout << "Time taken by PLOT_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+    time(&end); // TIME
+    time_taken = double(end - start);
+    if(debug) cout << "Time taken by PLOT_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
-      	time(&start); // TIME
-      	TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
-      	for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
-          for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
-            for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
-                asymmetries_SM.at(m).at(p).at(r) -> Write();
-                gen_asymmetries_SM.at(m).at(p).at(r) -> Write();
-                asymmetries_data_SM.at(m).at(p).at(r) -> Write();
-              }
-            }
-        } 
-        for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
-          for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
-            for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
-              asymmetries_FE.at(m).at(p).at(r) -> Write();
-              gen_asymmetries_FE.at(m).at(p).at(r) -> Write();
-              asymmetries_data_FE.at(m).at(p).at(r) -> Write();
-            }
+    time(&start); // TIME
+    TFile asyroot(outdir+"output/asymmetries.root","RECREATE");
+    for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
+      for( unsigned int p = 0; p < asymmetries_SM.at(m).size(); p++){
+        for( unsigned int r = 0; r < asymmetries_SM.at(m).at(p).size(); r++){
+          asymmetries_SM.at(m).at(p).at(r) -> Write();
+          gen_asymmetries_SM.at(m).at(p).at(r) -> Write();
+          asymmetries_data_SM.at(m).at(p).at(r) -> Write();
+
+          if(m<asymmetries_FE.size()){
+            // p and r should be the same size for SM and FE
+            // FE does not consider the first eta bin
+            // Do not run twice through all bins
+            asymmetries_FE.at(m).at(p).at(r) -> Write();
+            gen_asymmetries_FE.at(m).at(p).at(r) -> Write();
+            asymmetries_data_FE.at(m).at(p).at(r) -> Write();
           }
-        } 
-        asyroot.Close();
-
-        time(&end); // TIME
-        time_taken = double(end - start);
-        if(debug) cout << "Time taken by STORE_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+        }
+      }
     }
+    asyroot.Close();
+    time(&end); // TIME
+    time_taken = double(end - start);
+    if(debug) cout << "Time taken by STORE_ASY is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
     time(&start); // TIME
     for( unsigned int m = 0; m < asymmetries_SM.size(); m++){
@@ -2065,15 +2059,12 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
           delete asymmetries_SM.at(m).at(p).at(r);
           delete gen_asymmetries_SM.at(m).at(p).at(r);
           delete asymmetries_data_SM.at(m).at(p).at(r);
-        }
-      }
-    } 
-    for( unsigned int m = 0; m < asymmetries_FE.size(); m++){
-      for( unsigned int p = 0; p < asymmetries_FE.at(m).size(); p++){
-        for( unsigned int r = 0; r < asymmetries_FE.at(m).at(p).size(); r++){
-          delete asymmetries_FE.at(m).at(p).at(r);
-          delete gen_asymmetries_FE.at(m).at(p).at(r);
-          delete asymmetries_data_FE.at(m).at(p).at(r);
+
+          if(m<asymmetries_FE.size()){
+            delete asymmetries_FE.at(m).at(p).at(r);
+            delete gen_asymmetries_FE.at(m).at(p).at(r);
+            delete asymmetries_data_FE.at(m).at(p).at(r);
+          }
         }
       }
     }
@@ -2088,14 +2079,11 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     time(&start); // TIME
 
     // TFile WIDTHroot(outdir+"output/Width.root","RECREATE");
-
     // PLOT_WIDTH(widths_hist_data_SM, widths_hist_SM, gen_widths_hist_SM, outdir+"pdfy/widths/", eta_bins_edge_SM,Pt_bins_Central,Pt_bins_HF);
     // PLOT_WIDTH(widths_hist_data_FE, widths_hist_FE, gen_widths_hist_FE, outdir+"pdfy/widths/", eta_bins_edge_SM,Pt_bins_Central,Pt_bins_HF);
 
-    if(true){
-      PLOT_WIDTH_gr(data_correlated_graphs_SM, MC_correlated_graphs_SM, gen_correlated_graphs_SM, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, false);
-      PLOT_WIDTH_gr(data_correlated_graphs_FE, MC_correlated_graphs_FE, gen_correlated_graphs_FE, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, true);
-    }
+    PLOT_WIDTH_gr(data_correlated_graphs_SM, MC_correlated_graphs_SM, gen_correlated_graphs_SM, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, false);
+    PLOT_WIDTH_gr(data_correlated_graphs_FE, MC_correlated_graphs_FE, gen_correlated_graphs_FE, outdir+"ClosureTest/", eta_bins_edge_SM, Pt_bins_Central, Pt_bins_HF, true);
     // WIDTHroot.Close();
 
     time(&end); // TIME
@@ -2111,16 +2099,13 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
     time(&start); // TIME
 
     TFile widthroot(outdir+"output/widths.root","RECREATE");
-    if(false){ // Ignore to save time consumption
-      for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
-        for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
-          widths_hist_SM.at(m).at(p) -> Write();
-          gen_widths_hist_SM.at(m).at(p) -> Write();
-          widths_hist_data_SM.at(m).at(p) -> Write();
-        }
-      }
-      for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
-        for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
+    for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
+      for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
+        widths_hist_SM.at(m).at(p) -> Write();
+        gen_widths_hist_SM.at(m).at(p) -> Write();
+        widths_hist_data_SM.at(m).at(p) -> Write();
+
+        if(m<widths_hist_FE.size()){
           widths_hist_FE.at(m).at(p) -> Write();
           gen_widths_hist_FE.at(m).at(p) -> Write();
           widths_hist_data_FE.at(m).at(p) -> Write();
@@ -2139,18 +2124,18 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   time(&start); // TIME
   for( unsigned int m = 0; m < widths_hist_SM.size(); m++ ){
     for( unsigned int p = 0; p < widths_hist_SM.at(m).size(); p++ ){
-        delete widths_hist_SM.at(m).at(p);
-        delete gen_widths_hist_SM.at(m).at(p);
-        delete widths_hist_data_SM.at(m).at(p);
+      delete widths_hist_SM.at(m).at(p);
+      delete gen_widths_hist_SM.at(m).at(p);
+      delete widths_hist_data_SM.at(m).at(p);
+
+      if(m<widths_hist_FE.size()){
+        delete widths_hist_FE.at(m).at(p);
+        delete gen_widths_hist_FE.at(m).at(p);
+        delete widths_hist_data_FE.at(m).at(p);
+      }
     }
   }
-  for( unsigned int m = 0; m < widths_hist_FE.size(); m++ ){
-    for( unsigned int p = 0; p < widths_hist_FE.at(m).size(); p++ ){
-      delete widths_hist_FE.at(m).at(p);
-      delete gen_widths_hist_FE.at(m).at(p);
-      delete widths_hist_data_FE.at(m).at(p);
-    }
-  }
+
   time(&end); // TIME
   time_taken = double(end - start);
   if(debug) cout << "Time taken to delete widths is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
