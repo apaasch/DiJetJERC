@@ -1436,33 +1436,33 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //    alpha bins below 10GeV threshold                                    //
   ////////////////////////////////////////////////////////////////////////////
 
-  time(&start); // TIME
+  // time(&start); // TIME
   
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM, soft_gen_asymmetries_width_SM, soft_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM;
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM_error, soft_gen_asymmetries_width_SM_error, soft_asymmetries_width_data_SM_error, soft_gen_asymmetries_width_data_SM_error;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM, soft_gen_asymmetries_width_SM, soft_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_SM_error, soft_gen_asymmetries_width_SM_error, soft_asymmetries_width_data_SM_error, soft_gen_asymmetries_width_data_SM_error;
 
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE, soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE;
-  std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE_error, gen_soft_asymmetries_width_FE_error, soft_asymmetries_width_data_FE_error, gen_soft_asymmetries_width_data_FE_error;
-  std::vector< std::vector< std::vector< double > > > dummy_vec_x, dummy_vec_y;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE, soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE;
+  // std::vector< std::vector< std::vector< double > > > soft_asymmetries_width_FE_error, gen_soft_asymmetries_width_FE_error, soft_asymmetries_width_data_FE_error, gen_soft_asymmetries_width_data_FE_error;
+  // std::vector< std::vector< std::vector< double > > > dummy_vec_x, dummy_vec_y;
 
-  histWidthAsym( asymmetries_SM , soft_asymmetries_width_SM, soft_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_SM , soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( asymmetries_data_SM , soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_data_SM , soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_SM , soft_asymmetries_width_SM, soft_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_SM , soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_data_SM , soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_data_SM , soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error, true, gaustails, 0, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
 
-  histWidthAsym( asymmetries_FE , soft_asymmetries_width_FE, soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_FE , gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( asymmetries_data_FE , soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
-  histWidthAsym( gen_asymmetries_data_FE , gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_FE , soft_asymmetries_width_FE, soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_FE , gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( asymmetries_data_FE , soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
+  // histWidthAsym( gen_asymmetries_data_FE , gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error, true, gaustails, 1, dummy_vec_x, dummy_vec_y, eta_bins, alpha);
 
-  if (debug) {
-    std::cout << "asymmetries_SM " << asymmetries_SM.size() << '\n';
-    std::cout << "asymmetries_FE " << asymmetries_FE.size() << '\n';
-  }
+  // if (debug) {
+  //   std::cout << "asymmetries_SM " << asymmetries_SM.size() << '\n';
+  //   std::cout << "asymmetries_FE " << asymmetries_FE.size() << '\n';
+  // }
 
-  time(&end); // TIME
-  time_taken = double(end - start);
-  if(debug) cout << "Time taken by histWidthAsym add is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+  // time(&end); // TIME
+  // time_taken = double(end - start);
+  // if(debug) cout << "Time taken by histWidthAsym add is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
 
   ////////////////////////////////////////////////////////////////////////////
@@ -1520,24 +1520,24 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //    one needs these plots to prove which points should be rejected!     //
   ////////////////////////////////////////////////////////////////////////////
 
-  time(&start); // TIME
+  // time(&start); // TIME
   
-  std::vector< std::vector< TH1F* > > soft_widths_hist_SM, soft_gen_widths_hist_SM, soft_widths_hist_data_SM, soft_gen_widths_hist_data_SM;
-  std::vector< std::vector< TH1F* > > soft_widths_hist_FE, soft_gen_widths_hist_FE, soft_widths_hist_data_FE, soft_gen_widths_hist_data_FE;
+  // std::vector< std::vector< TH1F* > > soft_widths_hist_SM, soft_gen_widths_hist_SM, soft_widths_hist_data_SM, soft_gen_widths_hist_data_SM;
+  // std::vector< std::vector< TH1F* > > soft_widths_hist_FE, soft_gen_widths_hist_FE, soft_widths_hist_data_FE, soft_gen_widths_hist_data_FE;
 
-  fill_widths_hists( "all_widths", soft_widths_hist_SM, soft_asymmetries_width_SM, soft_asymmetries_width_SM_error );
-  fill_widths_hists( "all_widths_gen", soft_gen_widths_hist_SM, soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error );
-  fill_widths_hists( "all_widths_data", soft_widths_hist_data_SM, soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error );
-  fill_widths_hists( "all_widths_gen_data", soft_gen_widths_hist_data_SM, soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error );
+  // fill_widths_hists( "all_widths", soft_widths_hist_SM, soft_asymmetries_width_SM, soft_asymmetries_width_SM_error );
+  // fill_widths_hists( "all_widths_gen", soft_gen_widths_hist_SM, soft_gen_asymmetries_width_SM, soft_gen_asymmetries_width_SM_error );
+  // fill_widths_hists( "all_widths_data", soft_widths_hist_data_SM, soft_asymmetries_width_data_SM, soft_asymmetries_width_data_SM_error );
+  // fill_widths_hists( "all_widths_gen_data", soft_gen_widths_hist_data_SM, soft_gen_asymmetries_width_data_SM, soft_gen_asymmetries_width_data_SM_error );
 
-  fill_widths_hists( "all_widths_fe", soft_widths_hist_FE, soft_asymmetries_width_FE, soft_asymmetries_width_FE_error );
-  fill_widths_hists( "all_widths_gen_fe", soft_gen_widths_hist_FE, gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error );
-  fill_widths_hists( "all_widths_data_fe", soft_widths_hist_data_FE, soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error );
-  fill_widths_hists( "all_widths_gen_data_fe", soft_gen_widths_hist_data_FE, gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error ); 
+  // fill_widths_hists( "all_widths_fe", soft_widths_hist_FE, soft_asymmetries_width_FE, soft_asymmetries_width_FE_error );
+  // fill_widths_hists( "all_widths_gen_fe", soft_gen_widths_hist_FE, gen_soft_asymmetries_width_FE, gen_soft_asymmetries_width_FE_error );
+  // fill_widths_hists( "all_widths_data_fe", soft_widths_hist_data_FE, soft_asymmetries_width_data_FE, soft_asymmetries_width_data_FE_error );
+  // fill_widths_hists( "all_widths_gen_data_fe", soft_gen_widths_hist_data_FE, gen_soft_asymmetries_width_data_FE, gen_soft_asymmetries_width_data_FE_error ); 
   
-  time(&end); // TIME
-  time_taken = double(end - start);
-  if(debug) cout << "Time taken by fill_widths_hists 2 is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
+  // time(&end); // TIME
+  // time_taken = double(end - start);
+  // if(debug) cout << "Time taken by fill_widths_hists 2 is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
   ////////////////////////////////////////////////////////////////////////////
   //    I fit line or const to width(alpha_max)                             //
