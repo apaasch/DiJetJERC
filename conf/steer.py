@@ -129,19 +129,19 @@ QCD_process.append("QCDHT1200to1500_2022preEE")
 QCD_process.append("QCDHT1500to2000_2022preEE")
 QCD_process.append("QCDHT2000_2022preEE")
 
-QCD_process.append("QCDPT50to80_2022preEE")
-QCD_process.append("QCDPT80to120_2022preEE")
-QCD_process.append("QCDPT120to170_2022preEE")
-QCD_process.append("QCDPT170to300_2022preEE")
-QCD_process.append("QCDPT300to470_2022preEE")
-QCD_process.append("QCDPT470to600_2022preEE")
-QCD_process.append("QCDPT600to800_2022preEE")
-QCD_process.append("QCDPT800to1000_2022preEE")
-QCD_process.append("QCDPT1000to1400_2022preEE")
-QCD_process.append("QCDPT1400to1800_2022preEE")
-QCD_process.append("QCDPT1800to2400_2022preEE")
-QCD_process.append("QCDPT2400to3200_2022preEE")
-QCD_process.append("QCDPT3200_2022preEE")
+# QCD_process.append("QCDPT50to80_2022preEE")
+# QCD_process.append("QCDPT80to120_2022preEE")
+# QCD_process.append("QCDPT120to170_2022preEE")
+# QCD_process.append("QCDPT170to300_2022preEE")
+# QCD_process.append("QCDPT300to470_2022preEE")
+# QCD_process.append("QCDPT470to600_2022preEE")
+# QCD_process.append("QCDPT600to800_2022preEE")
+# QCD_process.append("QCDPT800to1000_2022preEE")
+# QCD_process.append("QCDPT1000to1400_2022preEE")
+# QCD_process.append("QCDPT1400to1800_2022preEE")
+# QCD_process.append("QCDPT1800to2400_2022preEE")
+# QCD_process.append("QCDPT2400to3200_2022preEE")
+# QCD_process.append("QCDPT3200_2022preEE")
 QCD_process.append("QCDPT50to80_2022postEE")
 QCD_process.append("QCDPT80to120_2022postEE")
 QCD_process.append("QCDPT120to170_2022postEE")
@@ -225,10 +225,10 @@ JECVersions_MC["UL17"]          = ["Summer20UL17_V2"]
 JECVersions_Data["UL18"]        = ["Summer20UL18_V2"]
 JECVersions_MC["UL18"]          = ["Summer20UL18_V2"]
 
-JECVersions_Data["2022"]        = ["Winter22Run3_V1"]
-JECVersions_MC["2022"]          = ["Winter22Run3_V1"]
-JECVersions_Data["2022preEE"]   = ["Winter22Run3_V1"]
-JECVersions_MC["2022preEE"]     = ["Winter22Run3_V1"]
+JECVersions_Data["2022"]        = ["Summer23Run3_V1"]
+JECVersions_MC["2022"]          = ["Summer23Run3_V1"]
+JECVersions_Data["2022preEE"]   = ["Summer23Run3_V1"]
+JECVersions_MC["2022preEE"]     = ["Summer23Run3_V1"]
 JECVersions_Data["2022postEE"]  = ["Summer22EEPrompt22_V1"] # V11 copy L2Res into L2L3Res due to nan values; V1 original
 JECVersions_MC["2022postEE"]    = ["Summer22EEPrompt22_V1"] # V11 copy L2Res into L2L3Res due to nan values; V1 original
 

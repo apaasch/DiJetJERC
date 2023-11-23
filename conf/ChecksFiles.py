@@ -51,13 +51,14 @@ class CheckFileNumbers():
 
 if __name__ == '__main__':
 
-    years       = ["UL16postVFP", "UL17", "UL18"]
+    years       = ["2022preEE"]
     studies     = ["eta_common"]
-    JetLabels   = ["AK4CHS", "AK8CHS", "AK8Puppi"]
-    Systematics = ["", "PU_up", "PU_down", "JEC_up", "JEC_down", "JER_nominal"]
+    JetLabels   = ["AK4Puppi"]
+    #Systematics = ["", "PU_up", "PU_down", "JEC_up", "JEC_down", "JER_nominal"]
+    Systematics = [""]
 
     JECVersions = {}
-    JECVersions["UL16preVFP"]    = ["Summer20UL16APV_V2"]
+    JECVersions["2022preEE"]     = ["Summer23Run3_V1"]
     JECVersions["UL16postVFP"]   = ["Summer20UL16_V2"]
     JECVersions["UL17"]          = ["Summer20UL17_V2"]
     JECVersions["UL18"]          = ["Summer20UL18_V2"]
