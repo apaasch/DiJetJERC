@@ -787,7 +787,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   declare_output(ctx);//store only varaibles useful for dijet analysis
 
   // PS reweighting
-  ps_weights.reset(new PSWeights(ctx, false)); // TODO: Run3
+  if(!isRun3) ps_weights.reset(new PSWeights(ctx, false)); // TODO: Run3
 
   // Do pileup reweighting (define it after undeclaring all other variables to keep the weights in the output)
   apply_lumiweights = string2bool(ctx.get("apply_lumiweights","true"));
@@ -922,7 +922,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   float prefire_weight_down = event.get(h_weight_prefire_down);
 
   if(debug) cout << "Parton Shower Weight" << endl;
-  if(!Run3) ps_weights->process(event); // TODO: Run3
+  if(!isRun3) ps_weights->process(event); // TODO: Run3
 
   //Dump Input
   h_input->fill(event);
