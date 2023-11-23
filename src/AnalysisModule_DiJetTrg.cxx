@@ -716,16 +716,11 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //Lepton cleaner
   if(debug) cout <<  "Lepton Cleaner " << endl;
-  const MuonId muoSR;
-  const ElectronId;
-  if(isRun3){
-    muoSR = AndId<Muon>    (PtEtaCut(15, 2.4), PtEtaCut(15, 2.4));
-    eleSR = AndId<Electron>( PtEtaSCCut(15, 2.4), PtEtaSCCut(15, 2.4));
-  }
-  else{
-    muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
-    eleSR(AndId<Electron>(ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wpLoose), PtEtaSCCut(15, 2.4)));
-  }
+  // TODO: lepton IDs in Nutplewriter
+  const MuonId muoSR(AndId<Muon>    (PtEtaCut(15, 2.4), PtEtaCut(15, 2.4)));
+  const ElectronId eleSR(AndId<Electron>( PtEtaSCCut(15, 2.4), PtEtaSCCut(15, 2.4)));
+  // const MuonId muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
+  // const ElectronId eleSR(AndId<Electron>(ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wpLoose), PtEtaSCCut(15, 2.4)));
   muoSR_cleaner.reset(new     MuonCleaner(muoSR));
   eleSR_cleaner.reset(new ElectronCleaner(eleSR));
 
