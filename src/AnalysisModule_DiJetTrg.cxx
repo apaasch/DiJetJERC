@@ -85,7 +85,7 @@ protected:
   Event::Handle<float> tt_jet1_ptRaw;  Event::Handle<float> tt_jet2_ptRaw;  Event::Handle<float> tt_jet3_ptRaw;
   Event::Handle<float> tt_jet1_pt_onoff_Resp;     Event::Handle<float> tt_jet2_pt_onoff_Resp;
   Event::Handle<int> tt_nvertices;
-  Event::Handle<int> tt_prescale, tt_prescale_L1min, tt_prescale_L1max;
+  Event::Handle<double> tt_prescale, tt_prescale_L1min, tt_prescale_L1max;
   Event::Handle<float> tt_pv0Z;     Event::Handle<float> tt_pv0X; Event::Handle<float> tt_pv0Y;
   Event::Handle<float> tt_probejet_eta;   Event::Handle<float> tt_probejet_phi;   Event::Handle<float> tt_probejet_pt;  Event::Handle<float> tt_probejet_ptRaw;
   Event::Handle<float> tt_barreljet_eta;  Event::Handle<float> tt_barreljet_phi;  Event::Handle<float> tt_barreljet_pt; Event::Handle<float> tt_barreljet_ptRaw;
@@ -306,9 +306,9 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   tt_barreljet_muonEF    = ctx.declare_event_output<float>("barreljet_muonEF");
 
   tt_nvertices = ctx.declare_event_output<int>("nvertices");
-  tt_prescale = ctx.declare_event_output<int>("prescale");
-  tt_prescale_L1min = ctx.declare_event_output<int>("prescale_L1min");
-  tt_prescale_L1max = ctx.declare_event_output<int>("prescale_L1max");
+  tt_prescale = ctx.declare_event_output<double>("prescale");
+  tt_prescale_L1min = ctx.declare_event_output<double>("prescale_L1min");
+  tt_prescale_L1max = ctx.declare_event_output<double>("prescale_L1max");
   tt_pv0Z = ctx.declare_event_output<float>("pv0Z");
   tt_pv0Y = ctx.declare_event_output<float>("pv0Y");
   tt_pv0X = ctx.declare_event_output<float>("pv0X");
