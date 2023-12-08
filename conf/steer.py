@@ -208,8 +208,8 @@ original_dir_ = os.getcwd()
 
 # QCDSamples = ["QCDPt","QCDHT", "DATA"]
 # QCDSamples = ["QCDHT", "DATA"]
-# QCDSamples = ["DATA"]
-QCDSamples = ["QCDHT"]
+QCDSamples = ["DATA"]
+# QCDSamples = ["QCDHT"]
 processes = list(filter( lambda sample: year in sample and any(QCD in sample for QCD in QCDSamples) , QCD_process+Data_process))
 others = list(set(QCD_process+Data_process)-set(processes))
 
@@ -225,10 +225,10 @@ JECVersions_MC["UL17"]          = ["Summer20UL17_V2"]
 JECVersions_Data["UL18"]        = ["Summer20UL18_V2"]
 JECVersions_MC["UL18"]          = ["Summer20UL18_V2"]
 
-JECVersions_Data["2022"]        = ["Summer23Run3_V1"]
-JECVersions_MC["2022"]          = ["Summer23Run3_V1"]
-JECVersions_Data["2022preEE"]   = ["Summer23Run3_V1"]
-JECVersions_MC["2022preEE"]     = ["Summer23Run3_V1"]
+JECVersions_Data["2022"]        = ["Summer22_22Sep2023_V1"]
+JECVersions_MC["2022"]          = ["Summer22_22Sep2023_V1"]
+JECVersions_Data["2022preEE"]   = ["Summer22_22Sep2023_V1"]
+JECVersions_MC["2022preEE"]     = ["Summer22_22Sep2023_V1"]
 JECVersions_Data["2022postEE"]  = ["Summer22EEPrompt22_V1"] # V11 copy L2Res into L2L3Res due to nan values; V1 original
 JECVersions_MC["2022postEE"]    = ["Summer22EEPrompt22_V1"] # V11 copy L2Res into L2L3Res due to nan values; V1 original
 
