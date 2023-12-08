@@ -72,10 +72,10 @@
 
 <!-- Data Samples -->
 
-<!ENTITY DATA_RunC_JetHT_2022			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/2022preVFP/JetHT_Run2022C-22Sep2023-v1.xml">
-<!ENTITY DATA_RunC_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/2022preVFP/JetMET_Run2022C-22Sep2023-v1.xml">
-<!ENTITY DATA_RunD_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/2022preVFP/JetMET_Run2022D-22Sep2023-v1.xml">
-<!ENTITY DATA_RunE_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/2022preVFP/JetMET_Run2022E-22Sep2023-v1.xml">
+<!ENTITY DATA_RunC_JetHT_2022			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022preEE/JetHT_Run2022C-22Sep2023-v1.xml">
+<!ENTITY DATA_RunC_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022preEE/JetMET_Run2022C-22Sep2023-v1.xml">
+<!ENTITY DATA_RunD_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022preEE/JetMET_Run2022D-22Sep2023-v1.xml">
+<!ENTITY DATA_RunE_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022preEE/JetMET_Run2022E-22Sep2023-v1.xml">
 <!-- <!ENTITY DATA_RunA_2022			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_126X_v1/2022/JetHT_Run2022A-PromptReco-v1.xml"> -->
 <!-- <!ENTITY DATA_RunB_JetHT_2022			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_126X_v1/2022/JetHT_Run2022B-PromptReco-v1.xml">
 <!ENTITY DATA_RunC_JetHT_2022			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_126X_v1/2022/JetHT_Run2022C-PromptReco-v1.xml">
