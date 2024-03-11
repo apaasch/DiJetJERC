@@ -928,6 +928,12 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   h_lumi_nocuts->fill(event);
   h_runnr_nocut->fill(event);
 
+  // CMS-certified luminosity sections
+  if(event.isRealData){
+    if(debug) std::cout<<"Start Lumi selection"<<std::endl;
+    if(!lumi_sel->passes(event)) return false;
+    else h_lumisel->fill(event);
+  }
   h_runnr_lumi->fill(event);
 
   // Do pileup reweighting
@@ -991,13 +997,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if (!PVCleaner->process(event)) return false;
   if(debug) std::cout<<"After PV Cleaner #pvs" << event.pvs->size() <<std::endl;
   h_runnr_pv->fill(event);
-
-  // CMS-certified luminosity sections
-  if(event.isRealData && apply_lumisel){
-    if(debug) std::cout<<"Start Lumi selection"<<std::endl;
-    if(!lumi_sel->passes(event)) return false;
-    else h_lumisel->fill(event);
-  }
 
   // MET filters
   if(debug) std::cout<<"Start MET filters"<<std::endl;
