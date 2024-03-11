@@ -809,6 +809,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
     if(is2018)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));
     if(is2017)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt"));
     if(is2016v2 || is2016v3)  jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"));
+    if(is2022preEE)           jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer22_22Sep2023_JRV1_MC/Summer22_22Sep2023_JRV1_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer22_22Sep2023_JRV1_MC/Summer22_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi.txt"));
+    if(is2022postEE)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer22EE_22Sep2023_JRV1_MC/Summer22EE_22Sep2023_JRV1_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer22EE_22Sep2023_JRV1_MC/Summer22EE_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi.txt"));
   }
 
   //output
