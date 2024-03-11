@@ -801,6 +801,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //JER Smearing for corresponding JEC-Version
   if(JERClosureTest && isMC) {
+    if(debug) cout <<  "JER build up " << endl;
     if(isUL16preVFP)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt"));
     if(isUL16postVFP)         jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV2_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL18_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt"));
     if(isUL17)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer19UL17_JRV3_MC/Summer19UL17_JRV3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer19UL17_JRV3_MC/Summer19UL17_JRV3_MC_PtResolution_AK4PFchs.txt"));
@@ -811,6 +812,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   }
 
   //output
+  if(debug) cout <<  "Declare output " << endl;
   ctx.undeclare_all_event_output();
   declare_output(ctx);//store only varaibles useful for dijet analysis
 
@@ -992,7 +994,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   h_runnr_lepton->fill(event);
   // PrimaryVertexV Cleaner
-  if(debug) std::cout<<"Start PV Cleaner"<<std::endl;
+  if(debug) std::cout<<"Start PV Cleaner #pvs" << event.pvs->size() <<std::endl;
   if (!PVCleaner->process(event)) return false;
   if(debug) std::cout<<"After PV Cleaner #pvs" << event.pvs->size() <<std::endl;
   h_runnr_pv->fill(event);
