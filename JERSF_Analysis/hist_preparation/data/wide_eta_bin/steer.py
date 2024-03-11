@@ -122,60 +122,26 @@ prescale = args.prescale
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
 
 samples = {}
-# samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
-# samples["2018"] = ["ABC", "D", "ABCD"]
-samples["UL16preVFP_split"] = ["BCD", "EF", "BCDEF"]
-# samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
-samples["UL16preVFP"] = ["BCDEF"]
-# samples["UL16preVFP"] = ["C"]
-# samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
-samples["UL16postVFP"] = ["FGH"]
-# samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
-samples["UL17"] = ["BCDEF"]
-# samples["UL17"] = ["BCDEF"]
-# samples["UL18"] = ["A", "B", "C", "D", "ABC", "ABCD"]
-# samples["UL18"] = ["ABCD", "A", "B", "C", "D"]
-samples["UL18"] = ["ABCD"]
-samples["2022postEE"] = ["FG"]
-# samples["2023"] = ["C0_v1", "C0_v2", "C0_v3", "C1_v1", "C1_v2", "C1_v3", "C0", "C1"]
+samples["2022preEE"] = ["CD"] # CHT is considered with C
+# samples["2022preEE"] = ["CD"] # CHT is considered with C
+samples["2022postEE"] = ["EFG"]
 samples["2023"] = ["C", "C_v4"]
-samples["Legacy"] = ["II"]
 
 JECVersions = {}
-JECVersions["2018"] = ["Autumn18_V19"]
-JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
-JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
-JECVersions["UL17"] = ["Summer20UL17_V2"]
-JECVersions["UL18"] = ["Summer20UL18_V2"]
-JECVersions["2022postEE"] = ["Summer22EEPrompt22_V1"]
+JECVersions["2022preEE"] = ["Summer22_19Dec2023_V2"]
+JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 JECVersions["2023"] = ["Winter23Prompt23_V1"]
 
-JECVersions["Legacy"] = ["Summer19Legacy"]
-
-# JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4Puppi"]
-# systematics = ["", "alpha","PU", "JEC", "JER", "Prefire"]
-# systematics = ["", "alpha","PU", "JEC", "Prefire"]
-# systematics = ["", "alpha","PU", "JEC"]
-# systematics = ["PU", "JEC", "Prefire"]
-# systematics = ["JER"]
-# systematics = ["", "alpha","PU"]
+# systematics = ["", "alpha","PU", "JEC", "JER"]
+# systematics = ["alpha","PU", "JEC"]
 systematics = [""]
 
 list_processes = []
 list_logfiles = []
 
 studies = []
-# studies.append("Standard")
-# studies.append("L1L2Residual")
-# studies.append("L1L2")
-# studies.append("Simplified")
-# # studies.append("PuJetId")
-# studies.append("eta_JER")
 studies.append("eta_common")
-# studies.append("eta_calo")
-# studies.append("eta_simple")
 
 global dirs_PS
 dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['4', '2']]

@@ -107,70 +107,22 @@ year = sys.argv[1]
 
 
 samples = {}
-# samples["2018"] = ["A", "B", "C", "D", "ABC", "ABCD"]
-# samples["2018"] = ["D", "ABC", "ABCD"]
-# samples["UL17"] = ["B", "C", "D", "E", "F","BCDEF"]
-# samples["UL18"] = ["ABC", "ABCD", "A", "B", "C", "D"]
 
-# samples["UL16preVFP"] = ["B", "C", "D", "E", "F", "BCD", "EF", "BCDEF"]
-# samples["UL16postVFP"] = ["F", "G", "H", "FG", "FGH"]
-# samples["UL16preVFP"] = ["BCD", "EF", "BCDEF"]
-samples["UL16preVFP_split"] = ["BCDEF"]
-samples["UL16preVFP"] = ["BCDEF"]
-samples["UL16postVFP"] = ["FGH"]
-samples["UL17"] = ["BCDEF"]
-samples["UL18"] = ["ABCD"]
-# samples["2022"] = ["FG"]
-samples["2022postEE"] = ["FG"]
+samples["2022preEE"] = ["CD"]
+samples["2022postEE"] = ["EFG"]
 samples["2023"] = ["C", "C_v4"]
-# samples["UL18"] = ["ABC"]
-
-
-# samples["UL16preVFP"] = ["B", "C", "D", "E", "F"]
-# samples["UL16postVFP"] = ["FG", "H"]
-# samples["UL17"] = ["B", "C", "D", "E", "F"]
-# samples["UL18"] = ["A", "B", "C", "D", "AB", "CD", "ABC"]
-
-
-
-# samples["UL16preVFP"] = ["EF"]
-# samples["UL17"] = ["EF"]
-
-
-
-samples["Legacy"] = ["II"]
-
-
 
 QCDSamples = {}
-QCDSamples["2018"] = ["QCDHT"]
-# QCDSamples["UL17"] = ["QCDPt"]
-QCDSamples["UL16preVFP_split"] = ["QCDHT"]
-QCDSamples["UL16preVFP"] = ["QCDHT"]
-QCDSamples["UL16postVFP"] = ["QCDHT"]
-QCDSamples["UL17"] = ["QCDHT"]
-QCDSamples["UL18"] = ["QCDHT"]
-QCDSamples["2022postEE"] = ["QCDPT"]
+QCDSamples["2022preEE"] = ["QCDHT"]
+QCDSamples["2022postEE"] = ["QCDHT"]
 QCDSamples["2023"] = ["QCDHT"]
-QCDSamples["Legacy"] = ["QCDHT"]
 
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
 JECVersions = {}
-
-# Summer 19 campaign
-JECVersions["2018"] = ["Autumn18_V19"]
-JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-# JECVersions["UL16preVFP"] = ["Summer19UL16APV_V3"]
-# JECVersions["UL16postVFP"] = ["Summer19UL16_V2"]
-# JECVersions["UL18"] = ["Summer19UL18_V5"]
-# JECVersions["UL17"] = ["Summer19UL17_V5"]
-JECVersions["Legacy"] = ["Summer19Legacy"]
-
 # Summer 20 campaign
-JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
-JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
-JECVersions["UL17"] = ["Summer20UL17_V2"]
-JECVersions["UL18"] = ["Summer20UL18_V2"]
+JECVersions["2022preEE"] = ["Summer22_22Sep2023_V2"]
+# JECVersions["2022preEE"] = ["Summer22_19Dec2023_V2"]
+JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels=["AK4CHS"]
@@ -197,23 +149,7 @@ if 'PS' in systematics:
 dirs = dirs_sys
 
 studies = []
-# studies.append("Standard")
-# studies.append("L1L2Residual")
-# studies.append("L1L2")
-# studies.append("eta_JER")
-# studies.append("eta_JER_fine")
-# studies.append("eta_JER_default")
-#studies.append("eta_common_default")
-# studies.append("eta_common_fine_v1")
-# studies.append("eta_common_fine_v2")
-# studies.append("eta_common_fine_v3")
-# studies.append("eta_common_fine_v4")
-# studies.append("eta_common_fine_v5_prescale")
-studies.append("eta_common_fine_v5_highalpha")
-# studies.append("eta_common_fine")
-# studies.append("eta_common_central_fine_v2")
-# studies.append("eta_common")
-# studies.append("eta_simple")
+studies.append("eta_common_default_finealpha_prescale")
 
 for extraText in [""]:
     for study in studies:

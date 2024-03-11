@@ -121,56 +121,27 @@ binning = args.sample
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/MC/"
 
 samples = {}
-# samples["2018"] = ["HT"]
-# samples["2018"] = ["Pt"]
-samples["UL16preVFP_split"] = ["HT"]
-samples["UL16preVFP"] = ["HT"]
-samples["UL16postVFP"] = ["HT"]
-samples["UL17"] = ["HT"]
-samples["UL18"] = ["HT"]
-samples["2022postEE"] = ["PT"]
+samples["2022preEE"] = ["HT"]
+samples["2022postEE"] = ["HT"]
 samples["2023"] = ["PT"]
-samples["Legacy"] = ["HT"]
 
 JECVersions = {}
-JECVersions["2018"] = ["Autumn18_V19"]
-JECVersions["UL16preVFP_split"] = ["Summer19UL16APV_V3"]
-JECVersions["UL16preVFP"] = ["Summer20UL16APV_V2"]
-JECVersions["UL16postVFP"] = ["Summer20UL16_V2"]
-JECVersions["UL17"] = ["Summer20UL17_V2"]
-JECVersions["UL18"] = ["Summer20UL18_V2"]
-JECVersions["2022postEE"] = ["Summer22EEPrompt22_V1"]
+JECVersions["2022preEE"] = ["Summer22_22Sep2023_V2"]
+JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 JECVersions["2023"] = ["Winter23Prompt23_V1"]
-
-JECVersions["Legacy"] = ["Summer19Legacy"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 # JetLabels = ["AK4Puppi", "AK8Puppi"]
 JetLabels = ["AK4Puppi"]
 # systematics = ["", "alpha","PU", "JEC", "JER", "Prefire", "PS"]
-# systematics = ["alpha","PU", "JEC", "Prefire"]
-# systematics = ["", "alpha","PU", "JEC", "Prefire"]
-# systematics = ["", "alpha", "JEC", "JER"]
-# systematics = ["PU", "JEC"]
-# systematics = ["PU"]
-# systematics = ["", "alpha","PU", "JEC"]
-# systematics = ["", "PU", "JEC"]
-# systematics = ["Prefire", "PU", "JEC"]
-# systematics = ["Prefire"]
-systematics = [""]
+# systematics = ["alpha","PU", "JEC"]
+systematics = ["JER"]
 
 list_processes = []
 list_logfiles = []
 
 studies = []
-# studies.append("Standard")
-# studies.append("L1L2Residual")
-# studies.append("L1L2")
-# studies.append("Simplified")
-# studies.append("PuJetId")
-# studies.append("eta_calo")
 studies.append("eta_common")
-# studies.append("eta_simple")
 
 global dirs_PS
 dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2','4','2']]
@@ -204,8 +175,5 @@ for i in list_processes:
   print i
 
 print len(list_processes)
-# print "PRO - ", list_processes
-# print ""
-# print "LOG - ", list_logfiles
 
 parallelise(list_processes, 12, list_logfiles)
