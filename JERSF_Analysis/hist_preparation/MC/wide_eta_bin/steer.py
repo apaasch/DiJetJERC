@@ -26,7 +26,7 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
   is23 = year=="2023"
   list_path_=list_path
   out_path_=out_path
-  dirs_sys = ["", "up", "down"]
+  dirs = ["", "up", "down"]
   for newJECVersion in JECVersions:
     for newJetLabel in JetLabels:
       for sys in set(systematics):
@@ -34,7 +34,6 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
           alpha_cut = 10
         else:
           alpha_cut = 15
-        dirs = dirs_PS if "PS" in sys else dirs_sys
         for dir in dirs:
           # if sys == "JER" and dir != "":
           #   continue
@@ -136,10 +135,8 @@ JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 JECVersions["2023"] = ["Winter23Prompt23_V1"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
-# JetLabels = ["AK4Puppi", "AK8Puppi"]
 JetLabels = ["AK4Puppi"]
 # systematics = ["", "alpha","PU", "JEC", "JER", "Prefire", "PS"]
-# systematics = ["alpha","PU", "JEC"]
 systematics = ["JER"]
 
 list_processes = []
@@ -147,12 +144,6 @@ list_logfiles = []
 
 studies = []
 studies.append("eta_common")
-
-global dirs_PS
-dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2','4','2']]
-# dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['down'] for f in ['sqrt2']]
-if 'PS' in systematics:
-    print(dirs_PS)
 
 for study in studies:
     list_path   = common_path+"lists/"+study+"/"+year+"/"

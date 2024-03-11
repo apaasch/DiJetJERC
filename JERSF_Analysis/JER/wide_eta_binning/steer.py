@@ -135,12 +135,7 @@ JetLabels=["AK4Puppi"]
 
 systematics=["", "PLI", "gaus", "PU", "JEC", "alpha", "JER"]
 
-dirs_sys = ["", "up", "down"]
-dirs_PS = [p+d+'_'+f for p in ['ISR'] for d in ['up'] for f in ['2']]
-# dirs_PS = [p+d+'_'+f for p in ['FSR','ISR'] for d in ['up', 'down'] for f in ['sqrt2']]
-if 'PS' in systematics:
-    print(dirs_PS)
-dirs = dirs_sys
+dirs = ["", "up", "down"]
 
 studies = []
 studies.append("eta_common_default_finealpha_prescale")
@@ -154,7 +149,6 @@ for extraText in [""]:
         for newJECVersion in JECVersions[year]:
             for newJetLabel in JetLabels:
                 for syst in systematics:
-                    dirs = dirs_PS if "PS" in syst else dirs_sys
                     for dir in dirs:
                         # if syst == "JER" and dir != "":
                         #   continue
