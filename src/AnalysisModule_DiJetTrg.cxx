@@ -652,7 +652,7 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   is2023        = (dataset_version.find("2023")        != std::string::npos);
   year = ctx.get("year");
   std::cout << "year " << year << '\n';
-  apply_lumisel = true; // only apply in combi with data, for 2023 Run C, not fully available in json file
+
   if (isMC) runs[year] = {"MC"};
   PtBinsTrigger = ctx.get("PtBinsTrigger");
 
@@ -912,10 +912,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   #define ak4jets event.jets
 
-  if(367554<event.run){ // last run number in 
-    apply_lumisel=false;
-  }
-
   n_evt++;
   if(debug){
     cout << endl << "++++++++++ NEW EVENT +++++++++" << endl << endl;
@@ -1018,7 +1014,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   double fill_event_integrated_lumi = 0;
   double inst_lumi = -1;
   double int_lumi_event = -1;
-  if(event.isRealData && apply_lumisel){
+  if(event.isRealData){
     run_lumi rl_event{event.run, event.luminosityBlock};
     double lumiblock_lumi = rl2lumi[rl_event];
     inst_lumi = lumiblock_lumi/23;
