@@ -43,24 +43,30 @@ bool JetInEtaBin(double jet_eta, std::vector<double> bins, int bin) {
   return JetInRange(jet_eta, bins[bin], bins[bin+1]);
 }
 
-#define FILL_HISTOS(region,method)                                                                      \
-if (TMath::Abs(weight/asy)>5*1e06) continue;                                                            \
-asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                                            \
-asymmetries_pt_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                       \
-asymmetries_ptf_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                      \
-asymmetries_rho_##region.at(r).at(k).at(m)->Fill( rho, weight);                                         \
-asymmetries_pt3_##region.at(r).at(k).at(m)->Fill( jet3_pt, weight);                                     \
-if (DR1 < s_delta_R) MC_Truth_asymmetries_##region.at(r).at(k).at(m)->Fill( Resp1, weight);             \
-if (DR2 < s_delta_R) MC_Truth_asymmetries_##region.at(r).at(k).at(m)->Fill( Resp2, weight);             \
-MC_Truth_asymmetries_2D_##region.at(r).at(k).at(m)->Fill(Resp1, Resp2,weight);                          \
-if ( m == AlphaBins-1 ) {                                                                               \
-  h_JetAvePt_##method->Fill( pt_ave, weight);                                                           \
-  h_Jet1Pt_##method->Fill( barreljet_pt, weight);                                                       \
-  h_Jet2Pt_##method->Fill( probejet_pt, weight);                                                        \
-  h_Jet3Pt_##method->Fill( jet3_pt, weight);                                                            \
-  h_rho_##method->Fill( rho, weight);                                                                   \
-  if (asy!=0) h_relerr_##method->Fill(TMath::Abs(weight/asy), 1.);                                      \
-}                                                                                                       \
+#define FILL_HISTOS(region,method)                                                                            \
+asymmetries_##region.at(r).at(k).at(m)->Fill( asy , weight);                                                  \
+asymmetries_pt_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                             \
+asymmetries_ptf_##region.at(r).at(k).at(m)->Fill( pt_ave, weight);                                            \
+asymmetries_rho_##region.at(r).at(k).at(m)->Fill( rho, weight);                                               \
+asymmetries_pt3_##region.at(r).at(k).at(m)->Fill( jet3_pt, weight);                                           \
+if (DR1 < s_delta_R) MC_Truth_asymmetries_##region.at(r).at(k).at(m)->Fill( Resp1, weight);                   \
+if (DR2 < s_delta_R) MC_Truth_asymmetries_##region.at(r).at(k).at(m)->Fill( Resp2, weight);                   \
+MC_Truth_asymmetries_2D_##region.at(r).at(k).at(m)->Fill(Resp1, Resp2,weight);                                \
+if ( m == AlphaBins-1 ) {                                                                                     \
+  h_JetAvePt_##method->Fill( pt_ave, weight);                                                                 \
+  h_Jet1Pt_##method->Fill( barreljet_pt, weight);                                                             \
+  h_Jet2Pt_##method->Fill( probejet_pt, weight);                                                              \
+  h_Jet3Pt_##method->Fill( jet3_pt, weight);                                                                  \
+  h_rho_##method->Fill( rho, weight);                                                                         \
+  if (asy!=0){                                                                                                \
+    h_relerr_##method->Fill(TMath::Abs(weight/asy), 1.);                                                      \
+    h_relerr_log_##method->Fill(TMath::Log10(TMath::Abs(weight/asy)), 1.);                                    \
+  }                                                                                                           \
+  if (gen_asymmetry!=0){                                                                                      \
+    h_relerr_gen_##method->Fill(TMath::Abs(gen_weight/gen_asymmetry), 1.);                                    \
+    h_relerr_gen_log_##method->Fill(TMath::Log10(TMath::Abs(gen_weight/gen_asymmetry)), 1.);                  \
+  }                                                                                                           \
+}                                                                                                             \
 
 #define FILL_GEN_HISTOS(region)                                                                                           \
 if (TMath::Abs(gen_asy) < 5) {                                                                                            \
@@ -283,11 +289,18 @@ void MySelector::SlaveBegin(TTree * /*tree*/) {
   h_PU          = new TH1F("PileUp",      "PU distribution",        60, 0., 60);    h_PU->SetXTitle("PU");                      h_PU->SetYTitle("a.u.");          h_PU->Sumw2();
   h_alpha_raw   = new TH1F("Alpha_raw",   "#alpha before selection",80, 0., 0.8);  h_alpha_raw->SetXTitle("#alpha_raw");       h_alpha_raw->SetYTitle("a.u.");   h_alpha_raw->Sumw2();
   h_alpha_sel   = new TH1F("Alpha",       "#alpha after selection", 80, 0., 0.8);   h_alpha_sel->SetXTitle("#alpha");           h_alpha_sel->SetYTitle("a.u.");   h_alpha_sel->Sumw2();
-  h_relerr_SM   = new TH1F("RelerrSM",    "Relerr SM",            1e07, 0 , 1e07);  h_relerr_SM->SetXTitle("relerr");           h_relerr_SM->SetYTitle("a.u.");   h_relerr_SM->Sumw2();
-  h_relerr_FE   = new TH1F("RelerrFE",    "Relerr FE",            1e07, 0 , 1e07);  h_relerr_FE->SetXTitle("relerr");           h_relerr_FE->SetYTitle("a.u.");   h_relerr_FE->Sumw2();
+  h_relerr_SM   = new TH1F("RelerrSM",    "Relerr SM",              1e5, 0 , 1e12);  h_relerr_SM->SetXTitle("relerr");           h_relerr_SM->SetYTitle("a.u.");   h_relerr_SM->Sumw2();
+  h_relerr_log_SM  = new TH1F("RelerrSM_log", "Relerr SM",      56, 0 , 14);  h_relerr_log_SM->SetXTitle("relerr");         h_relerr_log_SM->SetYTitle("a.u.");   h_relerr_log_SM->Sumw2();
+  h_relerr_FE   = new TH1F("RelerrFE",    "Relerr FE",              1e5, 0 , 1e12);  h_relerr_FE->SetXTitle("relerr");           h_relerr_FE->SetYTitle("a.u.");   h_relerr_FE->Sumw2();
+  h_relerr_log_FE  = new TH1F("RelerrFE_log", "Relerr FE",      56, 0 , 14);  h_relerr_log_FE->SetXTitle("relerr");           h_relerr_log_FE->SetYTitle("a.u.");   h_relerr_log_FE->Sumw2();
   h_PUweight    = new TH1F("WeightPileUp","WieghtedPU distribution",60, 0., 60);    h_PUweight->SetXTitle("PU");                h_PUweight->SetYTitle("a.u.");    h_PUweight->Sumw2();
   h_rho_SM      = new TH1F("Rho",         "Rho distribution",       60, 0., 30);    h_rho_SM->SetXTitle("Rho");                 h_rho_SM->SetYTitle("a.u.");      h_rho_SM->Sumw2();
   h_rho_FE      = new TH1F("RhoFWD",      "RhoFWD distribution",    60, 0., 30);    h_rho_FE->SetXTitle("RhoFWD");              h_rho_FE->SetYTitle("a.u.");      h_rho_FE->Sumw2();
+
+  h_relerr_gen_FE = new TH1F("RelerrFE_gen", "Relerr FE_gen", 1e5, 0 , 1e12); h_relerr_gen_FE->SetXTitle("relerr_gen"); h_relerr_gen_FE->SetYTitle("a.u."); h_relerr_gen_FE->Sumw2();
+  h_relerr_gen_log_FE = new TH1F("RelerrFE_gen_log", "Relerr FE_gen_log", 56, 0 , 14); h_relerr_gen_log_FE->SetXTitle("relerr_gen"); h_relerr_gen_log_FE->SetYTitle("a.u."); h_relerr_gen_log_FE->Sumw2();
+  h_relerr_gen_SM = new TH1F("RelerrSM_gen", "Relerr SM_gen", 1e5, 0 , 1e12); h_relerr_gen_SM->SetXTitle("relerr_gen"); h_relerr_gen_SM->SetYTitle("a.u."); h_relerr_gen_SM->Sumw2();
+  h_relerr_gen_log_SM = new TH1F("RelerrSM_gen_log", "Relerr SM_gen_log", 56, 0 , 14); h_relerr_gen_log_SM->SetXTitle("relerr_gen"); h_relerr_gen_log_SM->SetYTitle("a.u."); h_relerr_gen_log_SM->Sumw2();
 
   if (true) {
     std::cout << "\nConstructor: " << PtBins_Central << " " << PtBins_HF;
@@ -630,6 +643,8 @@ void MySelector::SlaveTerminate() {
   h_rho_FE->Write();
   h_relerr_SM->Write();
   h_relerr_FE->Write();
+  h_relerr_gen_SM->Write();
+  h_relerr_gen_FE->Write();
   h_JetAvePt_FE->Write();
   h_Jet1Pt_FE->Write();
   h_Jet2Pt_FE->Write();
