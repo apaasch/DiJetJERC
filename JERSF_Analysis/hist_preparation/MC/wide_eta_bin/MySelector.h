@@ -42,6 +42,7 @@ public:
   int run;
   long long event;
   float weight;
+  float gen_weight;
   float weight_pu;
   float weight_pu_down;
   float weight_pu_up;
@@ -78,6 +79,7 @@ public:
   TBranch *b_run;
   TBranch *b_event;
   TBranch *b_weight;
+  TBranch *b_gen_weight;
   TBranch *b_weight_pu;
   TBranch *b_weight_pu_down;
   TBranch *b_weight_pu_up;
@@ -226,6 +228,12 @@ public:
   TH1F *h_PUweight;
   TH1F *h_relerr_SM;
   TH1F *h_relerr_FE;
+  TH1F *h_relerr_gen_SM;
+  TH1F *h_relerr_gen_FE;
+  TH1F *h_relerr_log_SM;
+  TH1F *h_relerr_log_FE;
+  TH1F *h_relerr_gen_log_SM;
+  TH1F *h_relerr_gen_log_FE;
   TH1F *h_rho_SM;
   TH1F *h_rho_FE;
   TH1F *h_JetAvePt_SM;
@@ -259,7 +267,6 @@ void MySelector::Init(TTree *tree){
 
   fChain->SetBranchAddress("eventID", &event, &b_event);
   fChain->SetBranchAddress("run", &run, &b_run);
-  fChain->SetBranchAddress("weight", &weight, &b_weight);
   fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
   fChain->SetBranchAddress("Njet", &njet, &b_njet);
   fChain->SetBranchAddress("is_JER_SM", &is_JER_SM, &b_is_JER_SM);
@@ -287,6 +294,7 @@ void MySelector::Init(TTree *tree){
   fChain->SetBranchAddress("gen_pt_ave", &gen_pt_ave, &b_gen_pt_ave);
   fChain->SetBranchAddress("gen_asymmetry", &gen_asymmetry, &b_gen_asymmetry);
   fChain->SetBranchAddress("weight", &weight, &b_weight);
+  fChain->SetBranchAddress("gen_weight", &gen_weight, &b_gen_weight);
   fChain->SetBranchAddress("weight_pu", &weight_pu, &b_weight_pu);
   fChain->SetBranchAddress("weight_pu_down", &weight_pu_down, &b_weight_pu_down);
   fChain->SetBranchAddress("weight_pu_up", &weight_pu_up, &b_weight_pu_up);
