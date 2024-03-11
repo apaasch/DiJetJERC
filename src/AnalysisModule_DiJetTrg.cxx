@@ -729,11 +729,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
 
   //Lepton cleaner
   if(debug) cout <<  "Lepton Cleaner " << endl;
-  // TODO: lepton IDs in Nutplewriter
-  const MuonId muoSR(AndId<Muon>    (PtEtaCut(15, 2.4), PtEtaCut(15, 2.4)));
-  const ElectronId eleSR(AndId<Electron>( PtEtaSCCut(15, 2.4), PtEtaSCCut(15, 2.4)));
-  // const MuonId muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
-  // const ElectronId eleSR(AndId<Electron>(ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wpLoose), PtEtaSCCut(15, 2.4)));
+  const MuonId muoSR(AndId<Muon>    (MuonID(Muon::CutBasedIdTight),PtEtaCut  (15, 2.4)));
+  const ElectronId eleSR(PtEtaSCCut(30, 2.4)); // No lepton IDs
   muoSR_cleaner.reset(new     MuonCleaner(muoSR));
   eleSR_cleaner.reset(new ElectronCleaner(eleSR));
 
@@ -946,23 +943,38 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   //LEPTON selection
   h_Muon_before->fill(event);
-  if(debug) cout << "Muon Cleaner" << endl;
+  if(debug){
+    cout << "Muon Cleaner" << endl;
+    std::cout<<"#muons before cleaning = "<<event.muons->size()<<std::endl;
+  }
   muoSR_cleaner->process(event);
   sort_by_pt<Muon>(*event.muons);
-  if(debug )std::cout<<"#muons = "<<event.muons->size()<<std::endl;
+  if(debug) std::cout<<"#muons = "<<event.muons->size()<<std::endl;
   h_afterMuonCleaning->fill(event);
   h_Muon->fill(event);
   h_runnr_muon->fill(event);
 
   h_Elec_before->fill(event);
+  if(debug) std::cout<<"#electrons before cleaning = "<<event.electrons->size()<<std::endl;
   eleSR_cleaner->process(event);
   sort_by_pt<Electron>(*event.electrons);
+
+  int n_ele_iso = 0;
+  for(auto &e: *event.electrons){
+    bool e_not_iso = false;
+    for(auto &j: *ak4jets){
+      if(deltaR(j,e)<0.4) e_not_iso = true;
+    }
+    if(!e_not_iso) n_ele_iso++;
+  }
+
   if(debug) std::cout<<"#electrons = "<<event.electrons->size()<<std::endl;
+  if(debug) std::cout<<"#electrons iso = "<<n_ele_iso<<std::endl;
   h_afterElecCleaning->fill(event);
   h_Elec->fill(event);
   h_runnr_elec->fill(event);
 
-  if (event.electrons->size()>0 || event.muons->size()>0) return false; //veto events with leptons
+  if (n_ele_iso>0 || event.muons->size()>0) return false; //veto events with leptons
 
   h_runnr_lepton->fill(event);
   // PrimaryVertexV Cleaner
