@@ -131,8 +131,9 @@ JECVersions["2022preEE"] = ["Summer22_22Sep2023_V2"]
 JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 
 # JetLabels=["AK4CHS", "AK8Puppi", "AK4Puppi"]
-# JetLabels=["AK4CHS"]
 JetLabels=["AK4Puppi"]
+
+systematics=["", "PLI", "gaus", "PU", "JEC", "alpha", "JER"]
 
 dirs_sys = ["", "up", "down"]
 dirs_PS = [p+d+'_'+f for p in ['ISR'] for d in ['up'] for f in ['2']]
