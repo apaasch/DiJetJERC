@@ -199,6 +199,9 @@ for extraText in [""]:
                                 if 'PS' in syst or 'JER' in syst:
                                     Data_file = Data_file.replace("/"+syst+"/"+dir, "")
                                     print Data_file
+                                if "19Dec2023" in newJECVersion and year == "2022preEE":
+                                    MC_file = MC_file.replace("19Dec2023", "22Sep2023")
+                                    print 'Set jec version of MC to 22Sep2023:\n',MC_file
                                 print MC_file, Data_file
                                 if not os.path.isfile(str(MC_file.replace("\\","").strip("\""))) or not os.path.isfile(str(Data_file.replace("\\","").strip("\""))):
                                     continue
