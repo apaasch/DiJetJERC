@@ -63,6 +63,11 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
               fname="uhh2.AnalysisModuleRunner.MC.*root"
               for file_ in sorted(glob.glob(source_path+fname)):
                 if not sample in file_ and not isRunII: continue
+                if not binning == "":
+                  if binning not in file_:
+                    continue
+                  else:
+                    print "Run on ",file_, "with binning",binning
                 outputfile.write(file_+"\n")
             if not os.path.isfile(run_list):
               continue
