@@ -56,9 +56,9 @@ public:
   float jet3_pt;
   float asymmetry;
   float rho;
-  int HLT;
-  int L1min;
-  int L1max;
+  double HLT;
+  double L1min;
+  double L1max;
   float alpha_;
   float eventID;
   int run;
