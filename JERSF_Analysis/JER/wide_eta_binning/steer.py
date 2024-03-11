@@ -9,6 +9,12 @@ from utils import *
 
 def getLabel(sample, year):
     LABEL_LUMI_INV_FB = "[MC 106X] "+year
+    if "2022" in year:
+        LABEL_LUMI_INV_FB = "[MC 130X] "+year
+        if sample == "CD":
+            LABEL_LUMI_INV_FB += " 8.07 fb^{-1}"
+        if sample == "EFG":
+            LABEL_LUMI_INV_FB += " 27 fb^{-1}"
     # if sample == "A":
     #     LABEL_LUMI_INV_FB += "Run2018A 14.00 fb^{-1}"
     # elif sample == "B":
