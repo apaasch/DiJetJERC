@@ -150,6 +150,7 @@ protected:
   Event::Handle<float> tt_barrelgenjet_eta; Event::Handle<float> tt_barrelgenjet_phi; Event::Handle<float> tt_barrelgenjet_pt;  Event::Handle<float> tt_barrelgenjet_ptRaw;
   Event::Handle<float> tt_gen_alpha;  Event::Handle<float> tt_gen_pt_ave; Event::Handle<float> tt_gen_asymmetry;
   Event::Handle<int> tt_genjet_n;
+  Event::Handle<float> tt_gen_ht;
   Event::Handle<int> tt_no_mc_spikes;
   Event::Handle<bool> tt_JER_SM; //event should be used for StandardMethod JER SFs
   //Different energy fractions in jets
@@ -411,6 +412,7 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
   tt_gen_alpha        = ctx.declare_event_output<float>("gen_alpha");
   tt_gen_asymmetry    = ctx.declare_event_output<float>("gen_asymmetry");
   tt_genjet_n         = ctx.declare_event_output<int>("Ngenjet");
+  tt_gen_ht           = ctx.declare_event_output<float>("gen_ht");
   tt_no_mc_spikes     = ctx.declare_event_output<int>("no_mc_spikes");
   tt_genptcl_n        = ctx.declare_event_output<int>("Nptcl");
 
@@ -1548,6 +1550,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // Start MC
 
   int genjet_n            = 0;
+  float gen_ht            = 0;
   float genjet1_pt        = 0;
   float genjet2_pt        = 0;
   float genjet3_pt        = 0;
@@ -1598,9 +1601,12 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
     gen_alpha = genjet3_pt/pt_ave;
 
+    for (const auto & j : *event.genjets) {gen_ht += j.pt();}
+    if(debug) printf("gen HT %7.2f\n",gen_ht);
   }
 
   event.set(tt_genjet_n,genjet_n);
+  event.set(tt_gen_ht,gen_ht);
   event.set(tt_genjet1_pt,genjet1_pt);
   event.set(tt_genjet2_pt,genjet2_pt);
   event.set(tt_genjet3_pt,genjet3_pt);
