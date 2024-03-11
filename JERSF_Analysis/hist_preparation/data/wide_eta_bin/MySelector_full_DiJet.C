@@ -327,9 +327,9 @@ bool MySelector::Process(Long64_t entry) {
   bool dofill; int shift;
   bool isHF = TMath::Abs(probejet_eta)>eta_cut? true : false;
 
-  if(L1min!=L1max) std::cout << "Warning - More than one L1T Seed - L1min=" << std::setw(7) << L1min <<  " and L1max=" << std::setw(7) << L1max << std::setw(20) << probejet_pt << std::setw(20) << barreljet_pt << std::endl;
   double w_HLT = weight*HLT;
   double w_prescale = weight*HLT*L1max;
+  // printf("weight %3.0f HLT %10.2f L1min %10.2f L1max %10.2f PS %10.2f\n", weight, HLT, L1min, L1max, w_prescale, w_HLT*L1min);
   if(isPrescale) weight = w_prescale;
 
   // DELETE LATER - Calculate is_JER_SM for eta_calo since not PreSel was run here
