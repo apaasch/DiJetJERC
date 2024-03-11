@@ -553,20 +553,21 @@ void MySelector::SlaveTerminate() {
   std::vector<double> Pt_bins_Central_D(Pt_bins_Central.begin(), Pt_bins_Central.end());
   std::vector<double> Pt_bins_HF_D(Pt_bins_HF.begin(), Pt_bins_HF.end());
 
-  for (int m = 0; m < 6; m++){
-    h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
-    h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_JER-1,&eta_bins_JER[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
+  for (int m = 0; m < Alpha_bins.size(); m++){
+    h_nevents_central.push_back(new TH2F(("central_"+std::to_string(m)).c_str(),("central_"+std::to_string(m)).c_str(),n_eta_bins_common-1,&eta_bins_common[0], Pt_bins_Central_D.size()-1,&Pt_bins_Central_D[0]));
+    h_nevents_HF.push_back(new TH2F(("HF_"+std::to_string(m)).c_str(),("HF_"+std::to_string(m)).c_str(),n_eta_bins_common-1,&eta_bins_common[0], Pt_bins_HF_D.size()-1,&Pt_bins_HF_D[0]));
   }
   std::cout << "Pt_bins_Central: " << nevents_central.size() << std::endl;
   for (size_t i = 0; i < nevents_central.size(); i++) std::cout << "\t" << Pt_bins_Central_D[i];
   std::cout << std::endl;
 
-  for (int r = 0; r < 14; r++) {
-    for (int m = 0; m < 6; m++){
-      std::cout << r << " " << m << " ";
+  // r = eta; m = alpha; k = pt
+  for (int r = 0; r < n_eta_bins_common-1; r++) {
+    for (int m = 0; m < Alpha_bins.size(); m++){
+      printf("%2d %2d",r,m);
       for ( int k = 0 ; k < nevents_central.size() ; k++ ) {
-        std::cout << "\t" << nevents_central[k][r][m];
-        h_nevents_central[m]->SetBinContent(h_nevents_central[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_central[m]->GetYaxis()->FindBin(Pt_bins_Central_D.at(k)), nevents_central[k][r][m]);
+        printf(" %5.0f",nevents_central[k][r][m]);
+        h_nevents_central[m]->SetBinContent(h_nevents_central[m]->GetXaxis()->FindBin(eta_bins_common[r]), h_nevents_central[m]->GetYaxis()->FindBin(Pt_bins_Central_D.at(k)), nevents_central[k][r][m]);
       }
       std::cout << std::endl;
     } std::cout << std::endl;
@@ -576,12 +577,12 @@ void MySelector::SlaveTerminate() {
   for (size_t i = 0; i < nevents_HF.size(); i++) std::cout << "\t" << Pt_bins_HF_D[i];
   std::cout << std::endl;
 
-  for (int r = 0; r < 14; r++) {
-    for (int m = 0; m < 6; m++){
+  for (int r = 0; r < n_eta_bins_common-1; r++) {
+    for (int m = 0; m < Alpha_bins.size(); m++){
       std::cout << r << " " << m << " ";
       for ( int k = 0 ; k < nevents_HF.size() ; k++ ) {
         std::cout << "\t" << nevents_HF[k][r][m];
-        h_nevents_HF[m]->SetBinContent(h_nevents_HF[m]->GetXaxis()->FindBin(eta_bins_JER[r]), h_nevents_HF[m]->GetYaxis()->FindBin(Pt_bins_HF_D.at(k)), nevents_HF[k][r][m]);
+        h_nevents_HF[m]->SetBinContent(h_nevents_HF[m]->GetXaxis()->FindBin(eta_bins_common[r]), h_nevents_HF[m]->GetYaxis()->FindBin(Pt_bins_HF_D.at(k)), nevents_HF[k][r][m]);
       }
       std::cout << std::endl;
     }std::cout << std::endl;
