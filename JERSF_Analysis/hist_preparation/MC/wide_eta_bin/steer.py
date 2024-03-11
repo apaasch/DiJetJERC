@@ -36,8 +36,8 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
           alpha_cut = 15
         dirs = dirs_PS if "PS" in sys else dirs_sys
         for dir in dirs:
-          if sys == "JER" and dir != "":
-            continue
+          # if sys == "JER" and dir != "":
+          #   continue
           if sys == "JER" and dir == "":
             dir = "nominal"
             print sys, dir

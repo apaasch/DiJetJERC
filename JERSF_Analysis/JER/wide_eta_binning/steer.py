@@ -226,8 +226,8 @@ for extraText in [""]:
                 for syst in systematics:
                     dirs = dirs_PS if "PS" in syst else dirs_sys
                     for dir in dirs:
-                        if syst == "JER" and dir != "":
-                          continue
+                        # if syst == "JER" and dir != "":
+                        #   continue
                         if syst == "JER" and dir == "":
                           dir = "nominal"
                         if (syst in ["", "alpha", "PLI", "gaus"] and dir != "") or (not syst in ["", "alpha", "PLI", "gaus"] and dir == ""):
@@ -254,7 +254,7 @@ for extraText in [""]:
                                     MC_file = MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/eta_common_default/2022/Winter22Run3_V1/AK4Puppi/QCDHT_2022/histograms_mc_incl_full.root"+'\\"'
                                     print 'Set back MC input file:\n',MC_file
                                 Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+run+"_"+year+extraText+"/histograms_data_incl_full.root"+'\\"'
-                                if 'PS' in syst:
+                                if 'PS' in syst or 'JER' in syst:
                                     Data_file = Data_file.replace("/"+syst+"/"+dir, "")
                                     print Data_file
                                 print MC_file, Data_file
