@@ -2,9 +2,23 @@
 import sys
 import os
 import time
+import argparse
+from glob import glob
 
 sys.path.append(os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/conf/")
 from utils import *
+
+# Add the options parser
+def parse_args():
+    parser = argparse.ArgumentParser(description="Your script description")
+
+    parser.add_argument("-y", "--year", required=True, dest="year", help="Year (2022preEE, 2022postEE, 2023)")
+    parser.add_argument("-p", "--pt", dest="ptbins", default="default", help="PT bins")
+    parser.add_argument("-a", "--alpha", dest="alphabins", default="", help="Alpha bins")
+    parser.add_argument("-add", "--addition", dest="addition", default="", help="Addition")
+    parser.add_argument("--prescale", dest="prescale", action="store_true", help="Enable prescale")
+
+    return parser.parse_args()
 
 def main_program(path="", list_path="", out_path="", year="", study="", ptbins="", abins="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
@@ -96,19 +110,14 @@ USER = os.environ["USER"]
 
 inputdir = "DiJetJERC_DiJetHLT"
 
-#year = "2018"
-# year = "UL16preVFP_split"
-# year = "UL16preVFP"
-# year = "UL16postVFP"
-# year = "UL17"
-# year = "UL18"
-year = "2022"
-# year = "2023"
+args = parse_args()
 
-if len(sys.argv)<2:
-    sys.exit("I need at least a year")
-year = sys.argv[1]
-# year = "Legacy"
+# Update the variables with the command line arguments
+year = args.year
+ptbins = args.ptbins
+abins = args.alphabins
+addition = args.addition
+prescale = args.prescale
 
 common_path = os.environ["CMSSW_BASE"]+"/src/UHH2/DiJetJERC/JERSF_Analysis/hist_preparation/data/"
 
@@ -182,19 +191,13 @@ for study in studies:
     # Don't need to run PreSel again
     if "eta_calo" in study:
       list_path   = common_path+"lists/eta_common/"+year+"/"
+
     out = study
-    ptbins = ''
-    abins = ''
-    if len(sys.argv) >= 3:
-        ptbins = sys.argv[2]
-        out += '_'+ptbins
-    if len(sys.argv) >= 4:
-        if "alpha" in sys.argv[3]: 
-          abins = sys.argv[3]
-        out += '_'+sys.argv[3]
-    if len(sys.argv) >= 5:
-        out += '_'+sys.argv[4]
-    print out
+    if ptbins: out += '_' + ptbins
+    if abins: out += '_' + abins
+    if prescale: out += '_prescale'
+    if addition: out += '_' + addition
+
     out_path    = common_path+"wide_eta_bin/file/"+out+"/"+year+"/"
     os.chdir(common_path+"wide_eta_bin/")
 
