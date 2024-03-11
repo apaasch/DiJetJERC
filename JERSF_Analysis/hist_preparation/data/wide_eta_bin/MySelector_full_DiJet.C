@@ -316,7 +316,9 @@ bool MySelector::Process(Long64_t entry) {
   if (barreljet_pt < jet_thr && probejet_pt < jet_thr) return kTRUE;
   if ( TMath::Abs(TVector2::Phi_mpi_pi((probejet_phi - barreljet_phi))) < s_delta_phi ) { std::cout << "Jets are not back to back" << std::endl; return kTRUE;}
 
-  if ( jet3_pt > jet_thr ) alpha = TMath::Abs(alpha_raw);
+  // alpha_ stores value >1 even if ttree contains correct values <1
+  // if ( jet3_pt > jet_thr ) alpha = TMath::Abs(alpha_raw);
+  if ( jet3_pt > jet_thr ) alpha = TMath::Abs(jet3_pt/pt_ave);
   else alpha = (njet <3) ? 0. : 1. ;
 
   h_PU->Fill(nPU, 1);
