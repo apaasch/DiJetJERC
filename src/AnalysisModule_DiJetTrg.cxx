@@ -204,7 +204,7 @@ protected:
   std::unique_ptr<LuminosityHists> h_lumi_Trig40, h_lumi_Trig60, h_lumi_Trig80, h_lumi_Trig140, h_lumi_Trig200, h_lumi_Trig260, h_lumi_Trig320, h_lumi_Trig400, h_lumi_Trig450, h_lumi_Trig500;
   std::unique_ptr<LuminosityHists> h_lumi_TrigHF40, h_lumi_TrigHF60, h_lumi_TrigHF80, h_lumi_TrigHF100, h_lumi_TrigHF140, h_lumi_TrigHF160, h_lumi_TrigHF200, h_lumi_TrigHF220, h_lumi_TrigHF260, h_lumi_TrigHF300, h_lumi_TrigHF320, h_lumi_TrigHF400;
   std::unique_ptr<LumiHists> h_monitoring_final;
-  std::unique_ptr<JECRunnumberHists> h_runnr_input;
+  std::unique_ptr<JECRunnumberHists> h_runnr_nocut,h_runnr_weights,h_runnr_muon,h_runnr_elec,h_runnr_lepton,h_runnr_pv,h_runnr_lumi,h_runnr_met,h_runnr_jetid,h_runnr_puid,h_runnr_njet,h_runnr_trigger;
   std::unique_ptr<JECCrossCheckHists> h_input, h_lumisel, h_beforeCleaner, h_afterCleaner, h_afterHEM, h_2jets, h_beforeJEC, h_afterJEC, h_afterJER, h_afterMET, h_beforeTriggerData, h_afterTriggerData, h_beforeFlatFwd, h_afterFlatFwd, h_afterPtEtaReweight, h_afterLumiReweight, h_afterUnflat, h_afternVts;
   std::unique_ptr<JECCrossCheckHists> h_prefire_check, h_afterMuonCleaning, h_afterElecCleaning, h_beforeJetID, h_beforePUid, h_afterPUid;
   std::unique_ptr<MuonHists> h_Muon, h_Muon_before;
@@ -429,7 +429,18 @@ void AnalysisModule_DiJetTrg::declare_output(uhh2::Context& ctx){
 }
 
 void AnalysisModule_DiJetTrg::init_hists(uhh2::Context& ctx){
-  h_runnr_input.reset(new JECRunnumberHists(ctx,"Runnr_input"));
+  h_runnr_nocut.reset(new JECRunnumberHists(ctx,"Runnr_nocut"));
+  h_runnr_weights.reset(new JECRunnumberHists(ctx,"Runnr_weights"));
+  h_runnr_muon.reset(new JECRunnumberHists(ctx,"Runnr_muon"));
+  h_runnr_elec.reset(new JECRunnumberHists(ctx,"Runnr_elec"));
+  h_runnr_lepton.reset(new JECRunnumberHists(ctx,"Runnr_lepton"));
+  h_runnr_pv.reset(new JECRunnumberHists(ctx,"Runnr_pv"));
+  h_runnr_lumi.reset(new JECRunnumberHists(ctx,"Runnr_lumi"));
+  h_runnr_met.reset(new JECRunnumberHists(ctx,"Runnr_met"));
+  h_runnr_jetid.reset(new JECRunnumberHists(ctx,"Runnr_jetid"));
+  h_runnr_puid.reset(new JECRunnumberHists(ctx,"Runnr_puid"));
+  h_runnr_njet.reset(new JECRunnumberHists(ctx,"Runnr_njet"));
+  h_runnr_trigger.reset(new JECRunnumberHists(ctx,"Runnr_trigger"));
 
   h_Muon_before.reset(new MuonHists(ctx, "MuonHists_beforeCleaning"));
   h_Muon.reset(new MuonHists(ctx, "MuonHists"));
@@ -898,6 +909,9 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   // h_nocuts->fill(event);
   h_lumi_nocuts->fill(event);
+  h_runnr_nocut->fill(event);
+
+  h_runnr_lumi->fill(event);
 
   // Do pileup reweighting
   if(debug) cout << "Lumi Weights" << endl;
@@ -926,6 +940,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   //Dump Input
   h_input->fill(event);
+  h_runnr_weights->fill(event);
 
   //LEPTON selection
   h_Muon_before->fill(event);
@@ -935,6 +950,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(debug )std::cout<<"#muons = "<<event.muons->size()<<std::endl;
   h_afterMuonCleaning->fill(event);
   h_Muon->fill(event);
+  h_runnr_muon->fill(event);
 
   h_Elec_before->fill(event);
   eleSR_cleaner->process(event);
@@ -942,13 +958,16 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if(debug) std::cout<<"#electrons = "<<event.electrons->size()<<std::endl;
   h_afterElecCleaning->fill(event);
   h_Elec->fill(event);
+  h_runnr_elec->fill(event);
 
   if (event.electrons->size()>0 || event.muons->size()>0) return false; //veto events with leptons
 
-  h_runnr_input->fill(event);
+  h_runnr_lepton->fill(event);
   // PrimaryVertexV Cleaner
   if(debug) std::cout<<"Start PV Cleaner"<<std::endl;
   if (!PVCleaner->process(event)) return false;
+  if(debug) std::cout<<"After PV Cleaner #pvs" << event.pvs->size() <<std::endl;
+  h_runnr_pv->fill(event);
 
   // CMS-certified luminosity sections
   if(event.isRealData && apply_lumisel){
@@ -960,6 +979,8 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // MET filters
   if(debug) std::cout<<"Start MET filters"<<std::endl;
   if(!metfilters_sel->passes(event)) return false;
+
+  h_runnr_met->fill(event);
 
   int event_in_lumibin = -1;
   double fill_event_integrated_lumi = 0;
@@ -995,10 +1016,12 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
 
   h_beforeJetID->fill(event);
   jetID->process(event); //TODO FixME: make sure JetID works for AK8
+  h_runnr_jetid->fill(event);
 
   h_beforePUid->fill(event);
   if(apply_PUid) jetPUid->process(event);
   h_afterPUid->fill(event);
+  h_runnr_puid->fill(event);
 
   int n_jets_afterCleaner = ak4jets->size();
   // TODO discard events if not all jets fulfill JetID instead of just discarding single jets
@@ -1080,6 +1103,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   jet_n = ak4jets->size();
   if(debug) cout<<"#jets after cleanining low pt jets "<<n_jets_afterCleaner <<"; ("<<jet_n<<")"<<endl;
   if(jet_n<2) return false;
+  h_runnr_njet->fill(event);
   //FixME: do matching to trigger objects instead
   // sort_by_pt<Jet>(*ak4jets);
   // Jet jet1_a = ak4jets->at(0);// leading jet
@@ -1376,7 +1400,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     if(!fired_triggers)	return false;
 
   }
-
+  h_runnr_trigger->fill(event);
 
   if (n_trig>1) throw runtime_error("AnalysisModule_DiJetTrg.cxx: more than 1 trigger fired. To Check.");
   h_afterTriggerData->fill(event);
