@@ -939,15 +939,6 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   if (DO_Pu_ReWeighting) if(!pileupSF->process(event)) return false;
 
   if(debug) cout << "Prefire " << endl;
-  float prefire_weight;
-  if(prefire_direction == "nominal") prefire_weight = event.get(h_weight_prefire);
-  else if(prefire_direction == "up") prefire_weight = event.get(h_weight_prefire_up);
-  else if(prefire_direction == "down") prefire_weight = event.get(h_weight_prefire_down);
-  else throw runtime_error("PostSelection: Wrong prefire weight direction (nominal, up, down)");
-  if(debug) cout << "\t - weight " << prefire_weight << endl;
-  event.weight *= prefire_weight;
-  h_prefire_check->fill(event);
-
   float prefire_weight_nom = event.get(h_weight_prefire);
   float prefire_weight_up = event.get(h_weight_prefire_up);
   float prefire_weight_down = event.get(h_weight_prefire_down);
