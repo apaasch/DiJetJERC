@@ -697,19 +697,21 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     TString nameXaxis = "p_{T}^{ave} [GeV]";
     TString nameYaxis = h_uncor.at(m)->GetYaxis()->GetTitle();
     std::vector<TH1*> vec;
-    vec.push_back(h_uncor.at(m));
+    // vec.push_back(h_uncor.at(m));
     vec.push_back(h_cor.at(m));
-    vec.push_back(h_015.at(m));
+    // vec.push_back(h_015.at(m));
     double x_min, x_max, y_min, y_max;
     findExtreme(vec, &x_min, &x_max, &y_min, &y_max);
     extraText3.clear();
     extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
 
-    TCanvas* canv = tdrCanvas(canvName, 50, 2700, 0.99, 1.4, nameXaxis, nameYaxis);
+    // TCanvas* canv = tdrCanvas(canvName, 50, 2700, 0.99, 1.4, nameXaxis, nameYaxis);
+    TCanvas* canv = tdrCanvas(canvName, 50, 2700, y_min, y_max, nameXaxis, nameYaxis);
+    canv->SetLogx(1);
 
-    tdrDraw(h_uncor.at(m), "", kFullCircle, color_uncor );
+    // tdrDraw(h_uncor.at(m), "", kFullCircle, color_uncor );
     tdrDraw(h_cor.at(m), "", kFullCircle, color_cor );
-    tdrDraw(h_015.at(m), "", kFullCircle, color_015 );
+    // tdrDraw(h_015.at(m), "", kFullCircle, color_015 );
 
     TF1* f;
     char line[100];
@@ -718,30 +720,30 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     // if(debug) cout << "In before fitERR " << m << " " << h_fitERR.size() << " " << h_cor.size() << endl;
     // h_fitERR.at(m)->Draw("E4 same");
 
-    if(h_uncor.at(m)->GetFunction("constfit")){
-      f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);f->SetLineWidth(2);f->Draw("same");
-      f->SetParameter(0,f->GetParameter(0)-0.002);
-    } else { std::cout << "Fit uncor function at bin " << m << " was not found" << std::endl; }
+    // if(h_uncor.at(m)->GetFunction("constfit")){
+    //   f = h_uncor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_uncor);f->SetLineWidth(2);f->Draw("same");
+    //   f->SetParameter(0,f->GetParameter(0)-0.002);
+    // } else { std::cout << "Fit uncor function at bin " << m << " was not found" << std::endl; }
 
     if(h_cor.at(m)->GetFunction("constfit")){
       f = h_cor.at(m) -> GetFunction("constfit"); f->SetLineColor(color_cor);f->SetLineWidth(2);f->Draw("same");
     } else { std::cout << "Fit cor function at bin " << m << " was not found" << std::endl; }
 
-    f = new TF1( "constfit", "pol0", min_fit_lin, max_fit_lin );
-    f->SetParameter(0,1);
-    if (h_015.at(m)->GetEntries() > 1) h_015.at(m) -> Fit("constfit","RMQ+");
-    else h_015.at(m)->GetListOfFunctions()->Add(f);
-    if (h_015.at(m) -> GetFunction("constfit")==0) h_015.at(m)->GetListOfFunctions()->Add(f);
-    f->SetLineColor(color_015); f->SetLineWidth(2);f->Draw("same");
+    // f = new TF1( "constfit", "pol0", min_fit_lin, max_fit_lin );
+    // f->SetParameter(0,1);
+    // if (h_015.at(m)->GetEntries() > 1) h_015.at(m) -> Fit("constfit","RMQ+");
+    // else h_015.at(m)->GetListOfFunctions()->Add(f);
+    // if (h_015.at(m) -> GetFunction("constfit")==0) h_015.at(m)->GetListOfFunctions()->Add(f);
+    // f->SetLineColor(color_015); f->SetLineWidth(2);f->Draw("same");
 
     f = h_JER_corr_NSC.at(m) -> GetFunction("NSC_ratio");
     f->SetLineColor(kOrange+1); f->SetLineWidth(2); f->Draw("same");
 
 
     TLegend *leg = tdrLeg(0.55,0.55,0.9,0.85, 0.04, 42, kBlack);
-    leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC} uncorrelated","lep");
-    leg->AddEntry(h_cor.at(m),    "#sigma_{JER}^{data}/#sigma_{JER}^{MC} correlated","lep");
-    leg->AddEntry(h_015.at(m),    "#sigma_{0.15}^{data}/#sigma_{0.15}^{MC}","lep");
+    // leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC} uncorrelated","lep");
+    leg->AddEntry(h_cor.at(m),    "#sigma_{JER}^{data}/#sigma_{JER}^{MC}","lep");
+    // leg->AddEntry(h_015.at(m),    "#sigma_{0.15}^{data}/#sigma_{0.15}^{MC}","lep");
     leg->AddEntry(f, "NSC ratio", "l");
     leg->Draw("same");
 
