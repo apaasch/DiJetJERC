@@ -189,6 +189,18 @@ string BinToString(float low, float high, int precision=3) {
   return low_+"_"+high_;
 }
 
+int findBin(double pt, const std::vector<double>& ptbins) {
+    auto it = std::lower_bound(ptbins.begin(), ptbins.end(), pt);
+    // Check if pt is out of the range of ptbins
+    if (it == ptbins.begin() || it == ptbins.end()) {
+        // pt is smaller than the first bin or larger than the last bin
+        return -1;
+    }
+    // Calculate the bin index
+    int bin = std::distance(ptbins.begin(), it) - 1;
+    return bin;
+}
+
 TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, TH1* hist, TString sample, TString method, TString var){
   vector<double> xvalues = {};
   vector<double> xerrors_lo = {};
@@ -210,9 +222,10 @@ TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, 
   }
   // if(debug) cout << " x: " << setw(8) << xvalues.size() << " " << setw(8) << xerrors_lo.size() << " " << setw(8) << xerrors_hi.size() << " | y: " << setw(12) << yvalues.size() << " " << setw(12) << yerrors_lo.size() << " " << setw(12) << yerrors_hi.size() << endl;
   for(unsigned int p=0; p<xvalues.size();p++){
-    xerrors_lo.push_back(xvalues[p]-usedPtBinning[p]);
-    xerrors_hi.push_back(usedPtBinning[p+1]-xvalues[p]);
-    // if(debug) cout << " x:" << setw(8) << xvalues[p] << setw(8) << xerrors_lo[p] << setw(8) << xerrors_hi[p] << " | y:" << setw(12) << yvalues[p] << setw(12) << yerrors_lo[p] << setw(12) << yerrors_hi[p] << " | pt:" << setw(8) << usedPtBinning[p] << setw(8) << usedPtBinning[p+1] << endl;
+    // Sometimes one point is missing in hist, leading to not the same ordering in pt bins
+    int bin = findBin(xvalues[p], usedPtBinning);
+    xerrors_lo.push_back(xvalues[p]-usedPtBinning[bin]);
+    xerrors_hi.push_back(usedPtBinning[bin+1]-xvalues[p]);
   }
   TGraphAsymmErrors* MC_graph = new TGraphAsymmErrors(xvalues.size(), &xvalues[0], &yvalues[0], &xerrors_lo[0], &xerrors_hi[0], &yerrors_lo[0], &yerrors_hi[0]);
   // TString names = "TGraph_"+(TString) hist->GetName();
