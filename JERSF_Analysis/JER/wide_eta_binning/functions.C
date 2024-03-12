@@ -321,11 +321,6 @@ void histLoadAsym( TFile &f, bool data, TString text, std::vector< std::vector< 
           if (h_gen) h_gen->Rebin(2);
           temp1gen.push_back(h_gen);
         }
-        else {
-          TH1F* h_gen = (TH1F*)f.Get(name);
-          if (h_gen) h_gen->Rebin(2);
-          temp1gen.push_back(h_gen);
-        }
       }
       temp2.push_back(temp1);
       if ( data == false ) temp2gen.push_back(temp1gen);
