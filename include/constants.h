@@ -273,32 +273,30 @@ const std::map<std::string, std::vector<double> > pt_trigger_thr = {
   {"SingleJet_forward_AK8_UL18_ptbins_default", { 65, 103, 115, 179, 252, 317, 410, 519 }},
   {"SingleJet_forward_AK8_UL18_ptbins_fine_v1", { 65,  80, 103, 115, 140, 179, 210, 252, 317, 410, 519, 1000 }},
   // 2022
-  {"DiJet_central_2022preEE",                { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},   
-  {"DiJet_central_2022preEE_ptbins_default", { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},   
-  {"DiJet_central_2022preEE_ptbins_fine_v1", { 66, 75, 83, 95, 108, 128, 145, 177, 195, 225, 246, 285, 313, 350, 378, 420, 464, 490, 530, 572, 620, 700, 800, 900, 1000, 1500 }}, // 25 bins
-  {"DiJet_forward_2022preEE",                { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2022preEE_ptbins_default", { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2022preEE_ptbins_fine_v1", { 79, 99, 122, 194, 273, 365 }}, 
+  {"DiJet_central_2022preEE",                { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},
+  {"DiJet_central_2022preEE_ptbins_default", { 66, 75, 83, 95, 108, 128, 145, 177, 195, 225, 246, 285, 313, 340, 378, 420, 464, 490, 530, 572, 644, 730, 790, 840, 920, 1020, 1120, 1400 }},
+  {"DiJet_forward_2022preEE",                { 79, 99, 122, 194, 273, 365 }},
+  {"DiJet_forward_2022preEE_ptbins_default", { 79, 99, 109, 122, 140, 150, 194, 220, 250, 273, 365 }},
 
-  {"DiJet_central_2022postEE",                { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},   
-  {"DiJet_central_2022postEE_ptbins_default", { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},   
+  {"DiJet_central_2022postEE",                { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},
+  {"DiJet_central_2022postEE_ptbins_default", { 66, 75, 83, 95, 108, 128, 145, 177, 195, 225, 246, 285, 313, 340, 378, 420, 464, 490, 530, 572, 644, 730, 790, 840, 920, 1020, 1120, 1400 }},
   {"DiJet_central_2022postEE_ptbins_fine_v1", { 66, 75, 83, 95, 108, 135, 177, 195, 225, 246, 285, 313, 350, 378, 420, 464, 490, 530, 572, 620, 700, 750, 800, 850, 900, 1000 }}, // 25 bins
   {"DiJet_central_2022postEE_ptbins_fine_v2", { 66, 75, 83, 95, 108, 135, 177, 195, 225, 246, 285, 313, 350, 378, 420, 464, 490, 530, 572, 620, 700, 800, 900, 1000 }}, // 25 bins
   {"DiJet_central_2022postEE_ptbins_fine_v3", { 66, 83, 108, 140, 177, 210, 246, 275, 313, 378, 434, 464, 500, 525, 550, 572, 600, 625, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900 }}, // 25 bins
   {"DiJet_central_2022postEE_ptbins_fine_v4", { 66, 83, 108, 140, 177, 210, 246, 275, 313, 378, 434, 464, 500, 525, 550, 572, 600, 625, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900, 1000, 1200 }}, // 25 bins
-  {"DiJet_forward_2022postEE",                { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2022postEE_ptbins_default", { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2022postEE_ptbins_fine_v1", { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2022postEE_ptbins_fine_v2", { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2022postEE_ptbins_fine_v3", { 79, 99, 122, 194, 240, 273, 300, 365, 400, 500 }}, 
-  {"DiJet_forward_2022postEE_ptbins_fine_v4", { 79, 99, 122, 194, 240, 273, 300, 365, 400, 500 }}, 
+  {"DiJet_forward_2022postEE",                { 79, 99, 122, 194, 273, 365 }},
+  {"DiJet_forward_2022postEE_ptbins_default", { 79, 99, 109, 122, 140, 150, 194, 220, 250, 273, 365 }},
+  {"DiJet_forward_2022postEE_ptbins_fine_v1", { 79, 99, 122, 194, 273, 365 }},
+  {"DiJet_forward_2022postEE_ptbins_fine_v2", { 79, 99, 122, 194, 273, 365 }},
+  {"DiJet_forward_2022postEE_ptbins_fine_v3", { 79, 99, 122, 194, 240, 273, 300, 365, 400, 500 }},
+  {"DiJet_forward_2022postEE_ptbins_fine_v4", { 79, 99, 122, 194, 240, 273, 300, 365, 400, 500 }},
   // 2023
-  {"DiJet_central_2023",                { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},   
-  {"DiJet_central_2023_ptbins_default", { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},     
+  {"DiJet_central_2023",                { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},
+  {"DiJet_central_2023_ptbins_default", { 66, 83, 108, 177, 246, 313, 378, 464, 572 }},
   {"DiJet_central_2023_ptbins_fine_v1", { 66, 75, 83, 95, 108, 128, 145, 177, 195, 225, 246, 285, 313, 350, 378, 420, 464, 490, 530, 572, 620, 700, 800, 900, 1000, 1500 }}, // 25 bins
-  {"DiJet_forward_2023",                { 79, 99, 122, 194, 273, 365 }},   
-  {"DiJet_forward_2023_ptbins_default", { 79, 99, 122, 194, 273, 365 }}, 
-  {"DiJet_forward_2023_ptbins_fine_v1", { 79, 99, 122, 194, 273, 365 }}, 
+  {"DiJet_forward_2023",                { 79, 99, 122, 194, 273, 365 }},
+  {"DiJet_forward_2023_ptbins_default", { 79, 99, 122, 194, 273, 365 }},
+  {"DiJet_forward_2023_ptbins_fine_v1", { 79, 99, 122, 194, 273, 365 }},
 };
 
 // RunII pt-bins used in LumiHist, Reco-GEN matched plots and L2Res analysis (2nd step)
