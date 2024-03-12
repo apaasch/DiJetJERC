@@ -15,8 +15,8 @@ def condor_control(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                 for dir in dirs:
                     if sys == "" and dir != "":
                         continue
-                    if sys == "JER" and dir != "":
-                        continue
+                    # if sys == "JER" and dir != "":
+                    #     continue
                     if sys == "JER" and dir == "":
                         dir = "nominal"
                     path = original_dir+newJECVersion+"/"+newJetLabel+extratext+"/"+sys+"/"+dir+"/"
@@ -49,8 +49,8 @@ def delete_workdir(original_dir ="./SubmittedJobs/" , JECVersions_Data=["Autumn1
                     for dir in dirs:
                         if sys == "" and dir != "":
                             continue
-                        if sys == "JER" and dir != "":
-                            continue
+                        # if sys == "JER" and dir != "":
+                        #     continue
                         if sys == "JER" and dir == "":
                        	    dir = "nominal"
                         if 'PS' in sys:

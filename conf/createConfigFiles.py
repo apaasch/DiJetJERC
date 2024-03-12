@@ -212,9 +212,11 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 for sys in systematics:
                     if sys == "":
                         continue
-                    dirs = ["up", "down"]
+                    dirs = ["", "up", "down"]
                     for dir in dirs:
-                        if "JER" in sys:
+                        if dir=="" and not "JER" in sys:
+                            continue
+                        if dir=="" and "JER" in sys:
                             dir = "nominal"
                         add_path_sys = sys+"/"+dir+"/"
                         if not os.path.exists(path+add_path_sys):
@@ -231,6 +233,7 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                         if "JEC" in sys:
                             changes.append(["<!ENTITY", "JECSMEAR_DIRECTION", '"nominal"', '"'+dir+'"'])
                         elif "JER" in sys:
+                            changes.append(["<!ENTITY", "JERSMEAR_DIRECTION", '"nominal"', '"'+dir+'"'])
                             changes.append(["<!ENTITY", "jer_closuretest", '"false"', '"true"'])
                         elif "PU" in sys:
                             changes.append(["<!ENTITY", "SYSTYPE_PU", '"central"', '"'+dir+'"'])
