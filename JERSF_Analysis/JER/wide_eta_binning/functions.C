@@ -624,7 +624,8 @@ void SetFit(vector<double> Widths, vector<double> alpha, TMatrixD y_cov_, TF1 *l
   if ( !isFE && m == 7 && p == 6) { min_slope = 0.01; max_offset = 0.08;}
   if ( !isFE && m == 8 && p == 6) { min_slope = 0.09; max_offset = 0.045;}
   if ( !isFE && m >= 10&& p == 2) { max_offset = 0.4;}
-  if (isFE&&isMC&&m==10&& p == 6) { min_slope = 0.13; max_offset = 0.06;}
+  if (isFE&&isMC&&m==5&& p == 23) { min_slope = 0.10; max_slope = 0.15; max_offset = 0.045;}
+  if (isFE&&isMC&&m==4&& p == 10) { min_slope = 0.13; max_slope = 0.16; max_offset = 0.06;} // DELETE 2022post PU up
   if (!isFE&&isMC&&m==7&& p == 6) { min_slope = 0.01; max_offset = 0.08; min_offset = 0.04;}
   if (!isFE&&isMC&&m==7&& p == 2) { min_slope = 0.15; max_offset = 0.08; min_offset = 0.06;}
 
