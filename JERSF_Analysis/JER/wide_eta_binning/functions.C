@@ -1348,6 +1348,7 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
     if(!isHF){
       if     (pt<=108)  check = 0.2;
       else if(pt<=177)  check = 0.1;
+      else if(pt<=195)  check = 0.075;
       else if(pt<=7000) check = 0.05;
     }
     else{
@@ -1402,6 +1403,13 @@ double removePointsforAlphaExtrapolation(bool isFE, double eta, int p) {
     else if (p>=7)  check = 0.1;
     else if (p>=4)  check = (eta>=eta_cut)? 0.15 : 0.15;
     else if (p>=1)  check = (eta>=eta_cut)? 0.175 : 0.20;
+  }
+
+  if( g_year.Contains("2022") ){
+    if(p==7 || p==8){
+      check = (eta>=2.5 && eta<2.65)? 0.125 : 0.1;
+      // if(eta>=2.5 && eta<2.65) cout << p << " " << eta << " " << check << endl;
+    }
   }
 
   // if(eta==2.043 && p==26) check = 0.1;
