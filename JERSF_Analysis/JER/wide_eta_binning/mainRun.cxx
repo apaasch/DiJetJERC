@@ -2040,9 +2040,9 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   //    resolution cross check with mcTruth                                               //
   //////////////////////////////////////////////////////////////////////////////////////////
   int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 0=free form (uses lumi_sqrtS)
-  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  extraText  = "Work in Progress";  // default extra text is "Preliminary"
   lumi_13TeV = lumi; //"2.1 fb^{-1}";
-  lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
+  lumi_sqrtS = "13.6 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
