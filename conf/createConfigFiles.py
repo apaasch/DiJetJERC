@@ -8,6 +8,22 @@ from CrossSectionHelper import MCSampleValuesHelper
 helper = MCSampleValuesHelper()
 
 newNumber = {
+
+    "QCD_Flat_2022preEE":                20,
+    "QCDPt50to80_2022preEE":             10,
+    "QCDPt80to120_2022preEE":            20,
+    "QCDPt120to170_2022preEE":           20,
+    "QCDPt170to300_2022preEE":           20,
+    "QCDPt300to470_2022preEE":           15,
+    "QCDPt470to600_2022preEE":           15,
+    "QCDPt600to800_2022preEE":           20,
+    "QCDPt800to1000_2022preEE":          15,
+    "QCDPt1000to1400_2022preEE":         20,
+    "QCDPt1400to1800_2022preEE":         20,
+    "QCDPt1800to2400_2022preEE":         20,
+    "QCDPt2400to3200_2022preEE":         20,
+    "QCDPt3200toInf_2022preEE":          20,
+
     "QCDHT40to70_2022preEE":     150,
     "QCDHT70to100_2022preEE":    130,
     "QCDHT100to200_2022preEE":   100,
@@ -19,37 +35,26 @@ newNumber = {
     "QCDHT1200to1500_2022preEE": 100,
     "QCDHT1500to2000_2022preEE": 100,
     "QCDHT2000_2022preEE":       100,
-    "QCDPT50to80_2022preEE":     150,
-    "QCDPT80to120_2022preEE":    130,
-    "QCDPT120to170_2022preEE":   100,
-    "QCDPT170to300_2022preEE":   100,
-    "QCDPT300to470_2022preEE":   100,
-    "QCDPT470to600_2022preEE":   100,
-    "QCDPT600to800_2022preEE":   100,
-    "QCDPT800to1000_2022preEE":  140,
-    "QCDPT1000to1400_2022preEE": 100,
-    "QCDPT1400to1800_2022preEE": 100,
-    "QCDPT1800to2400_2022preEE": 100,
-    "QCDPT2400to3200_2022preEE": 100,
-    "QCDPT3200_2022preEE":       100,
-    "QCDPT50to80_2022postEE":     150,
-    "QCDPT80to120_2022postEE":    130,
-    "QCDPT120to170_2022postEE":   100,
-    "QCDPT170to300_2022postEE":   100,
-    "QCDPT300to470_2022postEE":   100,
-    "QCDPT470to600_2022postEE":   100,
-    "QCDPT600to800_2022postEE":   100,
-    "QCDPT800to1000_2022postEE":  140,
-    "QCDPT1000to1400_2022postEE": 100,
-    "QCDPT1400to1800_2022postEE": 100,
-    "QCDPT1800to2400_2022postEE": 100,
-    "QCDPT2400to3200_2022postEE": 100,
-    "QCDPT3200_2022postEE":       100,
-    "DATA_RunB_JetHT_2022":   150,
-    "DATA_RunC_JetHT_2022":   150,
+
+    # "QCDHT40to70_2022postEE":     150,
+    "QCDHT70to100_2022postEE":    130,
+    "QCDHT100to200_2022postEE":   100,
+    "QCDHT200to400_2022postEE":   100,
+    "QCDHT400to600_2022postEE":   100,
+    "QCDHT600to800_2022postEE":   100,
+    "QCDHT800to1000_2022postEE":  100,
+    "QCDHT1000to1200_2022postEE": 140,
+    "QCDHT1200to1500_2022postEE": 100,
+    "QCDHT1500to2000_2022postEE": 100,
+    "QCDHT2000_2022postEE":       100,
+
+    # "DATA_RunC_2022preEE":         150,
+    # "DATA_RunD_2022preEE":         150,
+
+    "DATA_RunCHT_2022preEE":       150,
     "DATA_RunC_2022preEE":         150,
     "DATA_RunD_2022preEE":         150,
-    "DATA_RunE_2022preEE":         150,
+    "DATA_RunE_2022postEE":         150,
     "DATA_RunF_2022postEE":         150,
     "DATA_RunG_2022postEE":         150,
 
@@ -65,26 +70,14 @@ newNumber = {
 
 
 lumi_file = {
-    "2017":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2017/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.root",
-    "2018":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2018/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.root",
-    "UL16preVFP":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL16preVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16preVFP_normtag.root",
-    "UL16postVFP":  os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL16postVFP/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON_UL16postVFP_normtag.root",
-    "UL17":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root",
-    "UL18":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/UL18/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON_normtag.root",
+    "2022":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2022/lumi_2022.root",
     "2022preEE":    os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2022/lumi_2022.root",
     "2022postEE":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2022/lumi_2022.root",
     "2023":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2023/lumi_runC.root",
 }
 
 TargetLumi = {
-    "2016":         "35920",
-    "2017":         "41530",
-    "2018":         "59740",
-    "UL16preVFP":   "35920",
-    "UL16postVFP":  "35920",
-    "UL17":         "41530",
-    "UL18":         "59740",
-    "RunII":       "137190",
+    "2022":         "35180", # TODO
     "2022preEE":    "35180", # TODO
     "2022postEE":   "35180", # TODO
     "2023":         "35180", # TODO
@@ -148,7 +141,8 @@ def createConfigFiles(study="Standard", processes=["QCDPt15to30", "QCDPt15to30_M
                 change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                 changes = []
                 if "QCD" in process:
-                    lumi = helper.get_lumi(process.replace('_'+year, '').replace('HT','_HT').replace('postEE','').replace('preEE',''), '13TeV', year)
+                    proc = process.replace('_'+year, '').replace('HT','_HT').replace('postEE','').replace('preEE','').replace("QCDPt", "QCDPT")
+                    lumi = helper.get_lumi(proc, '13TeV', year)
                     changes.append(["<InputData", "Type", "<CrossSection>", "{:.6f}".format(lumi)])
                     change_lines(path, filename, [el[0:2] for el in changes ], [el[2:3] for el in changes ], [el[3:4] for el in changes ])
                     changes = []
