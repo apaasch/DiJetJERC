@@ -209,7 +209,9 @@ TGraphAsymmErrors* TH1toTGraphAsymmErrors(int m, std::vector <double> eta_bins, 
   vector<double> yerrors_lo = {};
   vector<double> yerrors_hi = {};
   vector<double> dummy = {};
-  std::vector<double> usedPtBinning = m<14?usedPtTrigger_central:usedPtTrigger_forward;
+
+  int HFcut = method.EqualTo("FE")?13:14; // first 0.0-0.2 not in FE
+  std::vector<double> usedPtBinning = m<HFcut?usedPtTrigger_central:usedPtTrigger_forward;
   for(unsigned int i=2; i<=hist->GetNbinsX(); i ++){
     if(hist->GetBinContent(i)==0) continue;
     // cout << hist->GetTitle() << "   " << hist->GetBinContent(i) << endl;
