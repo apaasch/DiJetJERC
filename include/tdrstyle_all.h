@@ -272,7 +272,9 @@ void CMS_lumi( TPad* pad, int iPeriod, int iPosX ){
   } else if ( iPeriod==3 ){
     lumiText += lumi_13TeV_18 + " (13 TeV)";
   } else if ( iPeriod==0 ){
-    lumiText += lumi_13TeV + " (13 TeV)";
+    lumiText += lumi_13TeV + lumi_sqrtS;
+  } else if ( iPeriod==4 ){
+    lumiText += lumi_13TeV + " (13.6 TeV)";
   }
 
   // cout << lumiText << endl;
