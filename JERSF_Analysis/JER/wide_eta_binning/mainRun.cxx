@@ -2062,7 +2062,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   if(debug) cout << "Time taken by PLOT_MCT is : " << fixed << setprecision(2) << time_taken << " sec " << endl;
 
   bool plot_all = false;
-  debug = false;
+  if(outdir.Contains("asym")) plot_all = true;
   if (plot_all) {
     ////////////////////////////////////////////////////////////////////////////
     //  Plots Asymmetries                                                     //
