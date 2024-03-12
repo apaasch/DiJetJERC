@@ -2326,7 +2326,10 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   txt_ST.close();
   txt_FE.close();
 
-  TCanvas* canv_SF = tdrCanvas("JER SF",eta_bins_edge_SM[0]-0.1, eta_bins_edge_SM[EtaBins_SM + EtaBins_FE]+0.5, 0.8, 3.0, "#eta", "JER SF");
+  bool isJER = outdir.Contains("JER/nominal");
+  double max = (isJER)?1.4:3.0;
+  cout << "isJER " << isJER << " with max " << max << endl;
+  TCanvas* canv_SF = tdrCanvas("JER SF",eta_bins_edge_SM[0]-0.1, eta_bins_edge_SM[EtaBins_SM + EtaBins_FE]+0.5, 0.8, max, "#eta", "JER SF");
   canv_SF->SetTickx(0);
   canv_SF->SetTicky(0);
   TGraphErrors *gr_st = new TGraphErrors(JER_correlated_scale_hist_SM.size(), &(eta_bin_SM_center[0]), &(SF_correlated_SM[0]), &(eta_bin_SM_error[0]), &(SF_correlated_SM_error[0]));
