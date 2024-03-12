@@ -480,43 +480,34 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
   gPrintViaErrorHandler = kTRUE;
   gErrorIgnoreLevel = kFatal;
 
-  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  extraText  = "Work in Progress";  // default extra text is "Preliminary"
   lumi_13TeV = "[MC 102X] Run2017 41.53 fb^{-1}";
-  lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
+  lumi_sqrtS = " (13.6 TeV)";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
-  TString MCversion = (year.Contains("UL")) ? "[MC 106X]": "[MC 102X]";
+  TString MCversion = "[MC 130X]";
 
   TString lumi;
 
-  if (year.Contains("18")) {
-    if (DATA.Contains("RunA"))    lumi = "14.00";
-    if (DATA.Contains("RunB"))    lumi = "7.10";
-    if (DATA.Contains("RunC"))    lumi = "6.94";
-    if (DATA.Contains("RunD"))    lumi = "31.93";
-    if (DATA.Contains("RunAB"))   lumi = "14.10";
-    if (DATA.Contains("RunABC"))  lumi = "28.04";
-    if (DATA.Contains("RunABCD")) lumi = "59.74";
+  if (year.Contains("2022preEE")) {
+    if (DATA.Contains("RunC"))    lumi = "5.07";
+    if (DATA.Contains("RunD"))    lumi = "3.00";
+    if (DATA.Contains("RunCD"))   lumi = "8.07";
   }
-  if (year.Contains("17")) {
-    if (DATA.Contains("RunB"))      lumi = "4.82";
-    if (DATA.Contains("RunC"))      lumi = "9.66";
-    if (DATA.Contains("RunD"))      lumi = "4.25";
-    if (DATA.Contains("RunE"))      lumi = "9.28";
-    if (DATA.Contains("RunF"))      lumi = "13.54";
-    if (DATA.Contains("RunBCDEF"))  lumi = "41.53";
+  if (year.Contains("2022postEE")) {
+    if (DATA.Contains("RunE"))    lumi = "5.87";
+    if (DATA.Contains("RunF"))    lumi = "18.01";
+    if (DATA.Contains("RunG"))    lumi = "3.12";
+    if (DATA.Contains("RunEFG"))  lumi = "27.00";
   }
 
-  if (year.Contains("16")) {
-    if (DATA.Contains("RunFGH"))  lumi = "";
-  }
 
   // lumi_13TeV = "RunII";
   // lumi_13TeV = "35.92 fb^{-1}(2016)+41.53 fb^{-1}(2017)+59.74 fb^{-1}(2018)";
   //lumi_13TeV = "[MC Pythia8] RunII";
 
-  // lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
+  lumi_13TeV = MCversion+" "+DATA+" "+lumi+" fb^{-1} ("+year+")";
   // lumi_13TeV = MCversion+" "+DATA+" ("+year+")";
-  lumi_13TeV = "RunII Legacy";
+  // lumi_13TeV = "RunII Legacy";
 
   VecD eta_bins_all(eta_bins_common,                eta_bins_common + sizeof(eta_bins_common)/sizeof(double));
   VecD eta_bins_SM(eta_bins_common,                 eta_bins_common + sizeof(eta_bins_common)/sizeof(double) - shift_SM);
@@ -894,7 +885,8 @@ void plot_SF_systematics() {
   // years.push_back("UL16preVFP");
   // years.push_back("UL16postVFP");
   // years.push_back("UL17");
-  years.push_back("UL18");
+  years.push_back("2022preEE");
+  years.push_back("2022postEE");
   // years.push_back("Legacy");
   //TString year = "2018";
 
@@ -912,7 +904,8 @@ void plot_SF_systematics() {
   JECs["UL16postVFP"] = {"Summer20UL16_V2"};
   JECs["UL17"]        = {"Summer20UL17_V2"};
   JECs["UL18"]        = {"Summer20UL18_V2"};
-  JECs["2022postEE"]  = {"Summer22EEPrompt22_V1"};
+  JECs["2022preEE"]   = {"Summer22_22Sep2023_V2"};
+  JECs["2022postEE"]  = {"Summer22EE_22Sep2023_V2"};
   JECs["Legacy"]      = {"Summer19Legacy"};
 
   MapTS DATAS;
@@ -924,7 +917,8 @@ void plot_SF_systematics() {
   DATAS["UL16postVFP"] = {"RunFGH"};
   DATAS["UL17"]        = {"RunBCDEF"};
   DATAS["UL18"]        = {"RunABCD"};
-  DATAS["2022postEE"]  = {"RunFG"};
+  DATAS["2022preEE"]   = {"RunCD"};
+  DATAS["2022postEE"]  = {"RunEFG"};
   DATAS["Legacy"]      = {"RunII"};
 
 
