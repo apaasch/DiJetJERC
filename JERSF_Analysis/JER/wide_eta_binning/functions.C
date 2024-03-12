@@ -920,7 +920,7 @@ void correctForRef( TString name1, std::vector<std::vector<double> > &Output, st
         int index_p = -1; // In order to throw break
         double ptvalue = (pTbinsValue[p]+pTbinsValue[p+1])/2; // 1st: Get mid of pT bin of HF bins
         for(unsigned int z=0; z<pTbinsRef.size()-1; z++){
-          if(pTbinsRef[z]<ptvalue&&ptvalue<pTbinsRef[z+1]){index_p = z; break;}
+          if(pTbinsRef[z]<ptvalue&&ptvalue<=pTbinsRef[z+1]){index_p = z; break;} // <= for special cases were boundary of Ref is hit
         }
         pT = (double)(*std::max_element(width_pt.at(0).at(index_p).begin(),width_pt.at(0).at(index_p).end()));
 
