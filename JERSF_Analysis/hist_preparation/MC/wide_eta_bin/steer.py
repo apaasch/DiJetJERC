@@ -128,11 +128,15 @@ samples = {}
 samples["2022preEE"] = ["HT"]
 samples["2022postEE"] = ["HT"]
 samples["2023"] = ["PT"]
+samples["2023preBPix"] = ["HT"]
+samples["2023postBPix"] = ["HT"]
 
 JECVersions = {}
 JECVersions["2022preEE"] = ["Summer22_22Sep2023_V2"]
 JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 JECVersions["2023"] = ["Winter23Prompt23_V1"]
+JECVersions["2023preBPix"] = ["Summer23Prompt23_V1"]
+JECVersions["2023postBPix"] = ["Summer23BPixPrompt23_V1"]
 
 # JetLabels = ["AK4CHS", "AK8Puppi", "AK4Puppi"]
 JetLabels = ["AK4Puppi"]

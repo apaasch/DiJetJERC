@@ -23,7 +23,7 @@ def parse_args():
 def main_program(path="", list_path="", out_path="", year="", study="", ptbins="", abins="", JECVersions=[], JetLabels=[], systematics=[], samples=[]):
   isRunII = year=="Legacy"
   isRun3 = "202" in year
-  is23 = year=="2023"
+  is23 = "2023" in year
   list_path_=list_path
   out_path_=out_path
   dirs_sys = ["", "up", "down"]
@@ -59,13 +59,17 @@ def main_program(path="", list_path="", out_path="", year="", study="", ptbins="
             run_list = list_path_+pattern+"file_DataRun"+sample+"_"+year+".txt"
             with open(run_list, "w") as outputfile:
               for file_ in sorted(glob.glob(source_path+"uhh2.AnalysisModuleRunner.DATA.*root")):
-                if not is23:
+                if is23:
+                  if "Cv" in sample:
+                    if not "Run"+sample in file_ and not isRunII: continue
+                    outputfile.write(file_+"\n")
+                  else:
+                    for el in sample:
+                      if not "Run"+el in file_ and not isRunII: continue
+                      outputfile.write(file_+"\n")
+                else:
                   for el in sample:
                     if not "Run"+el in file_ and not isRunII: continue
-                    outputfile.write(file_+"\n")
-                else:
-                    if not "Run"+sample in file_: continue
-                    if sample=="C" and "C_v4" in file_: continue
                     outputfile.write(file_+"\n")
             if not os.path.isfile(run_list):
               continue
@@ -125,12 +129,15 @@ samples = {}
 samples["2022preEE"] = ["CD"] # CHT is considered with C
 # samples["2022preEE"] = ["CD"] # CHT is considered with C
 samples["2022postEE"] = ["EFG"]
-samples["2023"] = ["C", "C_v4"]
+samples["2023preBPix"] = ["C", "Cv123", "Cv4"] # Cv123, Cv4
+samples["2023postBPix"] = ["D"]
 
 JECVersions = {}
 JECVersions["2022preEE"] = ["Summer22_19Dec2023_V2"]
 JECVersions["2022postEE"] = ["Summer22EE_22Sep2023_V2"]
 JECVersions["2023"] = ["Winter23Prompt23_V1"]
+JECVersions["2023preBPix"] = ["Summer23Prompt23_V1"]
+JECVersions["2023postBPix"] = ["Summer23BPixPrompt23_V1"]
 
 JetLabels = ["AK4Puppi"]
 # systematics = ["", "alpha","PU", "JEC", "JER"]
