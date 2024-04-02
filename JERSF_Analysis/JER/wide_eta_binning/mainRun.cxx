@@ -706,6 +706,12 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     extraText3.push_back(Form("%.1f < |#eta| < %.1f", eta_bins[m], eta_bins[m+1]));
 
     // TCanvas* canv = tdrCanvas(canvName, 50, 2700, 0.99, 1.4, nameXaxis, nameYaxis);
+    if(eta_bins[m+1]<=1.566){
+      y_max = 1.6;
+      y_min=0.8;
+    }
+    else if(eta_bins[m+1]<=2.853) y_max = 3.0;
+    else y_max = 2.5;
     TCanvas* canv = tdrCanvas(canvName, 50, 2700, y_min, y_max, nameXaxis, nameYaxis);
     canv->SetLogx(1);
 
@@ -2326,7 +2332,7 @@ int mainRun(std::string year, bool data_, const char* filename, const char* file
   txt_ST.close();
   txt_FE.close();
 
-  bool isJER = outdir.Contains("JER/nominal");
+  bool isJER = (outdir.Contains("JER/nominal") || outdir.Contains("JER/up") || outdir.Contains("JER/down"));
   double max = (isJER)?1.4:3.0;
   cout << "isJER " << isJER << " with max " << max << endl;
   TCanvas* canv_SF = tdrCanvas("JER SF",eta_bins_edge_SM[0]-0.1, eta_bins_edge_SM[EtaBins_SM + EtaBins_FE]+0.5, 0.8, max, "#eta", "JER SF");
