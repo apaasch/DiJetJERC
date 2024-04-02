@@ -901,7 +901,7 @@ void plot_SF_systematics() {
   // studies.push_back("Standard");
   // studies.push_back("L1L2Residual");
   // studies.push_back("PuJetId");
-  studies.push_back("eta_common_fine_v3");
+  studies.push_back("eta_common_default_finealpha_prescale");
   // studies.push_back("eta_common_fine");
   // studies.push_back("eta_simple");
 
