@@ -742,15 +742,15 @@ void PLOT_SF(std::vector< TH1F* > h_uncor, std::vector< TH1F* > h_cor, std::vect
     // if (h_015.at(m) -> GetFunction("constfit")==0) h_015.at(m)->GetListOfFunctions()->Add(f);
     // f->SetLineColor(color_015); f->SetLineWidth(2);f->Draw("same");
 
-    f = h_JER_corr_NSC.at(m) -> GetFunction("NSC_ratio");
-    f->SetLineColor(kOrange+1); f->SetLineWidth(2); f->Draw("same");
+    // f = h_JER_corr_NSC.at(m) -> GetFunction("NSC_ratio");
+    // f->SetLineColor(kOrange+1); f->SetLineWidth(2); f->Draw("same");
 
 
     TLegend *leg = tdrLeg(0.55,0.55,0.9,0.85, 0.04, 42, kBlack);
     // leg->AddEntry(h_uncor.at(m),  "#sigma_{JER}^{data}/#sigma_{JER}^{MC} uncorrelated","lep");
     leg->AddEntry(h_cor.at(m),    "#sigma_{JER}^{data}/#sigma_{JER}^{MC}","lep");
     // leg->AddEntry(h_015.at(m),    "#sigma_{0.15}^{data}/#sigma_{0.15}^{MC}","lep");
-    leg->AddEntry(f, "NSC ratio", "l");
+    // leg->AddEntry(f, "NSC ratio", "l");
     leg->Draw("same");
 
     if (isFE) {
