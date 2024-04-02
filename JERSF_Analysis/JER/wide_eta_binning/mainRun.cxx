@@ -1122,7 +1122,7 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     leg = tdrLeg(0.55,0.7,0.9,0.9);
     leg->AddEntry(h_SF.at(m),"#sigma_{JER}^{data}/#sigma_{JER}^{mc} correlated","lep");
     leg->AddEntry(constfit,"Constant Fit","l");
-    leg->AddEntry(NSC_ratio,"Ratio of NSC-Fits","l");
+    // leg->AddEntry(NSC_ratio,"Ratio of NSC-Fits","l");
     if(isFE){
       if (m<9) canvName = canvName(0, canvName.Length()-1);
       else canvName = canvName(0, canvName.Length()-2);
