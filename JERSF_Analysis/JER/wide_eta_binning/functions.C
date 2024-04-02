@@ -1033,7 +1033,7 @@ void fill_hist( TString name1, std::vector< TH1F* > &output, std::vector< std::v
       if ( ( !(TMath::IsNaN(Widths.at(m).at(p))) ) && Widths.at(m).at(p)!= 0. )      h1 -> SetBinContent(h1 -> FindBin(pT), Widths.at(m).at(p) );
       if ( ( !(TMath::IsNaN(WidthsError.at(m).at(p))) ) && Widths.at(m).at(p)!= 0. ) h1 -> SetBinError(  h1 -> FindBin(pT), WidthsError.at(m).at(p) );
 
-      if (name1.Contains("SF_") && h1->GetBinContent(h1->FindBin(pT))<1) h1->SetBinContent(h1->FindBin(pT),1);
+      // if (name1.Contains("SF_") && h1->GetBinContent(h1->FindBin(pT))<1) h1->SetBinContent(h1->FindBin(pT),1);
     }
     h1 ->GetYaxis()-> SetRangeUser( 0., range );
     output.push_back(h1);
