@@ -938,14 +938,16 @@ void PLOT_NSC(std::vector< TH1F* > h_data, std::vector< TH1F* > h_MC, std::vecto
     leg->AddEntry(h_data.at(m),"data","lp");
     char line[100];
     TLegend *legend;
-    legend = tdrLeg(0.50,0.55,0.70,0.7, 0.025, 42, color_MC);
+    legend = tdrLeg(0.50,0.55,0.70,0.75, 0.025, 42, color_MC);
+    sprintf(line, "#chi^2/ndf = %.2f / %3d", mcChi, mcNDF); legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "N = %.5f #pm %.5f", N, Nerr);  legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "S = %.5f #pm %.5f", S, Serr);  legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "C = %.5f #pm %.5f", C, Cerr);  legend->AddEntry((TObject*)0, line, "");
     if(useP){ sprintf(line, "P = %.5f #pm %.5f", P, Perr);  legend->AddEntry((TObject*)0, line, ""); }
     legend->Draw("same");
-    legend = tdrLeg(0.70,0.55,0.85,0.7, 0.025, 42, color_data);
+    legend = tdrLeg(0.70,0.55,0.85,0.75, 0.025, 42, color_data);
     // sprintf(line, "k_{NS} = %.5f #pm %.5f", kNS,kNSerr);legend->AddEntry((TObject*)0, line, "");
+    sprintf(line, "#chi^2/ndf = %.2f / %3d", dtChi, dtNDF); legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "k_{N} = %.5f #pm %.5f", kN, kNerr); legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "k_{S} = %.5f #pm %.5f", kS, kSerr); legend->AddEntry((TObject*)0, line, "");
     sprintf(line, "k_{C} = %.5f #pm %.5f", kC, kCerr); legend->AddEntry((TObject*)0, line, "");
