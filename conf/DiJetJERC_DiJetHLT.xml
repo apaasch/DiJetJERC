@@ -82,6 +82,31 @@
 <!ENTITY QCDHT1500to2000_2022postEE   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/QCD-4Jets_HT-1500to2000_EE_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
 <!ENTITY QCDHT2000_2022postEE         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/QCD-4Jets_HT-2000_EE_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
 
+<!ENTITY QCDHT40to70_2023preBPix      SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-40to70_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT70to100_2023preBPix     SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-70to100_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT100to200_2023preBPix    SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-100to200_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT200to400_2023preBPix    SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-200to400_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT400to600_2023preBPix    SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-400to600_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT600to800_2023preBPix    SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-600to800_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT800to1000_2023preBPix   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-800to1000_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT1000to1200_2023preBPix  SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-1000to1200_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT1200to1500_2023preBPix  SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-1200to1500_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+<!ENTITY QCDHT1500to2000_2023preBPix  SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-1500to2000_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT2000_2023preBPix        SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-2000_CP5_13p6TeV_madgraphMLM-pythia8_v2.xml">
+
+<!ENTITY QCDHT40to70_2023postBPix     SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-40to70_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT70to100_2023postBPix    SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-70to100_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT100to200_2023postBPix   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-100to200_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v4.xml">
+<!ENTITY QCDHT200to400_2023postBPix   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-200to400_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT400to600_2023postBPix   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-400to600_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v4.xml">
+<!ENTITY QCDHT600to800_2023postBPix   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-600to800_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT800to1000_2023postBPix  SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-800to1000_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v4.xml">
+<!ENTITY QCDHT1000to1200_2023postBPix SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-1000to1200_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v4.xml">
+<!ENTITY QCDHT1200to1500_2023postBPix SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-1200to1500_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v4.xml">
+<!ENTITY QCDHT1500to2000_2023postBPix SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-1500to2000_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v3.xml">
+<!ENTITY QCDHT2000_2023postBPix       SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/SM/2023/QCD-4Jets_HT-2000_BPix_CP5_13p6TeV_madgraphMLM-pythia8_v4.xml">
+
+
 <!-- Data Samples -->
 <!ENTITY DATA_RunCHT_2022preEE			 SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022preEE/JetHT_Run2022C-22Sep2023-v1.xml">
 <!ENTITY DATA_RunC_2022preEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022preEE/JetMET_Run2022C-22Sep2023-v1.xml">
@@ -90,9 +115,9 @@
 <!ENTITY DATA_RunF_2022postEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022postEE/JetMET_Run2022F-22Sep2023-v1.xml">
 <!ENTITY DATA_RunG_2022postEE			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2022postEE/JetMET_Run2022G-22Sep2023-v1.xml">
 
-<!ENTITY DATA_RunC_2023			         SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/JetMET_Run2023C-PromptReco.xml">
-<!ENTITY DATA_RunC_v4_2023			     SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/JetMET_Run2023Cv4-PromptReco.xml">
-<!-- <!ENTITY DATA_RunC0_v1_2023			   SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/JetMET0_Run2023C-PromptReco.xml"> -->
+<!ENTITY DATA_RunCv123_2023preBPix		SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2023/JetMET_Run2023C-PromptReco-v123.xml">
+<!ENTITY DATA_RunCv4_2023preBPix		 SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2023/JetMET_Run2023C-PromptReco-v4.xml">
+<!ENTITY DATA_RunD_2023postBPix      SYSTEM "CMSSW_BASE/src/UHH2/common/UHH2-datasets/Run3_130X_v1/data/2023/JetMET_Run2023D-22Sep2023_v1.xml">
 
 ]>
 
@@ -146,6 +171,30 @@
     <InputData Type="MC" Version="QCDHT1500to2000_2022postEE"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1500to2000_2022postEE;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
     <InputData Type="MC" Version="QCDHT2000_2022postEE"              Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT2000_2022postEE;                <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
 
+    <InputData Type="MC" Version="QCDHT40to70_2023preBPix"            Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT40to70_2023preBPix;              <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT70to100_2023preBPix"           Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT70to100_2023preBPix;             <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT100to200_2023preBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT100to200_2023preBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT200to400_2023preBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT200to400_2023preBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT400to600_2023preBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT400to600_2023preBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT600to800_2023preBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT600to800_2023preBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT800to1000_2023preBPix"         Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT800to1000_2023preBPix;           <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT1000to1200_2023preBPix"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1000to1200_2023preBPix;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT1200to1500_2023preBPix"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1200to1500_2023preBPix;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT1500to2000_2023preBPix"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1500to2000_2023preBPix;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT2000_2023preBPix"              Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT2000_2023preBPix;                <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+
+    <InputData Type="MC" Version="QCDHT40to70_2023postBPix"            Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT40to70_2023postBPix;              <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT70to100_2023postBPix"           Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT70to100_2023postBPix;             <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT100to200_2023postBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT100to200_2023postBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT200to400_2023postBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT200to400_2023postBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT400to600_2023postBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT400to600_2023postBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT600to800_2023postBPix"          Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT600to800_2023postBPix;            <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT800to1000_2023postBPix"         Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT800to1000_2023postBPix;           <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT1000to1200_2023postBPix"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1000to1200_2023postBPix;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT1200to1500_2023postBPix"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1200to1500_2023postBPix;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT1500to2000_2023postBPix"        Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT1500to2000_2023postBPix;          <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="MC" Version="QCDHT2000_2023postBPix"              Lumi="<CrossSection>" NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &QCDHT2000_2023postBPix;                <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+
     <!-- DATA -->
     <!-- TODO: LUMI-->
     <InputData Type="DATA" Version="DATA_RunCHT_2022preEE"     Lumi="9664"         NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunCHT_2022preEE;       <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
@@ -155,8 +204,9 @@
     <InputData Type="DATA" Version="DATA_RunF_2022postEE"      Lumi="13540"        NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunF_2022postEE;        <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
     <InputData Type="DATA" Version="DATA_RunG_2022postEE"      Lumi="13540"        NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunG_2022postEE;        <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
 
-    <InputData Type="DATA" Version="DATA_RunC_2023"            Lumi="4823"         NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunC_2023;              <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
-    <InputData Type="DATA" Version="DATA_RunC_v4_2023"         Lumi="4823"         NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunC_v4_2023;           <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="DATA" Version="DATA_RunCv123_2023preBPix" Lumi="4823"         NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunCv123_2023preBPix;   <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="DATA" Version="DATA_RunCv4_2023preBPix"   Lumi="4823"         NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunCv4_2023preBPix;     <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
+    <InputData Type="DATA" Version="DATA_RunD_2023postBPix"    Lumi="4823"         NEventsMax="&NEVT;" Cacheable="&CACHEABLE;">  &DATA_RunD_2023postBPix;      <InputTree Name="AnalysisTree"/> <OutputTree Name="AnalysisTree"/> </InputData>
 
     <UserConfig>
       <!-- define which collections to read from the input. Only specify what you need to save I/O time -->

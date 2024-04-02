@@ -220,7 +220,7 @@ protected:
   //useful booleans
   bool debug, no_genp;
   bool isMC, JECClosureTest, JERClosureTest, apply_EtaPhi_cut, apply_EtaPhi_HCAL, trigger_central, trigger_fwd, DO_Pu_ReWeighting, apply_lumiweights, apply_PUid;
-  bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18, is2022, is2022preEE, is2022postEE, is2023;
+  bool is2016v2, is2016v3, is2017, is2018, isUL16, isUL16preVFP, isUL16postVFP, isUL17, isUL18, is2022, is2022preEE, is2022postEE, is2023, is2023preBPix, is2023postBPix;
   bool switchTrigger_UL16, switchTrigger_UL17;
   std::unordered_map<std::string, std::vector<std::string>> runs = {
     {"2016", runPeriods2016},
@@ -232,7 +232,9 @@ protected:
     {"UL18", runPeriods2018},
     {"2022postEE", runPeriods2022postEE},
     {"2022preEE", runPeriods2022preEE},
-    {"2023", runPeriods2023}
+    {"2023", runPeriods2023},
+    {"2023preBPix", runPeriods2023preBPix},
+    {"2023postBPix", runPeriods2023postBPix}
   };
   std::string year;
   bool isAK8, ispuppi, isRun3;
@@ -650,6 +652,8 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
   is2022preEE   = (dataset_version.find("2022preEE")   != std::string::npos);
   is2022postEE  = (dataset_version.find("2022postEE")  != std::string::npos);
   is2023        = (dataset_version.find("2023")        != std::string::npos);
+  is2023preBPix  = (dataset_version.find("2023preBPix")  != std::string::npos);
+  is2023postBPix = (dataset_version.find("2023postBPix") != std::string::npos);
   year = ctx.get("year");
   std::cout << "year " << year << '\n';
 
@@ -809,8 +813,11 @@ AnalysisModule_DiJetTrg::AnalysisModule_DiJetTrg(uhh2::Context & ctx) {
     if(is2018)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Autumn18_V4_MC/Autumn18_V4_MC_PtResolution_AK4PFchs.txt"));
     if(is2017)                jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt"));
     if(is2016v2 || is2016v3)  jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_SF_AK4PFchs.txt", "JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"));
-    if(is2022preEE)           jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer22_22Sep2023_JRV1_MC/Summer22_22Sep2023_JRV1_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer22_22Sep2023_JRV1_MC/Summer22_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi.txt"));
-    if(is2022postEE)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer22EE_22Sep2023_JRV1_MC/Summer22EE_22Sep2023_JRV1_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer22EE_22Sep2023_JRV1_MC/Summer22EE_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi.txt"));
+    // V1 pt dependent; V2 flat
+    if(is2022preEE)           jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer22_22Sep2023_JRV2_MC/Summer22_22Sep2023_JRV2_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer22_22Sep2023_JRV2_MC/Summer22_22Sep2023_JRV2_MC_PtResolution_AK4PFPuppi.txt"));
+    if(is2022postEE)          jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer22EE_22Sep2023_JRV2_MC/Summer22EE_22Sep2023_JRV2_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer22EE_22Sep2023_JRV2_MC/Summer22EE_22Sep2023_JRV2_MC_PtResolution_AK4PFPuppi.txt"));
+    if(is2023preBPix)         jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer23Prompt23_JRV1_MC/Summer23Prompt23_JRV1_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer23Prompt23_JRV1_MC/Summer23Prompt23_JRV1_MC_PtResolution_AK4PFPuppi.txt"));
+    if(is2023postBPix)        jet_resolution_smearer.reset(new GenericJetResolutionSmearer(ctx, "jets", "genjets", "JRDatabase/textFiles/Summer23BPixPrompt23_JRV1_MC/Summer23BPixPrompt23_JRV1_MC_SF_AK4PFPuppi.txt", "JRDatabase/textFiles/Summer23BPixPrompt23_JRV1_MC/Summer23BPixPrompt23_JRV1_MC_PtResolution_AK4PFPuppi.txt"));
   }
 
   //output
@@ -900,6 +907,7 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
   if (event.year=="2017UL") event.year=year; // --- TODO !!!! ------------------
+  if (year.find("2023") != std::string::npos) event.year=year;
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
 
@@ -1088,7 +1096,10 @@ bool AnalysisModule_DiJetTrg::process(Event & event) {
     for (const std::string & run : runs[year]) {
       if (debug) cout << " \trun map start with " << run << endl;
       if (run=="MC") continue;
-      if (year.find("UL")!= std::string::npos || year.find("2022")!= std::string::npos) {
+      if (year.find("UL")!= std::string::npos ||
+          year.find("2022")!= std::string::npos ||
+          year.find("2023")!= std::string::npos
+        ) {
         if (debug) cout << "Key for runmap: " << "20"+year.substr(2,2) << endl;
         if (run_number_map.at("20"+year.substr(2,2)).at(run).first <= event.run && event.run <= run_number_map.at("20"+year.substr(2,2)).at(run).second) apply_run[run] = true;
       } else {

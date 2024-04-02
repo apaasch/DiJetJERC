@@ -48,8 +48,29 @@ newNumber = {
     "QCDHT1500to2000_2022postEE": 100,
     "QCDHT2000_2022postEE":       100,
 
-    # "DATA_RunC_2022preEE":         150,
-    # "DATA_RunD_2022preEE":         150,
+    "QCDHT40to70_2023preBPix":     200,
+    "QCDHT70to100_2023preBPix":    200,
+    "QCDHT100to200_2023preBPix":   200,
+    "QCDHT200to400_2023preBPix":   200,
+    "QCDHT400to600_2023preBPix":   200,
+    "QCDHT600to800_2023preBPix":   200,
+    "QCDHT800to1000_2023preBPix":  200,
+    "QCDHT1000to1200_2023preBPix": 200,
+    "QCDHT1200to1500_2023preBPix": 200,
+    "QCDHT1500to2000_2023preBPix": 200,
+    "QCDHT2000_2023preBPix":       200,
+
+    "QCDHT40to70_2023postBPix":     150,
+    "QCDHT70to100_2023postBPix":    130,
+    "QCDHT100to200_2023postBPix":   100,
+    "QCDHT200to400_2023postBPix":   100,
+    "QCDHT400to600_2023postBPix":   100,
+    "QCDHT600to800_2023postBPix":   100,
+    "QCDHT800to1000_2023postBPix":  100,
+    "QCDHT1000to1200_2023postBPix": 140,
+    "QCDHT1200to1500_2023postBPix": 100,
+    "QCDHT1500to2000_2023postBPix": 100,
+    "QCDHT2000_2023postBPix":       100,
 
     "DATA_RunCHT_2022preEE":       150,
     "DATA_RunC_2022preEE":         150,
@@ -58,14 +79,9 @@ newNumber = {
     "DATA_RunF_2022postEE":         150,
     "DATA_RunG_2022postEE":         150,
 
-    "DATA_RunC_2023":         200,
-    "DATA_RunC_v4_2023":       200,
-    # "DATA_RunC0_v1_2023":         150,
-    # "DATA_RunC0_v2_2023":         150,
-    # "DATA_RunC0_v3_2023":         150,
-    # "DATA_RunC1_v1_2023":         150,
-    # "DATA_RunC1_v2_2023":         150,
-    # "DATA_RunC1_v3_2023":         150,
+    "DATA_RunCv123_2023preBPix":     250,
+    "DATA_RunCv4_2023preBPix":       250,
+    "DATA_RunD_2023postBPix":        200,
 }
 
 
@@ -74,6 +90,8 @@ lumi_file = {
     "2022preEE":    os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2022/lumi_2022.root",
     "2022postEE":   os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2022/lumi_2022.root",
     "2023":         os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2023/lumi_runC.root",
+    "2023preBPix":  os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2023preBPix/Cert_Collisions2023_eraC_367095_368823_Golden_normtag.root",
+    "2023postBPix": os.environ["CMSSW_BASE"]+"/src/UHH2/common/UHH2-data/2023postBPix/Cert_Collisions2023_eraD_369803_370790_Golden_normtag.root",
 }
 
 TargetLumi = {
@@ -81,6 +99,8 @@ TargetLumi = {
     "2022preEE":    "35180", # TODO
     "2022postEE":   "35180", # TODO
     "2023":         "35180", # TODO
+    "2023preBPix":  "35180", # TODO
+    "2023postBPix": "35180", # TODO
 }
 
 LumiWeight = {

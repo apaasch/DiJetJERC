@@ -155,6 +155,30 @@ QCD_process.append("QCDHT1200to1500_2022postEE")
 QCD_process.append("QCDHT1500to2000_2022postEE")
 QCD_process.append("QCDHT2000_2022postEE")
 
+QCD_process.append("QCDHT40to70_2023preBPix")
+QCD_process.append("QCDHT70to100_2023preBPix")
+QCD_process.append("QCDHT100to200_2023preBPix")
+QCD_process.append("QCDHT200to400_2023preBPix")
+QCD_process.append("QCDHT400to600_2023preBPix")
+QCD_process.append("QCDHT600to800_2023preBPix")
+QCD_process.append("QCDHT800to1000_2023preBPix")
+QCD_process.append("QCDHT1000to1200_2023preBPix")
+QCD_process.append("QCDHT1200to1500_2023preBPix")
+QCD_process.append("QCDHT1500to2000_2023preBPix")
+QCD_process.append("QCDHT2000_2023preBPix")
+
+QCD_process.append("QCDHT40to70_2023postBPix")
+QCD_process.append("QCDHT70to100_2023postBPix")
+QCD_process.append("QCDHT100to200_2023postBPix")
+QCD_process.append("QCDHT200to400_2023postBPix")
+QCD_process.append("QCDHT400to600_2023postBPix")
+QCD_process.append("QCDHT600to800_2023postBPix")
+QCD_process.append("QCDHT800to1000_2023postBPix")
+QCD_process.append("QCDHT1000to1200_2023postBPix")
+QCD_process.append("QCDHT1200to1500_2023postBPix")
+QCD_process.append("QCDHT1500to2000_2023postBPix")
+QCD_process.append("QCDHT2000_2023postBPix")
+
 # Data_process.append("DATA_RunC_2022preEE")
 # Data_process.append("DATA_RunD_2022preEE")
 Data_process.append("DATA_RunCHT_2022preEE")
@@ -165,8 +189,9 @@ Data_process.append("DATA_RunE_2022postEE")
 Data_process.append("DATA_RunF_2022postEE")
 Data_process.append("DATA_RunG_2022postEE")
 
-Data_process.append("DATA_RunC_2023")
-Data_process.append("DATA_RunC_v4_2023")
+Data_process.append("DATA_RunCv123_2023preBPix")
+Data_process.append("DATA_RunCv4_2023preBPix")
+Data_process.append("DATA_RunD_2023postBPix")
 
 # JECVersions_Data = ["Autumn18_V4"]
 # JetLabels = ["AK4CHS", "AK8Puppi"]
@@ -175,7 +200,9 @@ Data_process.append("DATA_RunC_v4_2023")
 # year = "2023"
 # year = "2022"
 # year = "2022preEE"
-year = "2022postEE"
+# year = "2022postEE"
+year = "2023preBPix"
+# year = "2023postBPix"
 
 
 studies = []
@@ -213,8 +240,10 @@ JECVersions_MC["2022preEE"]     = ["Summer22_22Sep2023_V2"]
 JECVersions_Data["2022postEE"]  = ["Summer22EE_22Sep2023_V2"] # V11 copy L2Res into L2L3Res due to nan values; V1 original
 JECVersions_MC["2022postEE"]    = ["Summer22EE_22Sep2023_V2"] # V11 copy L2Res into L2L3Res due to nan values; V1 original
 
-JECVersions_Data["2023"]        = ["Winter23Prompt23_V1"]
-JECVersions_MC["2023"]          = ["Winter23Prompt23_V1"]
+JECVersions_Data["2023preBPix"]  = ["Summer23Prompt23_V1"]
+JECVersions_MC["2023preBPix"]    = ["Summer23Prompt23_V1"]
+JECVersions_Data["2023postBPix"] = ["Summer23BPixPrompt23_V1"]
+JECVersions_MC["2023postBPix"]   = ["Summer23BPixPrompt23_V1"]
 
 # JetLabels = ["AK4CHS", "AK4Puppi", "AK8CHS", "AK8Puppi"]
 JetLabels = ["AK4Puppi"]
