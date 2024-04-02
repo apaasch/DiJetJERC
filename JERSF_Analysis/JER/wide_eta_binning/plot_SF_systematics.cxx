@@ -499,6 +499,12 @@ void plot_SF_systematics_(TString path_ = "", TString path = "", TString year ="
     if (DATA.Contains("RunG"))    lumi = "3.12";
     if (DATA.Contains("RunEFG"))  lumi = "27.00";
   }
+  if (year.Contains("2023preBPix")) {
+    if (DATA.Contains("RunC"))    lumi = "17.65";
+  }
+  if (year.Contains("2023postBPix")) {
+    if (DATA.Contains("RunD"))    lumi = "9.45";
+  }
 
 
   // lumi_13TeV = "RunII";
@@ -885,8 +891,8 @@ void plot_SF_systematics() {
   // years.push_back("UL16preVFP");
   // years.push_back("UL16postVFP");
   // years.push_back("UL17");
-  years.push_back("2022preEE");
-  years.push_back("2022postEE");
+  // years.push_back("2023preBPix");
+  years.push_back("2023postBPix");
   // years.push_back("Legacy");
   //TString year = "2018";
 
@@ -906,6 +912,8 @@ void plot_SF_systematics() {
   JECs["UL18"]        = {"Summer20UL18_V2"};
   JECs["2022preEE"]   = {"Summer22_22Sep2023_V2"};
   JECs["2022postEE"]  = {"Summer22EE_22Sep2023_V2"};
+  JECs["2023preBPix"]  = {"Summer23Prompt23_V1"};
+  JECs["2023postBPix"] = {"Summer23BPixPrompt23_V1"};
   JECs["Legacy"]      = {"Summer19Legacy"};
 
   MapTS DATAS;
@@ -919,6 +927,8 @@ void plot_SF_systematics() {
   DATAS["UL18"]        = {"RunABCD"};
   DATAS["2022preEE"]   = {"RunCD"};
   DATAS["2022postEE"]  = {"RunEFG"};
+  DATAS["2023preBPix"]   = {"RunC"};
+  DATAS["2023postBPix"]  = {"RunD"};
   DATAS["Legacy"]      = {"RunII"};
 
 

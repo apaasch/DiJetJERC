@@ -15,6 +15,12 @@ def getLabel(sample, year):
             LABEL_LUMI_INV_FB += " 8.07 fb^{-1}"
         if sample == "EFG":
             LABEL_LUMI_INV_FB += " 27 fb^{-1}"
+    if "2023" in year:
+        LABEL_LUMI_INV_FB = "[MC 130X] "+year
+        if sample == "C":
+            LABEL_LUMI_INV_FB += " 17.65 fb^{-1}"
+        if sample == "D":
+            LABEL_LUMI_INV_FB += " 9.45 fb^{-1}"
     # if sample == "A":
     #     LABEL_LUMI_INV_FB += "Run2018A 14.00 fb^{-1}"
     # elif sample == "B":
@@ -116,12 +122,16 @@ samples = {}
 
 samples["2022preEE"] = ["CD"]
 samples["2022postEE"] = ["EFG"]
-samples["2023"] = ["C", "C_v4"]
+samples["2023"] = ["C"]
+samples["2023preBPix"] = ["C"] # "C", "Cv123", "Cv4"
+samples["2023postBPix"] = ["D"]
 
 QCDSamples = {}
 QCDSamples["2022preEE"] = ["QCDHT"]
 QCDSamples["2022postEE"] = ["QCDHT"]
 QCDSamples["2023"] = ["QCDHT"]
+QCDSamples["2023preBPix"] = ["QCDHT"]
+QCDSamples["2023postBPix"] = ["QCDHT"]
 
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
 JECVersions = {}
@@ -172,10 +182,6 @@ for extraText in [""]:
                                 MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+QCDsample+"_"+year+extraText+"/histograms_mc_incl_full.root"+'\\"'
                                 if 'prescale' in study:
                                     MC_file = MC_file.replace("_prescale", "")
-                                    print 'Set back MC input file:\n',MC_file
-                                if '2023' in year:
-                                    # MC_file = MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/"+study+"/UL18/Summer20UL18_V2/AK4CHS/QCDHT_UL18/histograms_mc_incl_full.root"+'\\"'
-                                    MC_file = MC_file   = '\\"'+source_path+"MC/wide_eta_bin/file/eta_common_default/2022/Winter22Run3_V1/AK4Puppi/QCDHT_2022/histograms_mc_incl_full.root"+'\\"'
                                     print 'Set back MC input file:\n',MC_file
                                 Data_file = '\\"'+source_path+"data/wide_eta_bin/file/"+study+"/"+pattern.replace("/standard","")+run+"_"+year+extraText+"/histograms_data_incl_full.root"+'\\"'
                                 if 'PS' in syst or 'JER' in syst:
