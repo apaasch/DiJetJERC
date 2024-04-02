@@ -127,7 +127,8 @@ public:
   std::vector<double> Eta_bins_FE_control;
   std::vector<double> Eta_bins_FE;
   std::vector<double> Alpha_bins, Alpha_bins_Inc;
-
+  std::vector<double> eta_bins_global;
+  int n_eta_bins_global;
 
 
   std::vector< std::vector< std::vector< double > > > nevents_central,nevents_HF;
