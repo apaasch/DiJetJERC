@@ -75,6 +75,7 @@ public:
   float alpha_;
   float gen_Delta_R_radiation_barrel;
   float gen_Delta_R_radiation_probe;
+  int n_eta_bins_global;
 
   TBranch *b_run;
   TBranch *b_event;
@@ -176,6 +177,7 @@ public:
   std::vector<double> Eta_bins_FE_reference;
   std::vector<double> Eta_bins_FE_control;
   std::vector<double> Eta_bins_FE;
+  std::vector<double> eta_bins_global;
   std::vector<double> Alpha_bins, Alpha_bins_Inc;
 
 
